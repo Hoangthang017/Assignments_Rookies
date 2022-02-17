@@ -11,14 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{96C688AB-426C-4328-9030-392FA02E197C}"
+	ProjectSection(SolutionItems) = preProject
+		N-Tier.txt = N-Tier.txt
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.DataAccess", "ECommerce.DataAccess\ECommerce.DataAccess.csproj", "{848131A3-0A2C-4E89-9AE9-A7099165F332}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.DataAccess", "ECommerce.DataAccess\ECommerce.DataAccess.csproj", "{848131A3-0A2C-4E89-9AE9-A7099165F332}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Utilities", "ECommerce.Utilities\ECommerce.Utilities.csproj", "{A6EA4A11-324F-410B-B8C3-FBFC20C6640E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.Utilities", "ECommerce.Utilities\ECommerce.Utilities.csproj", "{A6EA4A11-324F-410B-B8C3-FBFC20C6640E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Models", "ECommerce.Models\ECommerce.Models.csproj", "{DBC2090A-7C28-4FB2-914E-58DA3B43E20B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.Models", "ECommerce.Models\ECommerce.Models.csproj", "{DBC2090A-7C28-4FB2-914E-58DA3B43E20B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.BackendApis", "ECommerce.BackendApis\ECommerce.BackendApis.csproj", "{E9018CDC-9464-484F-949B-D47289BE9BB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.BackendApis", "ECommerce.BackendApis\ECommerce.BackendApis.csproj", "{E9018CDC-9464-484F-949B-D47289BE9BB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
