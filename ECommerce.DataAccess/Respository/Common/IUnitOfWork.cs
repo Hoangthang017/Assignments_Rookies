@@ -11,6 +11,10 @@ namespace ECommerce.DataAccess.Respository.Common
     {
         IProductRepository Product { get; }
 
+        IProductImageRepository ProductImage { get; }
+
+        IProductTranslationRepository ProductTranslation { get; }
+
         Task Save();
     }
 }

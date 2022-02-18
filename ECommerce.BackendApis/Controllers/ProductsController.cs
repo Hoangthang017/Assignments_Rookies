@@ -1,5 +1,8 @@
-﻿using ECommerce.DataAccess.Respository.Common;
+﻿using AutoMapper;
+using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request;
+using ECommerce.Models.ViewModels;
+using ECommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +13,12 @@ namespace ECommerce.BackendApis.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ProductsController(IUnitOfWork unitOfWork)
+        public ProductsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         // Create
@@ -28,11 +33,14 @@ namespace ECommerce.BackendApis.Controllers
             if (productId == 0)
                 return BadRequest();
 
-            var product = _unitOfWork.Product.GetById(productId);
+            // conver to product view models
+            var product = await _unitOfWork.Product.GetById(productId);
+            var productTranslation = await _unitOfWork.ProductTranslation.GetByProductId(productId);
+            var productVM = ECommerceMapper.Map<ProductViewModel>(_mapper, product, productTranslation);
 
             return CreatedAtAction(nameof(_unitOfWork.Product.GetById),
                                    new { id = productId },
-                                   product);
+                                   productVM);
         }
 
         // Read
