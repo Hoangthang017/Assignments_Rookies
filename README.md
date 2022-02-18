@@ -15,6 +15,12 @@
 
 #### Technicals
 
+- Docker
+- Sql server
+- EF
+- Migration
+
+
 ##### Architecture
 
 3 - Tier:
