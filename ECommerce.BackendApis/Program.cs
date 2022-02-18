@@ -1,6 +1,8 @@
+using AutoMapper;
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.DataAccess.Respository.ProductRepo;
+using ECommerce.Models.AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -9,14 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// add dbcontext
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
 {
     string connectstring = builder.Configuration.GetConnectionString("ECommerceDB");
     options.UseSqlServer(connectstring);
 });
 
+// add DI services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// add swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -25,9 +30,15 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
-
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+// add auto mapper
+
+builder.Services.AddAutoMapper(mc =>
+{
+    mc.AddProfile(new ECommerceMapperProfile());
+});
 
 var app = builder.Build();
 
@@ -44,6 +55,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// security
 app.UseAuthorization();
 
 // swagger
