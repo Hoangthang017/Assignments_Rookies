@@ -11,3 +11,29 @@
 
 1. Customer Site
 2. Admin Site
+
+
+#### Technicals
+
+- Docker
+- Sql server
+- EF
+- Migration
+
+
+##### Architecture
+
+3 - Tier:
+
+- Presentation:
+	+ WebAPI 
+	+ WebApp
+- Logic:
+	+ Models
+- Data:
+
+##### Design Patterns & Principals
+
+- Repository Pattern
+- Unit of Work Pattern
+- DI
