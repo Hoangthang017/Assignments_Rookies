@@ -25,7 +25,7 @@ namespace ECommerce.DataAccess.Entities
         [Column(TypeName = "ntext")]
         public string Detail { get; set; }
 
-        public int LanguageId { get; set; }
+        public string LanguageId { get; set; }
 
         public Language Language { get; set; }
 

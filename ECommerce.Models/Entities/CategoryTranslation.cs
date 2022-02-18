@@ -16,7 +16,7 @@ namespace ECommerce.DataAccess.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
-        public int LanguageId { get; set; }
+        public string LanguageId { get; set; }
 
         public Language Language { get; set; }
 

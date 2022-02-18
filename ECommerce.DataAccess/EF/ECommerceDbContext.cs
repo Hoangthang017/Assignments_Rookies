@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.DataAccess
+namespace ECommerce.DataAccess.EF
 {
     public class ECommerceDbContext : DbContext
     {
