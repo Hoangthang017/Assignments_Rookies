@@ -1,11 +1,9 @@
-﻿using ECommerce.Models.Abstract;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Xml.Linq;
 
 namespace ECommerce.Models.Entities
 {
-    public class Product : AuditAble
+    public class Post
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,19 +15,11 @@ namespace ECommerce.Models.Entities
 
         [Required]
         [MaxLength(256)]
+        [Column(TypeName = "varchar")]
         public string Alias { get; set; }
 
         [MaxLength(256)]
         public string Image { get; set; }
-
-        [Column(TypeName = "xml")]
-        public XElement MoreImages { get; set; }
-
-        public decimal Price { get; set; }
-
-        public decimal? PromotionPrice { get; set; }
-
-        public int? Warranty { get; set; }
 
         [MaxLength(500)]
         public string Description { get; set; }
@@ -46,6 +36,6 @@ namespace ECommerce.Models.Entities
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
-        public virtual ProductCategory ProductCategory { get; set; }
+        public virtual PostCategory PostCategory { get; set; }
     }
 }
