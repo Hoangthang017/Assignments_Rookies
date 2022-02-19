@@ -1,7 +1,6 @@
-using AutoMapper;
 using ECommerce.DataAccess.EF;
+using ECommerce.DataAccess.Infrastructure;
 using ECommerce.DataAccess.Respository.Common;
-using ECommerce.DataAccess.Respository.ProductRepo;
 using ECommerce.Models.AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
