@@ -29,47 +29,38 @@ namespace ECommerce.BackendApis.Controllers
             {
                 return BadRequest(ModelState);
             }
-            int productId = await _unitOfWork.Product.Create(request);
-            if (productId == 0)
-                return BadRequest();
-
-            // conver to product view models
-            var product = await _unitOfWork.Product.GetById(productId);
-            var productTranslation = await _unitOfWork.ProductTranslation.GetByProductId(productId);
-            var productVM = ECommerceMapper.Map<ProductViewModel>(_mapper, product, productTranslation);
-
-            return CreatedAtAction(nameof(_unitOfWork.Product.GetById),
-                                   new { id = productId },
-                                   productVM);
+            return Ok();
         }
 
         // Read
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _unitOfWork.Product.GetAll();
-            if (products == null)
-                return BadRequest();
-            return Ok(products);
+            //var products = await _unitOfWork..GetAll();
+            //if (products == null)
+            //    return BadRequest();
+
+            //// conver to product view models
+            return Ok();
         }
 
         [HttpGet("{productId}")]
         public async Task<IActionResult> GetById(int productId)
         {
-            var product = await _unitOfWork.Product.GetById(productId);
+            //var product = await _unitOfWork.Product.GetById(productId);
 
-            if (product == null)
-                return BadRequest($"Cannot find product with id: {productId}");
-            return Ok(product);
+            //if (product == null)
+            //    return BadRequest($"Cannot find product with id: {productId}");
+            return Ok();
         }
 
         // Update
         [HttpPatch]
         public async Task<IActionResult> Update([FromForm] UpdateProductRequest request)
         {
-            var isSuccess = await _unitOfWork.Product.Update(request);
-            if (!isSuccess)
-                return BadRequest();
+            //var isSuccess = await _unitOfWork.Product.Update(request);
+            //if (!isSuccess)
+            //    return BadRequest();
             return Ok();
         }
 
@@ -77,9 +68,9 @@ namespace ECommerce.BackendApis.Controllers
         [HttpDelete("{productId}")]
         public async Task<IActionResult> Delete(int productId)
         {
-            var isSuccess = await _unitOfWork.Product.Remove(productId);
-            if (!isSuccess)
-                return BadRequest();
+            //var isSuccess = await _unitOfWork.Product.Remove(productId);
+            //if (!isSuccess)
+            //    return BadRequest();
             return Ok();
         }
     }
