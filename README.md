@@ -19,7 +19,7 @@
 - Sql server
 - EF
 - Migration
-
+- AutoMapper
 
 ##### Architecture
 

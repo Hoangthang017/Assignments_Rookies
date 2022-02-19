@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.DataAccess
+namespace ECommerce.DataAccess.EF
 {
     public class ECommerceDbContext : DbContext
     {
@@ -48,6 +48,8 @@ namespace ECommerce.DataAccess
                 entity.HasOne(x => x.Category).WithMany(x => x.ProductInCategories)
                   .HasForeignKey(x => x.CategoryId);
             });
+
+            ModelBuilderExtentions.Seed(modelBuilder);
         }
 
         public DbSet<Product> Products { get; set; }
