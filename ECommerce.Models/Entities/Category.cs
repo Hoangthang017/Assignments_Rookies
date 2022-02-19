@@ -15,10 +15,10 @@ namespace ECommerce.DataAccess.Entities
         [Required]
         public bool IsShowOnHome { get; set; }
 
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         public IEnumerable<ProductInCategory> ProductInCategories { get; set; }
 

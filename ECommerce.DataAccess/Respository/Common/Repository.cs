@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,6 +40,11 @@ namespace ECommerce.DataAccess.Respository.Common
                 throw new ECommerceException($"Cannot find a product with id: {id}");
             }
             return entity;
+        }
+
+        public async Task<T> GetFirstOrDefault(Expression<Func<T, bool>> filter)
+        {
+            return await dbSet.FirstOrDefaultAsync(filter);
         }
 
         public async Task<bool> Remove(object id)

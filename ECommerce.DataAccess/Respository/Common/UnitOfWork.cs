@@ -1,4 +1,6 @@
-﻿using ECommerce.DataAccess.EF;
+﻿using AutoMapper;
+using ECommerce.DataAccess.EF;
+using ECommerce.DataAccess.Respository.CategoryRepo;
 using ECommerce.DataAccess.Respository.ProductRepo;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -13,15 +15,26 @@ namespace ECommerce.DataAccess.Respository.Common
     {
         private readonly ECommerceDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMapper _mapper;
 
-        public UnitOfWork(ECommerceDbContext context, IWebHostEnvironment webHostEnvironment)
+        public UnitOfWork(ECommerceDbContext context, IWebHostEnvironment webHostEnvironment, IMapper mapper)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
-            Product = new ProductRepository(_context, webHostEnvironment);
+            _mapper = mapper;
+            Product = new ProductRepository(_context, webHostEnvironment, mapper);
+            ProductImage = new ProductImageRepository(_context, webHostEnvironment, mapper);
+            ProductTranslation = new ProductTranslationRepository(_context, webHostEnvironment, mapper);
+            CategoryTranslation = new CategoryTranslationRepository(_context, webHostEnvironment, mapper);
         }
 
         public IProductRepository Product { get; private set; }
+
+        public IProductImageRepository ProductImage { get; private set; }
+
+        public IProductTranslationRepository ProductTranslation { get; private set; }
+
+        public ICategoryTranslationRepository CategoryTranslation { get; private set; }
 
         async Task IUnitOfWork.Save()
         {

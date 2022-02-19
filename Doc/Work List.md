@@ -7,4 +7,8 @@
 ### Day 2
 
 - Research and Apply Repository & Unit of Work Pattern
+- Add Auto Mapper
 - Backend Apis for product
+
+### Day 3
+- Backend Apis for product and category

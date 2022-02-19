@@ -1,4 +1,5 @@
-﻿using ECommerce.DataAccess.EF;
+﻿using AutoMapper;
+using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Entities;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,15 +21,25 @@ namespace ECommerce.DataAccess.Respository.ProductRepo
     {
         private readonly ECommerceDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMapper _mapper;
 
-        public ProductRepository(ECommerceDbContext context, IWebHostEnvironment webHostEnvironment) : base(context)
+        public ProductRepository(ECommerceDbContext context, IWebHostEnvironment webHostEnvironment, IMapper mapper) : base(context)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _mapper = mapper;
         }
 
         public async Task<int> Create(CreateProductRequest request)
         {
+            var language = await _context.Languages.FindAsync(request.LanguageId);
+            var category = await _context.Categories.FindAsync(request.CategoryId);
+
+            if (language == null)
+                throw new ECommerceException($"Don't have language with id; {request.LanguageId}");
+            if (category == null)
+                throw new ECommerceException($"Don't have category with id; {request.CategoryId}");
+
             var product = new Product()
             {
                 Price = request.Price,
@@ -45,6 +57,15 @@ namespace ECommerce.DataAccess.Respository.ProductRepo
                     }
                 }
             };
+
+            product.ProductInCategories = new List<ProductInCategory>()
+                {
+                    new ProductInCategory()
+                    {
+                        CategoryId = request.CategoryId,
+                        ProductId = product.Id,
+                    }
+                };
 
             if (request.Image != null)
             {
