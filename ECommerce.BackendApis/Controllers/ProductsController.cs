@@ -35,8 +35,9 @@ namespace ECommerce.BackendApis.Controllers
 
             // conver to product view models
             var product = await _unitOfWork.Product.GetById(productId);
-            var productTranslation = await _unitOfWork.ProductTranslation.GetByProductId(productId);
-            var productVM = ECommerceMapper.Map<ProductViewModel>(_mapper, product, productTranslation);
+            var productTranslation = await _unitOfWork.ProductTranslation.GetFirstOrDefault(x => x.ProductId == product.Id && x.LanguageId == request.LanguageId);
+            var categoryTranslation = await _unitOfWork.CategoryTranslation.GetFirstOrDefault(x => x.CategoryId == request.CategoryId && x.LanguageId == request.LanguageId);
+            var productVM = ECommerceMapper.Map<ProductViewModel>(_mapper, product, productTranslation, categoryTranslation);
 
             return CreatedAtAction(nameof(_unitOfWork.Product.GetById),
                                    new { id = productId },
@@ -50,6 +51,8 @@ namespace ECommerce.BackendApis.Controllers
             var products = await _unitOfWork.Product.GetAll();
             if (products == null)
                 return BadRequest();
+
+            // conver to product view models
             return Ok(products);
         }
 

@@ -21,11 +21,13 @@ namespace ECommerce.Models.ViewModels
 
         public DateTime DateCreated { get; set; }
 
-        public string Name { set; get; }
+        public string ProductName { set; get; }
 
         public string Description { set; get; }
 
         public string Detail { set; get; }
+
+        public string CategoryName { set; get; }
 
         public string LanguageId { set; get; }
     }

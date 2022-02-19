@@ -14,7 +14,10 @@ namespace ECommerce.Models.AutoMapper
         public ECommerceMapperProfile() : base()
         {
             CreateMap<Product, ProductViewModel>();
-            CreateMap<ProductTranslation, ProductViewModel>();
+            CreateMap<ProductTranslation, ProductViewModel>()
+                .ForMember(pvm => pvm.ProductName, x => x.MapFrom(p => p.Name));
+            CreateMap<CategoryTranslation, ProductViewModel>()
+                .ForMember(pvm => pvm.CategoryName, x => x.MapFrom(ct => ct.Name));
         }
     }
 }

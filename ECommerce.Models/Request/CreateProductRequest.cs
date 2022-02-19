@@ -23,6 +23,8 @@ namespace ECommerce.Models.Request
 
         public string LanguageId { set; get; }
 
+        public int CategoryId { get; set; }
+
         public IFormFile Image { get; set; }
     }
 }

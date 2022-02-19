@@ -48,6 +48,8 @@ namespace ECommerce.DataAccess.EF
                 entity.HasOne(x => x.Category).WithMany(x => x.ProductInCategories)
                   .HasForeignKey(x => x.CategoryId);
             });
+
+            ModelBuilderExtentions.Seed(modelBuilder);
         }
 
         public DbSet<Product> Products { get; set; }
