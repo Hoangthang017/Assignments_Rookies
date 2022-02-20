@@ -3,7 +3,7 @@ using ECommerce.Models.Entities;
 
 namespace ECommerce.DataAccess.Repository.MenuRepo
 {
-    public interface IMenuRepository : IRepository<Footer>
+    public interface IMenuRepository : IRepository<Menu>
     {
     }
 }
