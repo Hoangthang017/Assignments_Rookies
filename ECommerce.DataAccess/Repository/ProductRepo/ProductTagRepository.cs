@@ -4,7 +4,7 @@ using ECommerce.Models.Entities;
 
 namespace ECommerce.DataAccess.Repository.ProductRepo
 {
-    public class ProductTagRepository : Repository<Product>, IProductTagRepository
+    public class ProductTagRepository : Repository<ProductTag>, IProductTagRepository
     {
         private readonly ECommerceDbContext _context;
 

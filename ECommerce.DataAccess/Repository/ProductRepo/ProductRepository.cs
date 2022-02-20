@@ -1,6 +1,7 @@
 ﻿using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.Models.Entities;
+using ECommerce.Models.ViewModels;
 
 namespace ECommerce.DataAccess.Repository.ProductRepo
 {

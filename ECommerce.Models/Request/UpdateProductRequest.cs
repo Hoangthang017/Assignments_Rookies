@@ -1,24 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ECommerce.Models.Request
+﻿namespace ECommerce.Models.Request
 {
     public class UpdateProductRequest
     {
-        [Required]
-        public int ProductId { get; set; }
-
         public string Name { get; set; }
+
+        public string Alias { get; set; }
+
+        public string Image { get; set; }
+
+        public string MoreImages { get; set; }
+
+        public decimal Price { get; set; }
+
+        public decimal? PromotionPrice { get; set; }
+
+        public int? Warranty { get; set; }
 
         public string Description { get; set; }
 
-        public string Detail { get; set; }
+        public string Content { get; set; }
 
-        [Required]
-        public string LanguageId { get; set; }
+        public bool? HomeFlag { get; set; }
+
+        public bool? HotFlag { get; set; }
+
+        public string MeteKeyword { get; set; }
+
+        public string MetaDescription { get; set; }
+
+        public bool Status { get; set; }
     }
 }

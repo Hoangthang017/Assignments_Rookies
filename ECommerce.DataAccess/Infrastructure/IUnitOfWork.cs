@@ -12,6 +12,6 @@ namespace ECommerce.DataAccess.Respository.Common
 
         IPostRepository Posts { get; }
 
-        Task Save();
+        Task<bool> Save();
     }
 }
