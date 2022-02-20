@@ -1,4 +1,7 @@
 ﻿using ECommerce.DataAccess.EF;
+using ECommerce.DataAccess.Repository.CommonRepo;
+using ECommerce.DataAccess.Repository.OrderRepo;
+using ECommerce.DataAccess.Repository.ProductRepo;
 using ECommerce.DataAccess.Respository.Common;
 
 namespace ECommerce.DataAccess.Infrastructure
@@ -10,11 +13,20 @@ namespace ECommerce.DataAccess.Infrastructure
         public UnitOfWork(ECommerceDbContext context)
         {
             _context = context;
+            Footers = new FooterRepository(context);
+            Products = new ProductRepository(context);
+            Posts = new PostRepository(context);
         }
 
-        async Task IUnitOfWork.Save()
+        public IFooterRepository Footers { get; private set; }
+
+        public IProductRepository Products { get; private set; }
+
+        public IPostRepository Posts { get; private set; }
+
+        async Task<bool> IUnitOfWork.Save()
         {
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }
