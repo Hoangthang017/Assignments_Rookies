@@ -1,0 +1,19 @@
+﻿using ECommerce.DataAccess.Respository.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ECommerce.Tests.RepositoryTest
+{
+    public class ProductRepositoryTests
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ProductRepositoryTests(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+    }
+}

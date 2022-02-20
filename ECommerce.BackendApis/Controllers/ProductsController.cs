@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using ECommerce.DataAccess.Respository.Common;
-using ECommerce.Models.Request;
-using ECommerce.Models.ViewModels;
-using ECommerce.Utilities;
-using Microsoft.AspNetCore.Http;
+﻿using ECommerce.DataAccess.Respository.Common;
 using Microsoft.AspNetCore.Mvc;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ECommerce.BackendApis.Controllers
 {
@@ -13,61 +10,43 @@ namespace ECommerce.BackendApis.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public ProductsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductsController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
-        // Create
-        [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            return Ok();
-        }
-
-        // Read
+        // GET: api/<ProductsController>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public IEnumerable<string> Get()
         {
-            var product = _unitOfWork.Products.GetAll().FirstOrDefault();
-            return Ok(product);
+            var products = _unitOfWork.Products.GetAll();
+            return new string[] { "value1", "value2" };
         }
 
-        [HttpGet("{productId}")]
-        public async Task<IActionResult> GetById(int productId)
+        // GET api/<ProductsController>/5
+        [HttpGet("{id}")]
+        public string Get(int id)
         {
-            //var product = await _unitOfWork.Product.GetById(productId);
-
-            //if (product == null)
-            //    return BadRequest($"Cannot find product with id: {productId}");
-            return Ok();
+            return "value";
         }
 
-        // Update
-        [HttpPatch]
-        public async Task<IActionResult> Update([FromForm] UpdateProductRequest request)
+        // POST api/<ProductsController>
+        [HttpPost]
+        public void Post([FromBody] string value)
         {
-            //var isSuccess = await _unitOfWork.Product.Update(request);
-            //if (!isSuccess)
-            //    return BadRequest();
-            return Ok();
         }
 
-        // Delete
-        [HttpDelete("{productId}")]
-        public async Task<IActionResult> Delete(int productId)
+        // PUT api/<ProductsController>/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] string value)
         {
-            //var isSuccess = await _unitOfWork.Product.Remove(productId);
-            //if (!isSuccess)
-            //    return BadRequest();
-            return Ok();
+        }
+
+        // DELETE api/<ProductsController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
         }
     }
 }
