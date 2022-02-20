@@ -22,8 +22,8 @@ namespace ECommerce.Models.Entities
         [MaxLength(256)]
         public string Image { get; set; }
 
-        [Column(TypeName = "xml")]
-        public XElement MoreImages { get; set; }
+        [Column(TypeName = "ntext")]
+        public string MoreImages { get; set; }
 
         public decimal Price { get; set; }
 

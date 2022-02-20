@@ -8,7 +8,7 @@ namespace ECommerce.Models.Entities
         [Key]
         [MaxLength(50)]
         [Column(TypeName = "varchar")]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         [MaxLength(50)]

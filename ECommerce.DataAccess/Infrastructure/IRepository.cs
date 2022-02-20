@@ -5,7 +5,7 @@ namespace ECommerce.DataAccess.Infrastructure
     public interface IRepository<T> where T : class
     {
         // Marks an entity as new
-        void Add(T entity);
+        Task Add(T entity);
 
         // Marks an entity as modified
         void Update(T entity);
@@ -14,12 +14,12 @@ namespace ECommerce.DataAccess.Infrastructure
         void Delete(T entity);
 
         //Delete multi records
-        void DeleteMulti(Expression<Func<T, bool>> where);
+        Task DeleteMulti(Expression<Func<T, bool>> where);
 
         // Get an entity by int id
-        T GetSingleById(int id);
+        Task<T> GetSingleById(int id);
 
-        T GetSingleByCondition(Expression<Func<T, bool>> expression, string[] includes = null);
+        Task<T> GetSingleByCondition(Expression<Func<T, bool>> expression, string[] includes = null);
 
         IQueryable<T> GetAll(string[] includes = null);
 
@@ -27,8 +27,8 @@ namespace ECommerce.DataAccess.Infrastructure
 
         IQueryable<T> GetMultiPaging(Expression<Func<T, bool>> filter, out int total, int index = 0, int size = 50, string[] includes = null);
 
-        int Count(Expression<Func<T, bool>> where);
+        Task<int> Count(Expression<Func<T, bool>> where);
 
-        bool CheckContains(Expression<Func<T, bool>> predicate);
+        Task<bool> CheckContains(Expression<Func<T, bool>> predicate);
     }
 }
