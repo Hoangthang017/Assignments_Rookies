@@ -2,7 +2,7 @@
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.Models.Entities;
 
-namespace ECommerce.DataAccess.Repository
+namespace ECommerce.DataAccess.Repository.ProductRepo
 {
     public class ProductCategoryRepository : Repository<ProductCategoryRepository>, IProductCategoryRepository
     {

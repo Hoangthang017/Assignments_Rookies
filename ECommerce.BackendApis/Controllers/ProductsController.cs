@@ -36,12 +36,8 @@ namespace ECommerce.BackendApis.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            //var products = await _unitOfWork..GetAll();
-            //if (products == null)
-            //    return BadRequest();
-
-            //// conver to product view models
-            return Ok();
+            var product = _unitOfWork.Products.GetAll().FirstOrDefault();
+            return Ok(product);
         }
 
         [HttpGet("{productId}")]
