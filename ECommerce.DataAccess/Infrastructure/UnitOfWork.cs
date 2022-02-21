@@ -16,9 +16,9 @@ namespace ECommerce.DataAccess.Infrastructure
 
         public IProductRepository Products { get; private set; }
 
-        async Task IUnitOfWork.Save()
+        async Task<bool> IUnitOfWork.Save()
         {
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

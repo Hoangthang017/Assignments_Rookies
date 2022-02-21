@@ -6,6 +6,6 @@ namespace ECommerce.DataAccess.Respository.Common
     {
         IProductRepository Products { get; }
 
-        Task Save();
+        Task<bool> Save();
     }
 }
