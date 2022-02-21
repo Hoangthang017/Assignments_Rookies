@@ -1,51 +1,38 @@
-﻿using ECommerce.Models.Abstract;
+﻿using ECommerce.Models.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Xml.Linq;
 
-namespace ECommerce.Models.Entities
+public class Product
 {
-    public class Product : AuditAble
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(256)]
-        public string Name { get; set; }
+    [Required]
+    public decimal Price { get; set; }
 
-        [Required]
-        [MaxLength(256)]
-        public string Alias { get; set; }
+    [Required]
+    public decimal OriginalPrice { get; set; }
 
-        [MaxLength(256)]
-        public string Image { get; set; }
+    [Required]
+    public int Stock { get; set; }
 
-        [Column(TypeName = "ntext")]
-        public string MoreImages { get; set; }
+    [Required]
+    public int ViewCount { get; set; }
 
-        public decimal Price { get; set; }
+    public DateTime CreatedDate { get; set; }
 
-        public decimal? PromotionPrice { get; set; }
+    public DateTime UpdatedDate { get; set; }
 
-        public int? Warranty { get; set; }
+    public IEnumerable<Cart> Carts { get; set; }
 
-        [MaxLength(500)]
-        public string Description { get; set; }
+    public IEnumerable<OrderDetail> OrderDetails { get; set; }
 
-        public string Content { get; set; }
+    public IEnumerable<ProductInCategory> ProductInCategories { get; set; }
 
-        public bool? HomeFlag { get; set; }
+    public IEnumerable<ProductTranslation> ProductTranslations { get; set; }
 
-        public bool? HotFlag { get; set; }
+    public IEnumerable<ProductImage> ProductImages { get; set; }
 
-        public int? ViewCount { get; set; }
-
-        [Required]
-        public int CategoryId { get; set; }
-
-        [ForeignKey("CategoryId")]
-        public virtual ProductCategory ProductCategory { get; set; }
-    }
+    public IEnumerable<ProductReview> ProductReviews { get; set; }
 }

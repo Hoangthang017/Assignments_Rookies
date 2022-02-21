@@ -1,9 +1,13 @@
 ﻿using ECommerce.Models.Entities;
+using ECommerce.Models.Enums;
+using ECommerce.Utilities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.DataAccess.EF
 {
-    public class ECommerceDbContext : DbContext
+    public class ECommerceDbContext : IdentityDbContext<User, Role, Guid>
     {
         public ECommerceDbContext(DbContextOptions<ECommerceDbContext> options) : base(options)
         {
@@ -13,30 +17,105 @@ namespace ECommerce.DataAccess.EF
         {
             base.OnModelCreating(modelBuilder);
 
-            // Fluent API
+            #region Fluent API
+
+            // Entities Configuaration
+            modelBuilder.Entity<Category>()
+                .Property(x => x.Status).HasDefaultValue(Status.Active);
+            modelBuilder.Entity<CategoryTranslation>()
+                .Property(x => x.LanguageId).IsUnicode(false);
+            modelBuilder.Entity<Language>()
+                .Property(x => x.Id).IsUnicode(false);
+            modelBuilder.Entity<Order>()
+                .Property(x => x.ShipEmail).IsUnicode(false);
+            modelBuilder.Entity<Contact>()
+                .Property(x => x.Email).IsUnicode(false);
+            modelBuilder.Entity<Product>()
+                .Property(x => x.Stock).HasDefaultValue(0);
+            modelBuilder.Entity<Product>()
+                .Property(x => x.ViewCount).HasDefaultValue(0);
+            modelBuilder.Entity<ProductTranslation>()
+                 .Property(x => x.Id).IsUnicode(false);
+            modelBuilder.Entity<ProductInCategory>()
+                .HasKey(t => new { t.CategoryId, t.ProductId });
+            modelBuilder.Entity<ProductInCategory>()
+                .HasOne(t => t.Product)
+                .WithMany(pc => pc.ProductInCategories)
+                .HasForeignKey(pc => pc.ProductId);
+            modelBuilder.Entity<ProductInCategory>()
+                .HasOne(t => t.Category)
+                .WithMany(pc => pc.ProductInCategories)
+                .HasForeignKey(pc => pc.CategoryId);
             modelBuilder.Entity<OrderDetail>()
-                .HasKey(od => new { od.OrderId, od.ProductId });
-            modelBuilder.Entity<PostTag>()
-                .HasKey(pt => new { pt.PostId, pt.TagId });
-            modelBuilder.Entity<ProductTag>()
-                .HasKey(pt => new { pt.ProductId, pt.TagId });
+                .HasKey(t => new { t.OrderId, t.ProductId });
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(t => t.Order)
+                .WithMany(pc => pc.OrderDetails)
+                .HasForeignKey(pc => pc.ProductId);
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(t => t.Product)
+                .WithMany(pc => pc.OrderDetails)
+                .HasForeignKey(pc => pc.ProductId);
+
+            // Identity configuration
+            modelBuilder.Entity<User>()
+                .ToTable("Users");
+            modelBuilder.Entity<Role>()
+                .ToTable("Roles");
+            modelBuilder.Entity<IdentityUserClaim<Guid>>()
+                .ToTable("UserClaims");
+            modelBuilder
+                .Entity<IdentityUserRole<Guid>>()
+                .ToTable("UserRoles")
+                .HasKey(x => new { x.UserId, x.RoleId });
+            modelBuilder
+                .Entity<IdentityUserLogin<Guid>>()
+                .ToTable("UserLogins")
+                .HasKey(x => x.UserId);
+            modelBuilder
+                .Entity<IdentityRoleClaim<Guid>>()
+                .ToTable("RoleClaims");
+            modelBuilder
+                .Entity<IdentityUserRole<Guid>>()
+                .ToTable("UserTokens")
+                .HasKey(x => x.UserId);
+
+            #endregion Fluent API
+
+            // seed data
+            modelBuilder.Seed();
         }
 
-        public DbSet<Footer> Footers { get; set; }
-        public DbSet<Menu> Menus { get; set; }
-        public DbSet<MenuGroup> MenuGroups { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<Page> Pages { get; set; }
-        public DbSet<Post> Posts { get; set; }
-        public DbSet<PostCategory> PostCategories { get; set; }
-        public DbSet<PostTag> PostTags { get; set; }
+        #region Add Tables
+
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductCategory> ProductCategories { get; set; }
-        public DbSet<ProductTag> ProductTags { get; set; }
-        public DbSet<Slide> Slides { get; set; }
-        public DbSet<SupportOnline> SupportOnlines { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<VisitorStatistic> visitorStatistics { get; set; }
+
+        public DbSet<Category> Categories { get; set; }
+
+        public DbSet<AppConfig> AppConfigs { get; set; }
+
+        public DbSet<Cart> Carts { get; set; }
+
+        public DbSet<CategoryTranslation> CategoryTranslations { get; set; }
+
+        public DbSet<ProductInCategory> ProductInCategories { get; set; }
+
+        public DbSet<Contact> Contacts { get; set; }
+
+        public DbSet<Language> Languages { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<ProductTranslation> ProductTranslations { get; set; }
+
+        public DbSet<Promotion> Promotions { get; set; }
+
+        public DbSet<ProductImage> ProductImages { get; set; }
+
+        public DbSet<ProductReview> ProductReviews { get; set; }
+
+        #endregion Add Tables
     }
 }
