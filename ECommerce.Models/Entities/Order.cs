@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ECommerce.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECommerce.Models.Entities
@@ -7,41 +8,33 @@ namespace ECommerce.Models.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int Id { set; get; }
+
+        public DateTime OrderDate { set; get; }
 
         [Required]
-        [MaxLength(256)]
-        public string CustomerName { get; set; }
+        [MaxLength(200)]
+        public string ShipName { set; get; }
 
         [Required]
-        [MaxLength(256)]
-        public string CustomerAddress { get; set; }
-
-        [Required]
-        [MaxLength(256)]
-        public string CustomerEmail { get; set; }
+        [MaxLength(200)]
+        public string ShipAddress { set; get; }
 
         [Required]
         [MaxLength(50)]
-        public string CustomerMobile { get; set; }
+        public string ShipEmail { set; get; }
 
         [Required]
-        [MaxLength(256)]
-        public string CustomerMessage { get; set; }
+        [MaxLength(200)]
+        public string ShipPhoneNumber { set; get; }
 
-        [MaxLength(256)]
-        public string PaymentMethod { get; set; }
+        public OrderStatus Status { set; get; }
 
-        public DateTime? CreatedDate { get; set; }
+        public IEnumerable<OrderDetail> OrderDetails { set; get; }
 
-        [MaxLength(256)]
-        public string CreatedBy { get; set; }
+        public Guid UserId { set; get; }
 
-        [MaxLength(256)]
-        public DateTime? UpdatedDate { get; set; }
-
-        public string UpdatedBy { get; set; }
-
-        public virtual IEnumerable<OrderDetail> OrderDetails { get; set; }
+        [ForeignKey("UserId")]
+        public User USer { get; set; }
     }
 }

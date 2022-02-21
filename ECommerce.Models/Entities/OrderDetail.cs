@@ -1,19 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace ECommerce.Models.Entities
+﻿namespace ECommerce.Models.Entities
 {
     public class OrderDetail
     {
-        public int OrderId { get; set; }
+        public int Quantity { set; get; }
 
-        [ForeignKey("OrderId")]
-        public virtual Order Order { get; set; }
+        public decimal Price { set; get; }
 
-        public int ProductId { get; set; }
+        public int OrderId { set; get; }
 
-        [ForeignKey("ProductId")]
-        public virtual Product Product { get; set; }
+        public Order Order { get; set; }
 
-        public int Quantity { get; set; }
+        public int ProductId { set; get; }
+
+        public Product Product { get; set; }
     }
 }
