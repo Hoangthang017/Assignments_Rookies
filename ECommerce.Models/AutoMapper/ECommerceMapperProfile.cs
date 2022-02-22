@@ -9,11 +9,12 @@ namespace ECommerce.Models.AutoMapper
     {
         public ECommerceMapperProfile()
         {
-            CreateMap<Product, ProductViewModel>();
             CreateMap<CreateProductRequest, Product>();
-            CreateMap<UpdateProductRequest, Product>();
-
-            CreateMap<Product, Product>();
+            CreateMap<CreateProductRequest, ProductTranslation>();
+            CreateMap<UpdateProductRequest, ProductTranslation>();
+            CreateMap<Product, ProductViewModel>();
+            CreateMap<ProductTranslation, ProductViewModel>();
+            CreateMap<CategoryTranslation, ProductViewModel>();
         }
     }
 }

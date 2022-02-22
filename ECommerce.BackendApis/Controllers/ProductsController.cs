@@ -28,57 +28,91 @@ namespace ECommerce.BackendApis.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _unitOfWork.Products.GetAll(new string[] { "ProductCategory" }).ToListAsync();
-            var productVMs = ECommerceMapper.Map<List<ProductViewModel>>(_mapper, products);
-            if (productVMs == null)
+            var productTranslations = _unitOfWork.ProductTranslation.GetAll(new string[] { "Product" });
+
+            var productsVMs = new List<ProductViewModel>();
+            await productTranslations.ForEachAsync(x =>
+                productsVMs.Add(ECommerceMapper.Map<ProductViewModel>(_mapper, x.Product, x))
+            );
+            if (productsVMs == null)
                 return BadRequest();
-            return Ok(productVMs);
+            return Ok(productsVMs);
         }
 
         // GET api/<ProductsController>/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("{productId}/{languageId}")]
+        public async Task<IActionResult> Get(int productId, string languageId)
         {
-            var product = await _unitOfWork.Products.GetSingleById(id);
-            if (product == null)
+            // get data
+            var productTranslation = await _unitOfWork.ProductTranslation
+                .GetSingleByCondition(x => x.ProductId == productId && x.LanguageId == languageId, new string[] { "Product" });
+
+            if (productTranslation == null)
                 return BadRequest();
-            return Ok(product);
+            // mapper
+
+            var productVM = ECommerceMapper.Map<ProductViewModel>(_mapper, productTranslation, productTranslation.Product);
+
+            return Ok(productVM);
         }
 
-        // POST api/<ProductsController>
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
         {
-            var newProduct = ECommerceMapper.Map<Product>(_mapper, request);
-            _unitOfWork.Products.Update(newProduct);
-            var isSucess = await _unitOfWork.Save();
+            var isSucess = await _unitOfWork.Product.Create(request);
+            if (isSucess == 0)
+                return BadRequest();
+            return Ok();
+        }
+
+        // PUT api/product/productId=_&languageId=_
+        [HttpPut("{productId}/{languageId}")]
+        public async Task<IActionResult> Update(int productId, string languageId, [FromForm] UpdateProductRequest request)
+        {
+            var isSucess = await _unitOfWork.Product.Update(productId, languageId, request);
+            if (isSucess == 0)
+                return BadRequest();
+            return Ok();
+        }
+
+        // PUT api/product/price/productId=_
+        [HttpPatch("price/{productId}")]
+        public async Task<IActionResult> Update(int productId, decimal newPrice)
+        {
+            var isSucess = await _unitOfWork.Product.UpdatePrice(productId, newPrice);
             if (!isSucess)
                 return BadRequest();
             return Ok();
         }
 
-        // PUT api/<ProductsController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request)
+        // PUT api/product/stock/productId=_
+        [HttpPatch("stock/{productId}")]
+        public async Task<IActionResult> Update(int productId, int Quantity)
         {
-            var newProduct = ECommerceMapper.Map<Product>(_mapper, request);
-            var product = await _unitOfWork.Products.GetSingleById(id);
-            newProduct.Id = id;
-            product = newProduct;
-            var isSucess = await _unitOfWork.Save();
+            var isSucess = await _unitOfWork.Product.UpdateStock(productId, Quantity);
             if (!isSucess)
                 return BadRequest();
             return Ok();
         }
 
-        // DELETE api/<ProductsController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        // PUT api/product/viewcount/productId=_
+        [HttpPatch("viewcount/{productId}")]
+        public async Task<IActionResult> Update(int productId)
         {
-            Product product = await _unitOfWork.Products.GetSingleById(id);
+            var isSucess = await _unitOfWork.Product.UpdateViewCount(productId);
+            if (!isSucess)
+                return BadRequest();
+            return Ok();
+        }
+
+        // DELETE api/product/_
+        [HttpDelete("{productId}")]
+        public async Task<IActionResult> Delete(int productId)
+        {
+            Product product = await _unitOfWork.Product.GetSingleById(productId);
             if (product == null)
                 return BadRequest();
-            _unitOfWork.Products.Delete(product);
+            _unitOfWork.Product.Delete(product);
             var isSuccess = await _unitOfWork.Save();
             if (!isSuccess)
                 return BadRequest();

@@ -64,20 +64,18 @@ namespace ECommerce.DataAccess.EF
                 .ToTable("Roles");
             modelBuilder.Entity<IdentityUserClaim<Guid>>()
                 .ToTable("UserClaims");
-            modelBuilder
-                .Entity<IdentityUserRole<Guid>>()
+            modelBuilder.Entity<IdentityUserRole<Guid>>()
                 .ToTable("UserRoles")
                 .HasKey(x => new { x.UserId, x.RoleId });
-            modelBuilder
-                .Entity<IdentityUserLogin<Guid>>()
+            modelBuilder.Entity<IdentityUserLogin<Guid>>()
                 .ToTable("UserLogins")
                 .HasKey(x => x.UserId);
-            modelBuilder
-                .Entity<IdentityRoleClaim<Guid>>()
+            modelBuilder.Entity<IdentityRoleClaim<Guid>>()
                 .ToTable("RoleClaims");
-            modelBuilder
-                .Entity<IdentityUserRole<Guid>>()
-                .ToTable("UserTokens")
+            modelBuilder.Entity<IdentityUserToken<Guid>>()
+                .ToTable("USerTokens");
+            modelBuilder.Entity<IdentityUserRole<Guid>>()
+                .ToTable("UserRoles")
                 .HasKey(x => x.UserId);
 
             #endregion Fluent API

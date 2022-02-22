@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ECommerce.DataAccess.Migrations
 {
-    public partial class createDatabase : Migration
+    public partial class addDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -282,26 +282,6 @@ namespace ECommerce.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Carts",
                 columns: table => new
                 {
@@ -426,7 +406,7 @@ namespace ECommerce.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTokens",
+                name: "UserRoles",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -434,15 +414,35 @@ namespace ECommerce.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTokens", x => x.UserId);
+                    table.PrimaryKey("PK_UserRoles", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_UserTokens_Roles_RoleId",
+                        name: "FK_UserRoles_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserTokens_Users_UserId",
+                        name: "FK_UserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "USerTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_USerTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_USerTokens_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -506,17 +506,17 @@ namespace ECommerce.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "CreatedDate", "OriginalPrice", "Price", "UpdatedDate" },
-                values: new object[] { 1, new DateTime(2022, 2, 21, 23, 22, 20, 203, DateTimeKind.Local).AddTicks(6004), 100000m, 200000m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { 1, new DateTime(2022, 2, 22, 15, 52, 35, 988, DateTimeKind.Local).AddTicks(5202), 100000m, 200000m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Name", "NormalizedName" },
-                values: new object[] { new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"), "1a808e63-58d8-4b52-bb75-388a075316f8", "Administrator role", "admin", "admin" });
+                values: new object[] { new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"), "903bd230-f821-4c08-9e7f-9ff93509d07f", "Administrator role", "admin", "admin" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"), 0, "8e888e2b-7551-4d54-91ef-9185a550fd8a", new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "thangnh1394@gmail.com", true, "Thang", "Nguyen", false, null, "thangnh1394@gmail.com", "admin", "AQAAAAEAACcQAAAAELT45xhOB85bZcXDKG2im4M6Clv3f1d4wzP3v4KfmCAdadMfvzCSIkW1fSbl2NONFw==", null, false, "", false, "admin" });
+                values: new object[] { new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"), 0, "624a50ca-6f8e-4406-9e08-742117fe8f30", new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "thangnh1394@gmail.com", true, "Thang", "Nguyen", false, null, "thangnh1394@gmail.com", "admin", "AQAAAAEAACcQAAAAEFQIPjWIniEqa8f+PEQvbKVpte2fcWDg0IPPxythII8yvd0Q1UQ88nMJrFTkDeRfNQ==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "CategoryTranslations",
@@ -544,7 +544,7 @@ namespace ECommerce.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "UserTokens",
+                table: "UserRoles",
                 columns: new[] { "UserId", "RoleId" },
                 values: new object[] { new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"), new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024") });
 
@@ -626,6 +626,11 @@ namespace ECommerce.DataAccess.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "Users",
                 column: "NormalizedEmail");
@@ -636,20 +641,12 @@ namespace ECommerce.DataAccess.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserTokens_RoleId",
-                table: "UserTokens",
-                column: "RoleId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "AppConfigs");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
                 name: "Carts");
@@ -688,7 +685,10 @@ namespace ECommerce.DataAccess.Migrations
                 name: "UserLogins");
 
             migrationBuilder.DropTable(
-                name: "UserTokens");
+                name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "USerTokens");
 
             migrationBuilder.DropTable(
                 name: "Orders");

@@ -1,0 +1,18 @@
+﻿- Product:
+	+ Create:
+		. CreateProduct
+		. CreateImage
+	+ Get:
+		. GetAll
+		. GetById
+		. GetAllPaging
+		. GetImage
+	+ Update:
+		. Update
+		. UpdatePrice
+		. UpdateViewCount
+		. UpdateStock
+		. UpdateImage
+	+ Delete:
+		. Delete
+		. DeleteImage
