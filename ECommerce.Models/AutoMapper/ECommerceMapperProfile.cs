@@ -10,7 +10,6 @@ namespace ECommerce.Models.AutoMapper
         public ECommerceMapperProfile()
         {
             CreateMap<Product, ProductViewModel>();
-            CreateMap<ProductCategory, ProductCategoryViewModel>();
             CreateMap<CreateProductRequest, Product>();
             CreateMap<UpdateProductRequest, Product>();
 
