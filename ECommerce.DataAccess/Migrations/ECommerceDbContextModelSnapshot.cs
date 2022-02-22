@@ -33,7 +33,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("AppConfigs");
+                    b.ToTable("AppConfigs", (string)null);
 
                     b.HasData(
                         new
@@ -82,7 +82,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.Category", b =>
@@ -109,7 +109,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -171,7 +171,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("LanguageId");
 
-                    b.ToTable("CategoryTranslations");
+                    b.ToTable("CategoryTranslations", (string)null);
 
                     b.HasData(
                         new
@@ -249,7 +249,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.Language", b =>
@@ -269,7 +269,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Languages");
+                    b.ToTable("Languages", (string)null);
 
                     b.HasData(
                         new
@@ -328,7 +328,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.OrderDetail", b =>
@@ -349,7 +349,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.ProductImage", b =>
@@ -389,7 +389,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.ProductInCategory", b =>
@@ -404,7 +404,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductInCategories");
+                    b.ToTable("ProductInCategories", (string)null);
 
                     b.HasData(
                         new
@@ -445,7 +445,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductReviews");
+                    b.ToTable("ProductReviews", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.ProductTranslation", b =>
@@ -500,7 +500,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductTranslations");
+                    b.ToTable("ProductTranslations", (string)null);
 
                     b.HasData(
                         new
@@ -569,7 +569,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Promotions");
+                    b.ToTable("Promotions", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.Role", b =>
@@ -852,7 +852,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
 
                     b.HasData(
                         new

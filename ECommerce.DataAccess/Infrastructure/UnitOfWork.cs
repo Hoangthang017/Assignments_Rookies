@@ -1,21 +1,29 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Repository.ProductRepo;
+using ECommerce.DataAccess.Repository.UserRepo;
 using ECommerce.DataAccess.Respository.Common;
+using ECommerce.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace ECommerce.DataAccess.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ECommerceDbContext _context;
-        private readonly IMapper _mapper;
 
-        public UnitOfWork(ECommerceDbContext context, IMapper mapper)
+        public UnitOfWork(
+            ECommerceDbContext context,
+            IMapper mapper,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            RoleManager<Role> roleManager,
+            IConfiguration configuration)
         {
             _context = context;
-            _mapper = mapper;
 
-            Product = new ProductRepository(context, _mapper);
+            Product = new ProductRepository(context, mapper);
 
             ProductImage = new ProductImageRepository(context);
 
@@ -28,6 +36,13 @@ namespace ECommerce.DataAccess.Infrastructure
             Category = new CategoryRepository(context);
 
             CategoryTranslation = new CategoryTranslationRepository(context);
+
+            User = new UserRepository(
+                context,
+                userManager,
+                signInManager,
+                roleManager,
+                configuration);
         }
 
         #region Product
@@ -47,6 +62,8 @@ namespace ECommerce.DataAccess.Infrastructure
         public ICategoryRepository Category { get; private set; }
 
         public ICategoryTranslationRepository CategoryTranslation { get; private set; }
+
+        public IUserRepository User { get; private set; }
 
         // save method
         async Task<bool> IUnitOfWork.Save()
