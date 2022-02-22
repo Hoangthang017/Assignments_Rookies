@@ -2,7 +2,11 @@ using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.AutoMapper;
+using ECommerce.Models.Entities;
+using ECommerce.Models.IdentityServer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +43,24 @@ builder.Services.AddAutoMapper(mc =>
     mc.AddProfile(new ECommerceMapperProfile());
 });
 
+// Identity Server 4
+builder.Services.AddIdentity<User, Role>()
+            .AddEntityFrameworkStores<ECommerceDbContext>()
+            .AddDefaultTokenProviders();
+
+builder.Services.AddIdentityServer(options =>
+{
+    options.Events.RaiseErrorEvents = true;
+    options.Events.RaiseInformationEvents = true;
+    options.Events.RaiseFailureEvents = true;
+    options.Events.RaiseSuccessEvents = true;
+})
+    .AddInMemoryApiResources(IdentityServerConfig.Apis)
+    .AddInMemoryClients(IdentityServerConfig.Clients)
+    .AddInMemoryApiScopes(IdentityServerConfig.ApiScopes)
+    .AddAspNetIdentity<User>()
+    .AddDeveloperSigningCredential();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,6 +77,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // security
+app.UseIdentityServer();
+app.UseAuthentication();
 app.UseAuthorization();
 
 // swagger
