@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Models.ViewModels.Common
+namespace ECommerce.Models.Request.Common
 {
     public class PagingRequestBase
     {

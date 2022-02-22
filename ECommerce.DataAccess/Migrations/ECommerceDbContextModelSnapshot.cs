@@ -607,7 +607,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"),
-                            ConcurrencyStamp = "1a808e63-58d8-4b52-bb75-388a075316f8",
+                            ConcurrencyStamp = "903bd230-f821-4c08-9e7f-9ff93509d07f",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -695,7 +695,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8e888e2b-7551-4d54-91ef-9185a550fd8a",
+                            ConcurrencyStamp = "624a50ca-6f8e-4406-9e08-742117fe8f30",
                             DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "thangnh1394@gmail.com",
                             EmailConfirmed = true,
@@ -704,7 +704,7 @@ namespace ECommerce.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "thangnh1394@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAELT45xhOB85bZcXDKG2im4M6Clv3f1d4wzP3v4KfmCAdadMfvzCSIkW1fSbl2NONFw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFQIPjWIniEqa8f+PEQvbKVpte2fcWDg0IPPxythII8yvd0Q1UQ88nMJrFTkDeRfNQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -791,7 +791,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserTokens", (string)null);
+                    b.ToTable("UserRoles", (string)null);
 
                     b.HasData(
                         new
@@ -817,7 +817,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("USerTokens", (string)null);
                 });
 
             modelBuilder.Entity("Product", b =>
@@ -858,7 +858,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2022, 2, 21, 23, 22, 20, 203, DateTimeKind.Local).AddTicks(6004),
+                            CreatedDate = new DateTime(2022, 2, 22, 15, 52, 35, 988, DateTimeKind.Local).AddTicks(5202),
                             OriginalPrice = 100000m,
                             Price = 200000m,
                             Stock = 0,
