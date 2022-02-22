@@ -33,6 +33,6 @@
         public string LanguageId { set; get; }
 
         // category
-        public List<string> CategoryName { get; set; }
+        public int CatogetyId { get; set; }
     }
 }
