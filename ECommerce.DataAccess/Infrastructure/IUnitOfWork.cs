@@ -1,4 +1,5 @@
 ﻿using ECommerce.DataAccess.Repository.ProductRepo;
+using ECommerce.DataAccess.Repository.UserRepo;
 
 namespace ECommerce.DataAccess.Respository.Common
 {
@@ -20,6 +21,12 @@ namespace ECommerce.DataAccess.Respository.Common
 
         ICategoryRepository Category { get; }
         ICategoryTranslationRepository CategoryTranslation { get; }
+
+        #region User
+
+        IUserRepository User { get; }
+
+        #endregion User
 
         // save method
         Task<bool> Save();

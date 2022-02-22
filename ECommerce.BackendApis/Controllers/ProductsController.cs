@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.Respository.Common;
-using ECommerce.Models.Entities;
 using ECommerce.Models.Request;
 using ECommerce.Models.ViewModels;
 using ECommerce.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,6 +43,7 @@ namespace ECommerce.BackendApis.Controllers
         // GET
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             // get all product
@@ -61,6 +62,7 @@ namespace ECommerce.BackendApis.Controllers
         }
 
         [HttpGet("{productId}/{languageId}")]
+        [Authorize]
         public async Task<IActionResult> Get(int productId, string languageId)
         {
             // get data
