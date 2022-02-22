@@ -24,22 +24,42 @@ namespace ECommerce.BackendApis.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<ProductsController>
+        // CREATE
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var isSucess = await _unitOfWork.Product.Create(request);
+            if (isSucess == 0)
+                return BadRequest();
+            return Ok();
+        }
+
+        // GET
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            // get all product
             var productTranslations = _unitOfWork.ProductTranslation.GetAll(new string[] { "Product" });
 
+            // mapper product translation and product to ProductViewModel
             var productsVMs = new List<ProductViewModel>();
             await productTranslations.ForEachAsync(x =>
                 productsVMs.Add(ECommerceMapper.Map<ProductViewModel>(_mapper, x.Product, x))
             );
+
+            // check
             if (productsVMs == null)
                 return BadRequest();
             return Ok(productsVMs);
         }
 
-        // GET api/<ProductsController>/5
         [HttpGet("{productId}/{languageId}")]
         public async Task<IActionResult> Get(int productId, string languageId)
         {
@@ -56,16 +76,8 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(productVM);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
-        {
-            var isSucess = await _unitOfWork.Product.Create(request);
-            if (isSucess == 0)
-                return BadRequest();
-            return Ok();
-        }
+        // UPDATE
 
-        // PUT api/product/productId=_&languageId=_
         [HttpPut("{productId}/{languageId}")]
         public async Task<IActionResult> Update(int productId, string languageId, [FromForm] UpdateProductRequest request)
         {
@@ -75,7 +87,6 @@ namespace ECommerce.BackendApis.Controllers
             return Ok();
         }
 
-        // PUT api/product/price/productId=_
         [HttpPatch("price/{productId}")]
         public async Task<IActionResult> Update(int productId, decimal newPrice)
         {
@@ -85,7 +96,6 @@ namespace ECommerce.BackendApis.Controllers
             return Ok();
         }
 
-        // PUT api/product/stock/productId=_
         [HttpPatch("stock/{productId}")]
         public async Task<IActionResult> Update(int productId, int Quantity)
         {
@@ -95,7 +105,6 @@ namespace ECommerce.BackendApis.Controllers
             return Ok();
         }
 
-        // PUT api/product/viewcount/productId=_
         [HttpPatch("viewcount/{productId}")]
         public async Task<IActionResult> Update(int productId)
         {
@@ -105,7 +114,8 @@ namespace ECommerce.BackendApis.Controllers
             return Ok();
         }
 
-        // DELETE api/product/_
+        // DELETE
+
         [HttpDelete("{productId}")]
         public async Task<IActionResult> Delete(int productId)
         {

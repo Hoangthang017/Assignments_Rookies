@@ -13,6 +13,8 @@ namespace ECommerce.Models.AutoMapper
             CreateMap<CreateProductRequest, ProductTranslation>();
             CreateMap<UpdateProductRequest, ProductTranslation>();
             CreateMap<Product, ProductViewModel>();
+            CreateMap<ProductInCategory, ProductViewModel>()
+                .ForMember(x => x.CatogetyId, opt => opt.MapFrom(x => x.CategoryId));
             CreateMap<ProductTranslation, ProductViewModel>();
             CreateMap<CategoryTranslation, ProductViewModel>();
         }
