@@ -1,12 +1,16 @@
-﻿using ECommerce.DataAccess.Infrastructure;
-using ECommerce.Models.Request;
+﻿using ECommerce.Models.Request;
 using ECommerce.Models.Request.Common;
 using ECommerce.Models.ViewModels;
 using ECommerce.Models.ViewModels.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ECommerce.DataAccess.Repository.ProductRepo
+namespace ECommerce.Services
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IProductService
     {
         Task<int> Create(CreateProductRequest request);
 

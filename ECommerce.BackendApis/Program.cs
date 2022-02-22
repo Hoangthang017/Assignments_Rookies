@@ -2,13 +2,19 @@ using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.AutoMapper;
+using ECommerce.Models.Entities;
+using ECommerce.Models.IdentityServer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 
 // add dbcontext
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
@@ -20,6 +26,24 @@ builder.Services.AddDbContext<ECommerceDbContext>(options =>
 // add DI services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Identity Server 4
+builder.Services.AddIdentity<User, Role>()
+            .AddEntityFrameworkStores<ECommerceDbContext>()
+            .AddDefaultTokenProviders();
+
+builder.Services.AddIdentityServer(options =>
+{
+    options.Events.RaiseErrorEvents = true;
+    options.Events.RaiseInformationEvents = true;
+    options.Events.RaiseFailureEvents = true;
+    options.Events.RaiseSuccessEvents = true;
+})
+    .AddInMemoryApiResources(IdentityServerConfig.Apis)
+    .AddInMemoryClients(IdentityServerConfig.Clients)
+    .AddInMemoryApiScopes(IdentityServerConfig.ApiScopes)
+    .AddAspNetIdentity<User>()
+    .AddDeveloperSigningCredential();
+
 // add swagger
 builder.Services.AddSwaggerGen(c =>
 {
@@ -28,7 +52,63 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Swagger Ecommerce ",
         Version = "v1"
     });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                  {
+                    {
+                      new OpenApiSecurityScheme
+                      {
+                        Reference = new OpenApiReference
+                          {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                          },
+                          Scheme = "oauth2",
+                          Name = "Bearer",
+                          In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                      }
+                    });
 });
+
+string issuer = builder.Configuration.GetValue<string>("Tokens:Issuer");
+string signingKey = builder.Configuration.GetValue<string>("Tokens:Key");
+byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
+
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = issuer,
+        ValidateAudience = true,
+        ValidAudience = issuer,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = System.TimeSpan.Zero,
+        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+    };
+});
+
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
@@ -52,9 +132,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// security
+app.UseIdentityServer();
+app.UseAuthentication();
 app.UseRouting();
 
-// security
 app.UseAuthorization();
 
 // swagger

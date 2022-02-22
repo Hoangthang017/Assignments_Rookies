@@ -83,29 +83,6 @@ namespace ECommerce.DataAccess.Infrastructure
             return _context.Set<T>().Where<T>(predicate).AsQueryable<T>();
         }
 
-        public IQueryable<T> GetMultiPaging(Expression<Func<T, bool>> predicate, out int total, int index = 0, int size = 20, string[] includes = null)
-        {
-            int skipCount = index * size;
-            IQueryable<T> _resetSet;
-
-            //HANDLE INCLUDES FOR ASSOCIATED OBJECTS IF APPLICABLE
-            if (includes != null && includes.Count() > 0)
-            {
-                var query = _context.Set<T>().Include(includes.First());
-                foreach (var include in includes.Skip(1))
-                    query = query.Include(include);
-                _resetSet = predicate != null ? query.Where<T>(predicate).AsQueryable() : query.AsQueryable();
-            }
-            else
-            {
-                _resetSet = predicate != null ? _context.Set<T>().Where<T>(predicate).AsQueryable() : _context.Set<T>().AsQueryable();
-            }
-
-            _resetSet = skipCount == 0 ? _resetSet.Take(size) : _resetSet.Skip(skipCount).Take(size);
-            total = _resetSet.Count();
-            return _resetSet.AsQueryable();
-        }
-
         public async Task<bool> CheckContains(Expression<Func<T, bool>> predicate)
         {
             return await _context.Set<T>().CountAsync<T>(predicate) > 0;

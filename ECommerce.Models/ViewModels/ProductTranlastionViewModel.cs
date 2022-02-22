@@ -1,6 +1,12 @@
-﻿namespace ECommerce.Models.Request
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ECommerce.Models.ViewModels
 {
-    public class UpdateProductRequest
+    public class ProductTranlastionViewModel
     {
         public string Name { set; get; }
 
@@ -13,5 +19,7 @@
         public string SeoTitle { set; get; }
 
         public string SeoAlias { get; set; }
+
+        public string LanguageId { set; get; }
     }
 }

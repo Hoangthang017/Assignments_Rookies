@@ -9,12 +9,14 @@ namespace ECommerce.Models.AutoMapper
     {
         public ECommerceMapperProfile()
         {
-            CreateMap<Product, ProductViewModel>();
-            CreateMap<ProductCategory, ProductCategoryViewModel>();
             CreateMap<CreateProductRequest, Product>();
-            CreateMap<UpdateProductRequest, Product>();
-
-            CreateMap<Product, Product>();
+            CreateMap<CreateProductRequest, ProductTranslation>();
+            CreateMap<UpdateProductRequest, ProductTranslation>();
+            CreateMap<Product, ProductViewModel>();
+            CreateMap<ProductInCategory, ProductViewModel>()
+                .ForMember(x => x.CatogetyId, opt => opt.MapFrom(x => x.CategoryId));
+            CreateMap<ProductTranslation, ProductViewModel>();
+            CreateMap<CategoryTranslation, ProductViewModel>();
         }
     }
 }
