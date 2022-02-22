@@ -11,24 +11,46 @@ namespace ECommerce.Models.ViewModels
     {
         public int Id { get; set; }
 
+        public string Name { get; set; }
+
+        public string Alias { get; set; }
+
+        public string Image { get; set; }
+
+        public string MoreImages { get; set; }
+
         public decimal Price { get; set; }
 
-        public decimal OriginalPrice { get; set; }
+        public decimal? PromotionPrice { get; set; }
 
-        public int Quantity { get; set; }
+        public int? Warranty { get; set; }
 
-        public int ViewCount { get; set; }
+        public string Description { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        public string Content { get; set; }
 
-        public string ProductName { set; get; }
+        public bool? HomeFlag { get; set; }
 
-        public string Description { set; get; }
+        public bool? HotFlag { get; set; }
 
-        public string Detail { set; get; }
+        public int? ViewCount { get; set; }
 
-        public string CategoryName { set; get; }
+        public int CategoryId { get; set; }
 
-        public string LanguageId { set; get; }
+        public DateTime? CreatedDate { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        public DateTime? UpdatedDate { get; set; }
+
+        public string UpdatedBy { get; set; }
+
+        public string MeteKeyword { get; set; }
+
+        public string MetaDescription { get; set; }
+
+        public bool Status { get; set; }
+
+        public ProductCategoryViewModel ProductCategoryViewModel { get; set; }
     }
 }
