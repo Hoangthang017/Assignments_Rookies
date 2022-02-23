@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.Respository.Common;
+using ECommerce.Models.Request.Common;
+using ECommerce.Models.Request.ProductImages;
 using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Products;
 using ECommerce.Utilities;
@@ -24,6 +26,8 @@ namespace ECommerce.BackendApis.Controllers
             _mapper = mapper;
         }
 
+        #region PRODUCT
+
         // CREATE
 
         [HttpPost]
@@ -34,10 +38,16 @@ namespace ECommerce.BackendApis.Controllers
                 return BadRequest(ModelState);
             }
 
-            var isSucess = await _unitOfWork.Product.Create(request);
-            if (isSucess == 0)
+            var productId = await _unitOfWork.Product.Create(request);
+
+            if (productId == 0)
                 return BadRequest();
-            return Ok();
+
+            var product = _unitOfWork.Product.GetById(productId);
+
+            return CreatedAtAction(nameof(GetProductById),
+                                   new { id = productId },
+                                   product);
         }
 
         // GET
@@ -61,6 +71,17 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(productsVMs);
         }
 
+        [HttpGet("paging")]
+        public async Task<IActionResult> GetAllPaging([FromQuery] GetProductPagingRequest request)
+        {
+            var productsVMs = await _unitOfWork.Product.GetAllPaging(request);
+
+            if (productsVMs == null)
+                return BadRequest();
+
+            return Ok(productsVMs);
+        }
+
         [HttpGet("{productId}/{languageId}")]
         [Authorize]
         public async Task<IActionResult> Get(int productId, string languageId)
@@ -76,6 +97,17 @@ namespace ECommerce.BackendApis.Controllers
             var productVM = ECommerceMapper.Map<ProductViewModel>(_mapper, productTranslation, productTranslation.Product);
 
             return Ok(productVM);
+        }
+
+        [HttpGet("{productId}")]
+        public async Task<IActionResult> GetProductById(int productId)
+        {
+            var image = await _unitOfWork.Product.GetById(productId);
+
+            if (image == null)
+                return BadRequest();
+
+            return Ok(image);
         }
 
         // UPDATE
@@ -121,14 +153,72 @@ namespace ECommerce.BackendApis.Controllers
         [HttpDelete("{productId}")]
         public async Task<IActionResult> Delete(int productId)
         {
-            Product product = await _unitOfWork.Product.GetSingleById(productId);
-            if (product == null)
-                return BadRequest();
-            _unitOfWork.Product.Delete(product);
-            var isSuccess = await _unitOfWork.Save();
+            var isSuccess = await _unitOfWork.Product.Delete(productId);
             if (!isSuccess)
                 return BadRequest();
             return Ok();
         }
+
+        #endregion PRODUCT
+
+        #region IMAGE
+
+        [HttpGet("{productId}/images/{imageId}")]
+        public async Task<IActionResult> GetImageById(int productId, int imageId)
+        {
+            var image = await _unitOfWork.ProductImage.GetImageById(imageId);
+
+            if (image == null)
+                return BadRequest();
+
+            return Ok(image);
+        }
+
+        [HttpPost("{productId}/images")]
+        public async Task<IActionResult> Create(int productId, [FromForm] CreateProductImageRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var imageId = await _unitOfWork.ProductImage.AddImage(productId, request);
+            if (imageId == 0)
+                return BadRequest();
+
+            var image = await _unitOfWork.ProductImage.GetImageById(imageId);
+
+            return CreatedAtAction(nameof(GetImageById),
+                                   new { id = imageId },
+                                   image);
+        }
+
+        [HttpPut("{productId}/images/{imageId}")]
+        public async Task<IActionResult> UpdateImage(int imageId, [FromForm] UpdateProductImageRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var result = await _unitOfWork.ProductImage.UpdateImage(imageId, request);
+
+            if (result == 0)
+                return BadRequest();
+
+            return Ok();
+        }
+
+        [HttpDelete("{productId}/images/{imageId}")]
+        public async Task<IActionResult> DeleteImage(int imageId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var result = await _unitOfWork.ProductImage.RemoveImage(imageId);
+
+            if (result == 0)
+                return BadRequest();
+
+            return Ok();
+        }
+
+        #endregion IMAGE
     }
 }
