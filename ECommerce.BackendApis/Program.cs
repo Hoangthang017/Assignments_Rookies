@@ -1,5 +1,6 @@
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
+using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.AutoMapper;
 using ECommerce.Models.Entities;
@@ -27,8 +28,11 @@ builder.Services.AddDbContext<ECommerceDbContext>(options =>
     options.UseSqlServer(connectstring);
 });
 
-// add DI services
+// DI services
+// add unit of work pattern
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// add file storage for handler image
+builder.Services.AddTransient<IStorageService, FileStorageService>();
 
 // Identity Server 4
 builder.Services.AddIdentity<User, Role>()

@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Models.ViewModels.Common
 {
-    public class PageResult<T>
+    public class PageResult<T> : PageResultBase
     {
-        private IEnumerable<T> Items { get; set; }
-
-        public int TotalRecord { get; set; }
+        public IEnumerable<T> Items { get; set; }
     }
 }

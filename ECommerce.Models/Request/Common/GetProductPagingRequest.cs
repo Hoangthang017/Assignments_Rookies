@@ -9,5 +9,6 @@ namespace ECommerce.Models.Request.Common
     public class GetProductPagingRequest : PagingRequestBase
     {
         public string Keyword { get; set; }
+        public int CategoryId { get; set; }
     }
 }

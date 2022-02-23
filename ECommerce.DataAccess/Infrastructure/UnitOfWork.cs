@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.EF;
+using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.DataAccess.Repository.ProductRepo;
 using ECommerce.DataAccess.Repository.UserRepo;
 using ECommerce.DataAccess.Respository.Common;
@@ -15,6 +16,7 @@ namespace ECommerce.DataAccess.Infrastructure
 
         public UnitOfWork(
             ECommerceDbContext context,
+            IStorageService storageService,
             IMapper mapper,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -23,9 +25,9 @@ namespace ECommerce.DataAccess.Infrastructure
         {
             _context = context;
 
-            Product = new ProductRepository(context, mapper);
+            Product = new ProductRepository(context, storageService, mapper);
 
-            ProductImage = new ProductImageRepository(context);
+            ProductImage = new ProductImageRepository(context, storageService, mapper);
 
             ProductInCategory = new ProductInCategoryRepository(context);
 

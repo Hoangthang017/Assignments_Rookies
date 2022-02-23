@@ -1,11 +1,11 @@
-# E-Commerce Website
+c # E-Commerce Website
 
 ## Mentor: Phong Nguyen
 ## Author: Thang Hoang
 
 #### Deadline: 
 
-17/02/2022 - 16/02/2022
+17/02/2022 - 16/03/2022
 
 #### Requirements:
 
