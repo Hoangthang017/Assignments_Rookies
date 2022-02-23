@@ -1,8 +1,8 @@
 ﻿using ECommerce.DataAccess.Infrastructure;
-using ECommerce.Models.Request;
 using ECommerce.Models.Request.Common;
-using ECommerce.Models.ViewModels;
+using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Common;
+using ECommerce.Models.ViewModels.Products;
 
 namespace ECommerce.DataAccess.Repository.ProductRepo
 {

@@ -1,13 +1,7 @@
-﻿namespace ECommerce.Models.Request
+﻿namespace ECommerce.Models.Request.Products
 {
-    public class CreateProductRequest
+    public class UpdateProductRequest
     {
-        public decimal Price { get; set; }
-
-        public decimal OriginalPrice { get; set; }
-
-        public int Stock { get; set; }
-
         public string Name { set; get; }
 
         public string Description { set; get; }
@@ -19,7 +13,5 @@
         public string SeoTitle { set; get; }
 
         public string SeoAlias { get; set; }
-
-        public string LanguageId { set; get; }
     }
 }
