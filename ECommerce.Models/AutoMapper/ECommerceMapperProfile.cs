@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using ECommerce.Models.Entities;
-using ECommerce.Models.Request;
-using ECommerce.Models.ViewModels;
+using ECommerce.Models.Request.ProductImages;
+using ECommerce.Models.Request.Products;
+using ECommerce.Models.ViewModels.ProductImages;
+using ECommerce.Models.ViewModels.Products;
 
 namespace ECommerce.Models.AutoMapper
 {
@@ -13,10 +15,13 @@ namespace ECommerce.Models.AutoMapper
             CreateMap<CreateProductRequest, ProductTranslation>();
             CreateMap<UpdateProductRequest, ProductTranslation>();
             CreateMap<Product, ProductViewModel>();
-            CreateMap<ProductInCategory, ProductViewModel>()
-                .ForMember(x => x.CatogetyId, opt => opt.MapFrom(x => x.CategoryId));
+            CreateMap<ProductInCategory, ProductViewModel>();
+            CreateMap<CategoryTranslation, ProductViewModel>()
+                .ForMember(x => x.Categories, opt => opt.MapFrom(x => x.Name));
             CreateMap<ProductTranslation, ProductViewModel>();
             CreateMap<CategoryTranslation, ProductViewModel>();
+            CreateMap<ProductImage, ProductImageViewModel>();
+            CreateMap<UpdateProductImageRequest, ProductImage>();
         }
     }
 }

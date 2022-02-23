@@ -1,9 +1,12 @@
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
+using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.AutoMapper;
 using ECommerce.Models.Entities;
 using ECommerce.Models.IdentityServer;
+using ECommerce.Models.Request.Validations;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +17,9 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+// add fluent validation
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
 
 // add dbcontext
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
@@ -23,8 +28,11 @@ builder.Services.AddDbContext<ECommerceDbContext>(options =>
     options.UseSqlServer(connectstring);
 });
 
-// add DI services
+// DI services
+// add unit of work pattern
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// add file storage for handler image
+builder.Services.AddTransient<IStorageService, FileStorageService>();
 
 // Identity Server 4
 builder.Services.AddIdentity<User, Role>()
@@ -83,6 +91,7 @@ builder.Services.AddSwaggerGen(c =>
                     });
 });
 
+// add authenticate token
 string issuer = builder.Configuration.GetValue<string>("Tokens:Issuer");
 string signingKey = builder.Configuration.GetValue<string>("Tokens:Key");
 byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
@@ -109,16 +118,17 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
+// add json exception
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // add auto mapper
-
 builder.Services.AddAutoMapper(mc =>
 {
     mc.AddProfile(new ECommerceMapperProfile());
 });
 
+// build app
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

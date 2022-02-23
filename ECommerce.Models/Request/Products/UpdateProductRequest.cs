@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Models.Request
+﻿using Microsoft.AspNetCore.Http;
+
+namespace ECommerce.Models.Request.Products
 {
     public class UpdateProductRequest
     {
@@ -13,5 +15,7 @@
         public string SeoTitle { set; get; }
 
         public string SeoAlias { get; set; }
+
+        public IFormFile Image { set; get; }
     }
 }

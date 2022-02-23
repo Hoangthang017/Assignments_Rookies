@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Models.Request
+﻿using Microsoft.AspNetCore.Http;
+
+namespace ECommerce.Models.Request.Products
 {
     public class CreateProductRequest
     {
@@ -21,5 +23,7 @@
         public string SeoAlias { get; set; }
 
         public string LanguageId { set; get; }
+
+        public IFormFile Image { set; get; }
     }
 }

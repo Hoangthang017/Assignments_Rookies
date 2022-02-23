@@ -1,14 +1,18 @@
 ﻿using ECommerce.DataAccess.Infrastructure;
-using ECommerce.Models.Request;
 using ECommerce.Models.Request.Common;
-using ECommerce.Models.ViewModels;
+using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Common;
+using ECommerce.Models.ViewModels.Products;
 
 namespace ECommerce.DataAccess.Repository.ProductRepo
 {
     public interface IProductRepository : IRepository<Product>
     {
         Task<int> Create(CreateProductRequest request);
+
+        Task<PageResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request);
+
+        Task<ProductViewModel> GetById(int productId);
 
         Task<int> Update(int productId, string languageId, UpdateProductRequest request);
 
@@ -18,6 +22,6 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
 
         Task<bool> UpdateViewCount(int productId);
 
-        Task<PageResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request);
+        Task<bool> Delete(int productId);
     }
 }

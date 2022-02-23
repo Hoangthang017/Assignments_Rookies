@@ -1,25 +1,29 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
+using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.Models.Entities;
-using ECommerce.Models.Request;
 using ECommerce.Models.Request.Common;
-using ECommerce.Models.ViewModels;
+using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Common;
+using ECommerce.Models.ViewModels.Products;
 using ECommerce.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
+using System.Net.Http.Headers;
 
 namespace ECommerce.DataAccess.Repository.ProductRepo
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
         private readonly ECommerceDbContext _context;
+        private readonly IStorageService _storageService;
         private readonly IMapper _mapper;
 
-        public ProductRepository(ECommerceDbContext context, IMapper mapper) : base(context)
+        public ProductRepository(ECommerceDbContext context, IStorageService storageService, IMapper mapper) : base(context)
         {
             _context = context;
+            _storageService = storageService;
             _mapper = mapper;
         }
 
@@ -33,14 +37,103 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             product.CreatedDate = DateTime.Now;
             product.ProductTranslations = new List<ProductTranslation>() { productTranslation };
 
+            if (request.Image != null)
+            {
+                product.ProductImages = new List<ProductImage>()
+                {
+                    new ProductImage()
+                    {
+                        Caption = "Thumbnail image",
+                        DateCreated = DateTime.Now,
+                        FileSize = request.Image.Length,
+                        ImagePath = await this.SaveFile(request.Image),
+                        IsDefault = true,
+                        SortOrder = 1
+                    }
+                };
+            }
+
             // add product to DbContext and Save
             await _context.Products.AddAsync(product);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+
+            return product.Id;
         }
 
-        public Task<PageResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request)
+        public async Task<bool> Delete(int productId)
         {
-            throw new NotImplementedException();
+            // find product
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+                throw new ECommerceException("Cannot find product");
+
+            // find all image of product and delete it out wwwroot
+            var images = _context.ProductImages.Where(i => i.ProductId == productId);
+            foreach (var image in images)
+            {
+                await _storageService.DeleteFileAsync(image.ImagePath);
+            }
+
+            _context.Products.Remove(product);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<PageResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request)
+        {
+            // get product from tables
+            var query = from p in _context.Products
+                        join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                        join pic in _context.ProductInCategories on p.Id equals pic.ProductId
+                        join c in _context.Categories on pic.CategoryId equals c.Id
+                        select new { p, pt, pic, c };
+            // filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                query = query.Where(x => x.pt.Name.Contains(request.Keyword));
+            }
+            if (request.CategoryId != null && request.CategoryId != 0)
+            {
+                query = query.Where(x => x.pic.CategoryId == request.CategoryId);
+            }
+
+            // paging
+            int totalRow = await query.CountAsync();
+            var data = query.Skip((request.PageIndex - 1) * request.PageSize)
+                            .Take(request.PageSize);
+            var productVMs = ECommerceMapper.Map<List<ProductViewModel>>(_mapper,
+                data.Select(x => x.p),
+                data.Select(x => x.pt));
+
+            // select and projection
+            var pageResult = new PageResult<ProductViewModel>()
+            {
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                TotalRecords = totalRow,
+                Items = productVMs
+            };
+
+            return pageResult;
+        }
+
+        public async Task<ProductViewModel> GetById(int productId)
+        {
+            // get product in tabels
+            var query = await (from p in _context.Products
+                               join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                               join pic in _context.ProductInCategories on p.Id equals pic.ProductId
+                               where p.Id == productId
+                               select new { p, pt, pic }).FirstOrDefaultAsync();
+
+            // check null
+            if (query == null)
+                throw new ECommerceException("Cannot find product");
+
+            // map to product view model
+            var productVM = ECommerceMapper.Map<ProductViewModel>(_mapper, query.p, query.pt, query.pic);
+
+            return productVM;
         }
 
         public async Task<int> Update(int productId, string languageId, UpdateProductRequest request)
@@ -79,5 +172,17 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             product.ViewCount += 1;
             return await _context.SaveChangesAsync() > 0;
         }
+
+        #region method to save image
+
+        private async Task<string> SaveFile(IFormFile file)
+        {
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
+            return fileName;
+        }
+
+        #endregion method to save image
     }
 }
