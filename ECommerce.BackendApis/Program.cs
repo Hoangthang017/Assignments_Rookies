@@ -4,6 +4,8 @@ using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.AutoMapper;
 using ECommerce.Models.Entities;
 using ECommerce.Models.IdentityServer;
+using ECommerce.Models.Request.Validations;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,9 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+// add fluent validation
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
 
 // add dbcontext
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
@@ -83,6 +87,7 @@ builder.Services.AddSwaggerGen(c =>
                     });
 });
 
+// add authenticate token
 string issuer = builder.Configuration.GetValue<string>("Tokens:Issuer");
 string signingKey = builder.Configuration.GetValue<string>("Tokens:Key");
 byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
@@ -109,16 +114,17 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
+// add json exception
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // add auto mapper
-
 builder.Services.AddAutoMapper(mc =>
 {
     mc.AddProfile(new ECommerceMapperProfile());
 });
 
+// build app
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

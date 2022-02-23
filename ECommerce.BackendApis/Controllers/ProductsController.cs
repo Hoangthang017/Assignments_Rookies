@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.Respository.Common;
-using ECommerce.Models.Request;
-using ECommerce.Models.ViewModels;
+using ECommerce.Models.Request.Products;
+using ECommerce.Models.ViewModels.Products;
 using ECommerce.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

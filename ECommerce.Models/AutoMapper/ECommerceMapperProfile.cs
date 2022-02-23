@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.Models.Entities;
-using ECommerce.Models.Request;
-using ECommerce.Models.ViewModels;
+using ECommerce.Models.Request.Products;
+using ECommerce.Models.ViewModels.Products;
 
 namespace ECommerce.Models.AutoMapper
 {

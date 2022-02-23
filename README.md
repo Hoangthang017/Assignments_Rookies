@@ -20,6 +20,8 @@
 - EF
 - Migration
 - AutoMapper
+- JWT token
+- Fluent Validation
 
 ##### Architecture
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Models.ViewModels
+namespace ECommerce.Models.ViewModels.Products
 {
     public class ProductTranlastionViewModel
     {
