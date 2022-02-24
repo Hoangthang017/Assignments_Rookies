@@ -144,6 +144,7 @@ app.UseStaticFiles();
 
 // security
 app.UseIdentityServer();
+
 app.UseAuthentication();
 app.UseRouting();
 
