@@ -20,6 +20,7 @@ namespace ECommerce.DataAccess.Respository.Common
         #endregion Product
 
         ICategoryRepository Category { get; }
+
         ICategoryTranslationRepository CategoryTranslation { get; }
 
         #region User

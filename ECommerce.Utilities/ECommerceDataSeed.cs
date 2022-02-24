@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Utilities
 {
-    public static class ModelBuilderExtentions
+    public static class ECommerceDataSeed
     {
         public static void Seed(this ModelBuilder modelBuilder)
         {
