@@ -8,13 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="RepositoryTest\**" />
+    <EmbeddedResource Remove="RepositoryTest\**" />
+    <None Remove="RepositoryTest\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicExpresso.Core" Version="2.11.0" />
     <PackageReference Include="FakeItEasy" Version="7.3.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Neleus.LambdaCompare" Version="1.0.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="Xunit.DependencyInjection" Version="8.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -31,10 +40,6 @@
     <ProjectReference Include="..\ECommerce.BackendApis\ECommerce.BackendApis.csproj" />
     <ProjectReference Include="..\ECommerce.DataAccess\ECommerce.DataAccess.csproj" />
     <ProjectReference Include="..\ECommerce.Models\ECommerce.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="RepositoryTest\" />
   </ItemGroup>
 
 </Project>
