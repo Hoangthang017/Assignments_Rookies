@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using ECommerce.DataAccess.Respository.Common;
+﻿using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request.Users;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.BackendApis.Controllers
@@ -12,12 +10,10 @@ namespace ECommerce.BackendApis.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public UsersController(IUnitOfWork unitOfWork, IMapper mapper)
+        public UsersController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         [HttpPost("authenticate")]
