@@ -22,6 +22,7 @@ c # E-Commerce Website
 - AutoMapper
 - JWT token
 - Fluent Validation
+- xUnit Test
 
 ##### Architecture
 
