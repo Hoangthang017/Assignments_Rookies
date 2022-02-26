@@ -43,7 +43,7 @@ namespace ECommerce.BackendApis.Controllers
             if (productId == 0)
                 return BadRequest();
 
-            var product = _unitOfWork.Product.GetById(productId);
+            var product = await _unitOfWork.Product.GetById(productId);
 
             return CreatedAtAction(nameof(GetProductById),
                                    new { id = productId },
@@ -68,6 +68,7 @@ namespace ECommerce.BackendApis.Controllers
             // check
             if (productsVMs == null)
                 return BadRequest();
+
             return Ok(productsVMs);
         }
 
