@@ -52,6 +52,51 @@ builder.Services.AddIdentityServer(options =>
     .AddAspNetIdentity<User>()
     .AddDeveloperSigningCredential();
 
+// add authenticate token
+//string issuer = builder.Configuration.GetValue<string>("Tokens:Issuer");
+//string signingKey = builder.Configuration.GetValue<string>("Tokens:Key");
+//byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
+//builder.Services.AddAuthentication(opt =>
+//{
+//    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(options =>
+//{
+//    options.RequireHttpsMetadata = false;
+//    options.SaveToken = true;
+//    options.TokenValidationParameters = new TokenValidationParameters()
+//    {
+//        ValidateIssuer = true,
+//        ValidIssuer = issuer,
+//        ValidateAudience = true,
+//        ValidAudience = issuer,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ClockSkew = System.TimeSpan.Zero,
+//        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+//    };
+//})
+//.AddLocalApi("Bearer", option =>
+//{
+//    option.ExpectedScope = "api.BackendApi";
+//});
+
+builder.Services.AddAuthentication()
+.AddLocalApi("Bearer", option =>
+{
+    option.ExpectedScope = "api.BackendApi";
+});
+
+builder.Services.AddAuthorization(option =>
+{
+    option.AddPolicy("Bearer", policy =>
+    {
+        policy.AddAuthenticationSchemes("Bearer");
+        policy.RequireAuthenticatedUser();
+    });
+});
+
 // add swagger
 builder.Services.AddSwaggerGen(c =>
 {
@@ -68,54 +113,45 @@ builder.Services.AddSwaggerGen(c =>
                       \r\n\r\nExample: 'Bearer 12345abcdef'",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.OAuth2,
+        Scheme = "Bearer",
+        Flows = new OpenApiOAuthFlows
+        {
+            Implicit = new OpenApiOAuthFlow
+            {
+                AuthorizationUrl = new Uri(builder.Configuration["AuthorityUrl"] + "connect/authorize"),
+                TokenUrl = new Uri(builder.Configuration["AuthorityUrl"] + "connect/token"),
+                Scopes = new Dictionary<string, string> { { "api.BackendApi", "Backend API" } },
+            }
+        }
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                  {
-                    {
-                      new OpenApiSecurityScheme
-                      {
-                        Reference = new OpenApiReference
-                          {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                          },
-                          Scheme = "oauth2",
-                          Name = "Bearer",
-                          In = ParameterLocation.Header,
-                        },
-                        new List<string>()
-                      }
-                    });
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+             },
+             new List<string>{"api.BackendApi" }
+        }
+    });
 });
 
-// add authenticate token
-string issuer = builder.Configuration.GetValue<string>("Tokens:Issuer");
-string signingKey = builder.Configuration.GetValue<string>("Tokens:Key");
-byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
+builder.Services.AddOpenApiDocument(options =>
+{
+    options.DocumentName = "v1";
+    options.Title = "Protected API";
+    options.Version = "v1";
 
-builder.Services.AddAuthentication(opt =>
-{
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters()
-    {
-        ValidateIssuer = true,
-        ValidIssuer = issuer,
-        ValidateAudience = true,
-        ValidAudience = issuer,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ClockSkew = System.TimeSpan.Zero,
-        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
-    };
+    // we're going to be adding more here...
 });
 
 // add json exception
@@ -151,11 +187,19 @@ app.UseRouting();
 app.UseAuthorization();
 
 // swagger
-app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
+    c.OAuthClientId("swagger");
+    c.OAuthUsePkce();
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Ecommerce v1");
 });
+
+//app.UseOpenApi();
+//app.UseSwaggerUi3(options =>
+//{
+//    options.OAuth2Client.ClientId = "swaggerr";
+//    options.OAuth2Client.UsePkceWithAuthorizationCodeGrant = true;
+//});
 
 app.MapControllerRoute(
     name: "default",

@@ -20,23 +20,24 @@ namespace ECommerce.Models.IdentityServer
         public static IEnumerable<ApiResource> Apis =>
             new ApiResource[]
             {
-                new ApiResource("api.WebApp", "WebApp API")
+                new ApiResource("api.BackendApi", "Backend API")
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-                new ApiScope("api.WebApp", "WebApp API")
+                new ApiScope("api.BackendApi", "Backend API")
         };
 
-        /*  định nghĩa ra các Client chín là các ứng dụng ta định làm , chính là webportal , server (chính là swagger) và .. */
+        /*  định nghĩa ra các Client chín là các ứng dụng ta định làm ,
+         *  chính là webportal , server (chính là swagger) và .. */
 
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
                 new Client
                 {
-                    ClientId = "WebApp",
+                    ClientId = "BackendApi",
                     ClientSecrets = { new Secret("secret".Sha256()) },//  mã hóa theo Sha256
 
                     AllowedGrantTypes = GrantTypes.Code,
@@ -58,7 +59,7 @@ namespace ECommerce.Models.IdentityServer
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
-                        "api.WebApp"
+                        "api.BackendApi"
                     }
                  },
                 new Client
@@ -78,7 +79,7 @@ namespace ECommerce.Models.IdentityServer
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api.WebApp"
+                        "api.BackendApi"
                     }
                 },
             };
