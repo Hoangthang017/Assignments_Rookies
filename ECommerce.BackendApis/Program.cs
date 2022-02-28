@@ -10,15 +10,17 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// add fluent validation
+// Add services to the container
+
+// add json handler & fluent validation
 builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
 
 // add dbcontext
@@ -35,92 +37,93 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IStorageService, FileStorageService>();
 
 // Identity Server 4
-builder.Services.AddIdentity<User, Role>()
-            .AddEntityFrameworkStores<ECommerceDbContext>()
+// add identity EF
+builder.Services.AddIdentity<User, Role>() // use custome user and role
+            .AddEntityFrameworkStores<ECommerceDbContext>() // declare DbContext
+                                                            // add default token provider used to generate tokens for reset password,
+                                                            // change mail and telephone number, operations and for 2FA token generation
             .AddDefaultTokenProviders();
 
-builder.Services.AddIdentityServer(options =>
+// add identity server
+builder.Services.AddIdentityServer(options => // custome event for identity server
 {
     options.Events.RaiseErrorEvents = true;
     options.Events.RaiseInformationEvents = true;
     options.Events.RaiseFailureEvents = true;
     options.Events.RaiseSuccessEvents = true;
 })
-    .AddInMemoryApiResources(IdentityServerConfig.Apis)
+    .AddInMemoryApiResources(IdentityServerConfig.Apis) // using in-memory resources
     .AddInMemoryClients(IdentityServerConfig.Clients)
     .AddInMemoryApiScopes(IdentityServerConfig.ApiScopes)
-    .AddAspNetIdentity<User>()
+    .AddAspNetIdentity<User>() // declare user using identity server
     .AddDeveloperSigningCredential();
+
+// add authenticate config for using scheme jwt
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = builder.Configuration["AuthorityUrl"];
+    options.TokenValidationParameters.ValidateAudience = false;
+});
+
+// add author
+builder.Services.AddAuthorization();
 
 // add swagger
 builder.Services.AddSwaggerGen(c =>
 {
+    // add swagger ui
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
+        Description = "Swagger UI for ECommerce Web",
         Title = "Swagger Ecommerce ",
-        Version = "v1"
+        Version = "1.0.0"
     });
 
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    // add identity server to swagger
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
-        Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+        Description = @"Sign In to get authorize",
         Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.OAuth2,
+        Scheme = "oauth2",
+        Flows = new OpenApiOAuthFlows
+        {
+            Password = new OpenApiOAuthFlow
+            {
+                TokenUrl = new Uri(builder.Configuration["AuthorityUrl"] + "/connect/token"),
+                Scopes = new Dictionary<string, string>
+                {
+                    //{ "api.BackendApi", "Backend API" }
+                },
+            }
+        }
     });
 
+    // add identity server to swagger
     c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                  {
-                    {
-                      new OpenApiSecurityScheme
-                      {
-                        Reference = new OpenApiReference
-                          {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                          },
-                          Scheme = "oauth2",
-                          Name = "Bearer",
-                          In = ParameterLocation.Header,
-                        },
-                        new List<string>()
-                      }
-                    });
-});
-
-// add authenticate token
-string issuer = builder.Configuration.GetValue<string>("Tokens:Issuer");
-string signingKey = builder.Configuration.GetValue<string>("Tokens:Key");
-byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
-
-builder.Services.AddAuthentication(opt =>
-{
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateIssuer = true,
-        ValidIssuer = issuer,
-        ValidateAudience = true,
-        ValidAudience = issuer,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ClockSkew = System.TimeSpan.Zero,
-        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
-    };
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "oauth2"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+             },
+             new List<string>{"api.BackendApi" }
+        }
+    });
 });
-
-// add json exception
-builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // add auto mapper
 builder.Services.AddAutoMapper(mc =>
@@ -146,6 +149,7 @@ app.UseStaticFiles();
 app.UseIdentityServer();
 
 app.UseAuthentication();
+
 app.UseRouting();
 
 app.UseAuthorization();
@@ -154,6 +158,9 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
+    c.OAuthClientId("swagger");
+    c.OAuthScopeSeparator(" ");
+    c.OAuthClientSecret("swagger_Secret");
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Ecommerce v1");
 });
 

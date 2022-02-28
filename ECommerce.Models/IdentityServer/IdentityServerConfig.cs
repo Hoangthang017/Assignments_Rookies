@@ -20,36 +20,32 @@ namespace ECommerce.Models.IdentityServer
         public static IEnumerable<ApiResource> Apis =>
             new ApiResource[]
             {
-                new ApiResource("api.WebApp", "WebApp API")
+                new ApiResource("api.BackendApi", "Backend API")
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-                new ApiScope("api.WebApp", "WebApp API")
+                new ApiScope("api.BackendApi", "Backend API")
         };
 
-        /*  định nghĩa ra các Client chín là các ứng dụng ta định làm , chính là webportal , server (chính là swagger) và .. */
+        /*  định nghĩa ra các Client chín là các ứng dụng ta định làm ,
+         *  chính là webportal , server (chính là swagger) và .. */
 
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
                 new Client
                 {
-                    ClientId = "WebApp",
-                    ClientSecrets = { new Secret("secret".Sha256()) },//  mã hóa theo Sha256
+                    ClientId = "BackendApi",
+                    ClientSecrets = { new Secret("BackendApi_Secret".Sha256()) },//  mã hóa theo Sha256
 
                     AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
                     RequireConsent = false,
                     RequirePkce = true,
-                    AllowOfflineAccess = true,
-                    AllowedCorsOrigins={"http://localhost/" },
-
-                    // đăng nhập thành công thì redirect lại theo đường dẫn này
-                    RedirectUris = { "https://localhost:5002/signin-oidc" },
-
-                    // khi logout nó chạy cổng này và sử lý logout bên kia
-                    PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
+                    AllowAccessTokensViaBrowser = false,
+                    AllowedCorsOrigins={"https://localhost:7195" },
 
                     // ở client này cho phép chuy cập đến những cái này
                     AllowedScopes = new List<string>
@@ -58,27 +54,23 @@ namespace ECommerce.Models.IdentityServer
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
-                        "api.WebApp"
+                        "api.BackendApi"
                     }
                  },
                 new Client
                 {
-                    ClientId = "swagger",
                     ClientName = "Swagger Client",
+                    ClientId = "swagger",
+                    ClientSecrets = { new Secret("swagger_Secret".Sha256()) },
 
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
-                    RequireConsent = false,
-
-                    RedirectUris =           { "https://localhost:5000/swagger/oauth2-redirect.html" }, // chuyển hướng
-                    PostLogoutRedirectUris = { "https://localhost:5000/swagger/oauth2-redirect.html" },// chuyển hướng đăng xuất
-                    AllowedCorsOrigins =     { "https://localhost:5000" }, // cho phép nguồn gốc cores
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowedCorsOrigins = { "https://localhost:7195" }, // cho phép nguồn gốc cores
 
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api.WebApp"
+                        "api.BackendApi"
                     }
                 },
             };
