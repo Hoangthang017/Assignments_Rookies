@@ -53,7 +53,7 @@ namespace ECommerce.BackendApis.Controllers
         // GET
 
         [HttpGet]
-        [Authorize("Bearer")]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             // get all product
@@ -84,7 +84,7 @@ namespace ECommerce.BackendApis.Controllers
         }
 
         [HttpGet("{productId}/{languageId}")]
-        [Authorize("Bearer")]
+        [Authorize]
         public async Task<IActionResult> Get(int productId, string languageId)
         {
             // get data
