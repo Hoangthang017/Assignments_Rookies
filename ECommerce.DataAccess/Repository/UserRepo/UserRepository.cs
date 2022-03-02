@@ -2,6 +2,10 @@
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.Models.Entities;
 using ECommerce.Models.Request.Users;
+using ECommerce.Utilities;
+using IdentityModel.Client;
+using IdentityServer4;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +18,7 @@ namespace ECommerce.DataAccess.Repository.UserRepo
     public class UserRepository : Repository<User>, IUserRepository
     {
         private readonly ECommerceDbContext _context;
+        private readonly IdentityServerTools _tools;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<Role> _roleManager;
@@ -21,12 +26,14 @@ namespace ECommerce.DataAccess.Repository.UserRepo
 
         public UserRepository(
             ECommerceDbContext context,
+            IdentityServerTools tools,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             RoleManager<Role> roleManager,
             IConfiguration config) : base(context)
         {
             _context = context;
+            _tools = tools;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
@@ -43,23 +50,27 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             {
                 return null;
             }
-            var roles = _userManager.GetRolesAsync(user);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Role, string.Join(";",roles))
-            };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var userToken = await GetAccessToken();
 
-            var token = new JwtSecurityToken(_config["Tokens:Issuer"],
-                _config["Tokens:Issuer"],
-                claims,
-                expires: DateTime.Now.AddHours(3),
-                signingCredentials: creds);
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            //var roles = _userManager.GetRolesAsync(user);
+            //var claims = new[]
+            //{
+            //    new Claim(ClaimTypes.Email, user.Email),
+            //    new Claim(ClaimTypes.GivenName, user.FirstName),
+            //    new Claim(ClaimTypes.Role, string.Join(";",roles))
+            //};
+
+            //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+            //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            //var token = new JwtSecurityToken(_config["Tokens:Issuer"],
+            //    _config["Tokens:Issuer"],
+            //    claims,
+            //    expires: DateTime.Now.AddHours(3),
+            //    signingCredentials: creds);
+
+            return userToken;
         }
 
         public async Task<bool> Register(RegisterRequest request)
@@ -77,6 +88,16 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             if (result.Succeeded)
                 return true;
             return false;
+        }
+
+        public async Task<string> GetAccessToken()
+        {
+            var token = await _tools.IssueClientJwtAsync(
+                clientId: "BackendApi",
+                lifetime: 3600,
+                audiences: new[] { "api.BackendApi" }
+            );
+            return token.ToString();
         }
     }
 }

@@ -9,5 +9,7 @@ namespace ECommerce.DataAccess.Repository.UserRepo
         Task<string> Authencate(LoginRequest request);
 
         Task<bool> Register(RegisterRequest request);
+
+        Task<string> GetAccessToken();
     }
 }

@@ -5,6 +5,7 @@ using ECommerce.DataAccess.Repository.ProductRepo;
 using ECommerce.DataAccess.Repository.UserRepo;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Entities;
+using IdentityServer4;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -16,6 +17,7 @@ namespace ECommerce.DataAccess.Infrastructure
 
         public UnitOfWork(
             ECommerceDbContext context,
+            IdentityServerTools tools,
             IStorageService storageService,
             IMapper mapper,
             UserManager<User> userManager,
@@ -41,6 +43,7 @@ namespace ECommerce.DataAccess.Infrastructure
 
             User = new UserRepository(
                 context,
+                tools,
                 userManager,
                 signInManager,
                 roleManager,

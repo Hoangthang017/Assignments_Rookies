@@ -58,7 +58,6 @@ builder.Services.AddIdentityServer(options => // custome event for identity serv
     .AddAspNetIdentity<User>() // declare user using identity server
     .AddDeveloperSigningCredential();
 
-// add authenticate config for using scheme jwt
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -99,7 +98,7 @@ builder.Services.AddSwaggerGen(c =>
                 TokenUrl = new Uri(builder.Configuration["AuthorityUrl"] + "/connect/token"),
                 Scopes = new Dictionary<string, string>
                 {
-                    //{ "api.BackendApi", "Backend API" }
+                    //{ "swaggerApi", "Swagger API" }
                 },
             }
         }
@@ -120,7 +119,7 @@ builder.Services.AddSwaggerGen(c =>
                 Name = "Bearer",
                 In = ParameterLocation.Header,
              },
-             new List<string>{"api.BackendApi" }
+             new List<string>{ "swaggerApi" }
         }
     });
 });
@@ -158,10 +157,10 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Ecommerce v1");
     c.OAuthClientId("swagger");
     c.OAuthScopeSeparator(" ");
-    c.OAuthClientSecret("swagger_Secret");
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Ecommerce v1");
+    c.OAuthClientSecret("3EEF0E6D-F9D8-496D-B53D-64C253FCD6EE");
 });
 
 app.MapControllerRoute(
