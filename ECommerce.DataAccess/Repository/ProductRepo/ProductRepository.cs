@@ -37,6 +37,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             product.CreatedDate = DateTime.Now;
             product.ProductTranslations = new List<ProductTranslation>() { productTranslation };
 
+            // handler image
             if (request.Image != null)
             {
                 product.ProductImages = new List<ProductImage>()

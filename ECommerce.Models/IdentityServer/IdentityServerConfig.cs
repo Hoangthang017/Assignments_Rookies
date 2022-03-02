@@ -61,9 +61,9 @@ namespace ECommerce.Models.IdentityServer
                 {
                     ClientName = "Swagger Client",
                     ClientId = "swagger",
-                    ClientSecrets = { new Secret("swagger_Secret".Sha256()) },
+                    ClientSecrets = { new Secret("swagger_secret".Sha256()) },
 
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowedGrantTypes = GrantTypes.Code,
                     AllowedCorsOrigins = { "https://localhost:7195" }, // cho phép nguồn gốc cores
 
                     AllowedScopes = new List<string>
