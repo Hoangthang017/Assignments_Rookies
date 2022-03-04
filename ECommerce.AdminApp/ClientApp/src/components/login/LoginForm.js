@@ -2,49 +2,45 @@
 import { Redirect } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.css';
 import { User } from 'oidc-client';
-import AuthContext from '../context/AuthProvider';
 import axios from '../api/axios';
 
-const LOGIN_URL = 'account/login';
+const LOGIN_URL = 'api/Users/authenticate';
 
-function LoginFrom() {
-    const { setAuth } = useContext(AuthContext)
+async function loginUser(credentials) {
+    const reponse = await axios.post(LOGIN_URL,
+        JSON.stringify(credentials),
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
 
+    return reponse.data;
+}
+
+function LoginFrom({ setToken }) {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [success, setSuccess] = useState(false);
-    //const [remember, setRemember] = useState(false);
 
-    const submit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
-
         try {
-            const respone = await axios.post(LOGIN_URL);
-
-            console.log(respone)
-            //axios.get(LOGIN_URL,
-            //    {
-            //        params: {
-            //            client_id: 'admin',
-            //            client_secret: 'secret',
-            //            scope: 'openid',
-            //            username: 'thangnh1394',
-            //            password: 'Admin@123',
-            //            nonce: 'bearer',
-            //            redirect_uri: 'https://localhost:44401/signin-oidc',
-            //            response_type: 'token',
-            //        }
-            //    })
-            //    .then(function (reponse) {
-            //        console.log(reponse)
-            //    })
+            const token = await loginUser({
+                ClientId: 'react-admin',
+                ClientSecret: 'D013F030-0177-4F0D-AECA-1206D0608408',
+                Scope: "openid profile swaggerApi",
+                UserName: username,
+                Password: password,
+            })
+            console.log(token);
+            setToken(token);
         }
         catch {
         }
     }
 
     return (
-        <form className='w-25 mx-5' onSubmit={submit}>
+        <form className='w-25 mx-5' onSubmit={handleSubmit}>
             <div className="mb-3">
                 <label htmlFor="input-userNameId"
                     className="form-label">
@@ -79,5 +75,4 @@ function LoginFrom() {
         </form>
     );
 }
-
 export default LoginFrom;

@@ -1,27 +1,23 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
-import { Counter } from './components/Counter';
+import React, { Component, Link, useState } from 'react';
 import Login from './components/login/Login'
 import './custom.css'
 import 'bootstrap/dist/css/bootstrap.css';
-import { Redirect } from 'react-router-dom';
+import useToken from './components/app/useToken'
+import Logout from './components/logout/logout';
 
-export default class App extends Component {
-    static displayName = App.name;
+function App() {
+    const displayName = App.name;
+    const { token, setToken } = useToken();
 
-    render() {
-        return (
-
-            //<Layout>
-            //    {/*<Route exact path='/' component={Home} />*/}
-            //    {/*<Route path='/counter' component={Counter} />*/}
-            //    {/*<Route path='/fetch-data' component={FetchData} />*/}
-            //    <Route path='/login' component={Login} />
-            //</Layout>
-            <Login />
-        );
+    if (!token) {
+        return <Login setToken={setToken} />
     }
+
+    return (
+        <div>
+            <Logout setToken={setToken}>Logout</Logout>
+        </div>
+    );
 }
+
+export default App;

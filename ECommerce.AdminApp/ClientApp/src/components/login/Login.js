@@ -2,7 +2,7 @@
 
 import LoginFrom from './LoginForm'
 
-const Login = () => {
+function Login({ setToken }) {
     return (
         <div className='container-fluid vh-100'>
             <div className="row h-100">
@@ -12,7 +12,7 @@ const Login = () => {
                     <p>Login from here for access management</p>
                 </div>
                 <div className="col-8 d-flex align-items-center">
-                    <LoginFrom></LoginFrom>
+                    <LoginFrom setToken={setToken}></LoginFrom>
                 </div>
             </div>
         </div>

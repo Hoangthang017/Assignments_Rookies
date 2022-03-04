@@ -70,6 +70,21 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters.ValidateAudience = false;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+    builder => builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+    //setup.AddDefaultPolicy(policy =>
+    //{
+    //    policy.AllowAnyHeader();
+    //    policy.AllowAnyMethod();
+    //    policy.WithOrigins("https://localhost:5001/api/authenticate", "https://localhost:44401");
+    //    policy.AllowCredentials();
+    //});
+});
+
 // add author
 builder.Services.AddAuthorization();
 
@@ -143,6 +158,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseCors("CorsPolicy");
 
 // security
 app.UseIdentityServer();
