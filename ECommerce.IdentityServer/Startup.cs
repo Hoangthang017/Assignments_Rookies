@@ -30,12 +30,14 @@ namespace ECommerce.IdentityServer
         {
             services.AddControllersWithViews();
 
-            var cors = new DefaultCorsPolicyService(new LoggerFactory().CreateLogger<DefaultCorsPolicyService>())
+            services.AddSingleton<ICorsPolicyService>((container) =>
             {
-                AllowAll = true
-            };
-            services.AddSingleton<ICorsPolicyService>(cors);
-            services.AddTransient<IReturnUrlParser, ReturnUrlParser>();
+                var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
+                return new DefaultCorsPolicyService(logger)
+                {
+                    AllowedOrigins = { "https://localhost:44401" }
+                };
+            });
             services.AddDbContext<ECommerceDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ECommerceDB")));
 
@@ -45,30 +47,44 @@ namespace ECommerce.IdentityServer
 
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
 
-            services.AddCors(setup =>
+            services.AddCors(options =>
             {
-                setup.AddDefaultPolicy(policy =>
-                {
-                    policy.AllowAnyHeader();
-                    policy.AllowAnyMethod();
-                    policy.WithOrigins("https://localhost:5001", "https://localhost:7004");
-                    policy.AllowCredentials();
-                });
+                options.AddPolicy("CorsPolicy",
+                builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+                //setup.AddDefaultPolicy(policy =>
+                //{
+                //    policy.AllowAnyHeader();
+                //    policy.AllowAnyMethod();
+                //    policy.WithOrigins("https://localhost:5001/api/authenticate", "https://localhost:44401");
+                //    policy.AllowCredentials();
+                //});
             });
 
             var builder = services.AddIdentityServer(options =>
             {
-                options.UserInteraction.LoginUrl = "https://localhost:5001";
-                options.UserInteraction.ErrorUrl = "https://localhost:5001/error";
-                options.UserInteraction.LogoutUrl = "https://localhost:5001/logout";
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+
+                // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
+                options.EmitStaticAudienceClaim = true;
+
+                //options.UserInteraction.LoginUrl = "https://localhost:5001";
+                //options.UserInteraction.ErrorUrl = "https://localhost:5001/error";
+                //options.UserInteraction.LogoutUrl = "https://localhost:5001/logout";
             })
+                .AddDeveloperSigningCredential()
+                .AddInMemoryPersistedGrants()
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
                 .AddAspNetIdentity<User>();
 
             // not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            //builder.AddDeveloperSigningCredential();
 
             //services.AddAuthentication()
             //    .AddGoogle(options =>
@@ -90,12 +106,13 @@ namespace ECommerce.IdentityServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors();
+            app.UseCors("CorsPolicy");
 
             app.UseStaticFiles();
 
             app.UseRouting();
             app.UseIdentityServer();
+
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

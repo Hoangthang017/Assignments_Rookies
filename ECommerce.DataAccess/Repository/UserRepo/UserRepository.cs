@@ -71,6 +71,27 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             //    signingCredentials: creds);
 
             return userToken;
+
+            //var client = new HttpClient();
+
+            //// discover endpoints from metadata
+            //var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5001");
+            //disco.Policy.ValidateIssuerName = false;
+            //if (disco.IsError)
+            //{
+            //    return Json(disco.IsError + disco.Error);
+            //}
+
+            //// request token
+            //var tokenClient = new TokenClient(disco.TokenEndpoint, model.ClientId, model.ClientSecrets);
+            //var tokenResponse = await tokenClient.RequestClientCredentialsAsync(model.Scope);
+
+            //if (tokenResponse.IsError)
+            //{
+            //    return Json(tokenResponse.Error);
+            //}
+
+            //return Json(tokenResponse.Json);
         }
 
         public async Task<bool> Register(RegisterRequest request)

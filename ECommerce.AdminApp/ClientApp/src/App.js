@@ -7,12 +7,14 @@ import { Counter } from './components/Counter';
 import Login from './components/login/Login'
 import './custom.css'
 import 'bootstrap/dist/css/bootstrap.css';
+import { Redirect } from 'react-router-dom';
 
 export default class App extends Component {
     static displayName = App.name;
 
     render() {
         return (
+
             //<Layout>
             //    {/*<Route exact path='/' component={Home} />*/}
             //    {/*<Route path='/counter' component={Counter} />*/}
