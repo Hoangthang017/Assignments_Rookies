@@ -29,8 +29,8 @@ namespace ECommerce.IdentityServer
                  // interactive client using code flow + pkce
                 new Client
                 {
-                    ClientId = "admin",
-                    ClientSecrets = { new Secret("secret".Sha256() )},
+                    ClientId = "react-admin",
+                    ClientSecrets = { new Secret("D013F030-0177-4F0D-AECA-1206D0608408".Sha256() )},
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
 
@@ -44,7 +44,7 @@ namespace ECommerce.IdentityServer
 
                     AllowOfflineAccess = true,
 
-                    AllowedScopes = { "openid" }
+                    AllowedScopes = { "openid", "profile", "swaggerApi" }
                 },
 
                 // interactive client using code flow + pkce

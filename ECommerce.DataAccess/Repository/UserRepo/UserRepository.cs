@@ -2,16 +2,10 @@
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.Models.Entities;
 using ECommerce.Models.Request.Users;
-using ECommerce.Utilities;
 using IdentityModel.Client;
 using IdentityServer4;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace ECommerce.DataAccess.Repository.UserRepo
 {
@@ -42,56 +36,29 @@ namespace ECommerce.DataAccess.Repository.UserRepo
 
         public async Task<string> Authencate(LoginRequest request)
         {
-            var user = await _userManager.FindByNameAsync(request.UserName);
-            if (user == null)
-                return null;
-            var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, true);
-            if (!result.Succeeded)
+            var client = new HttpClient();
+
+            // discover endpoints from metadata
+            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5001");
+            disco.Policy.ValidateIssuerName = false;
+            if (disco.IsError)
             {
+                return (disco.IsError + disco.Error);
+            }
+
+            // request token
+            var tokenClient = new TokenClient(new HttpClient() { BaseAddress = new Uri(disco.TokenEndpoint) }, new TokenClientOptions { ClientId = request.ClientId, ClientSecret = request.ClientSecret });
+            var tokenResponse = await tokenClient.RequestPasswordTokenAsync(request.UserName, request.Password, request.Scope);
+
+            if (tokenResponse.IsError)
+            {
+                Console.Error.WriteLine(tokenResponse.Error);
                 return null;
             }
 
-            var userToken = await GetAccessToken();
-
-            //var roles = _userManager.GetRolesAsync(user);
-            //var claims = new[]
-            //{
-            //    new Claim(ClaimTypes.Email, user.Email),
-            //    new Claim(ClaimTypes.GivenName, user.FirstName),
-            //    new Claim(ClaimTypes.Role, string.Join(";",roles))
-            //};
-
-            //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
-            //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            //var token = new JwtSecurityToken(_config["Tokens:Issuer"],
-            //    _config["Tokens:Issuer"],
-            //    claims,
-            //    expires: DateTime.Now.AddHours(3),
-            //    signingCredentials: creds);
-
-            return userToken;
-
-            //var client = new HttpClient();
-
-            //// discover endpoints from metadata
-            //var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5001");
-            //disco.Policy.ValidateIssuerName = false;
-            //if (disco.IsError)
-            //{
-            //    return Json(disco.IsError + disco.Error);
-            //}
-
-            //// request token
-            //var tokenClient = new TokenClient(disco.TokenEndpoint, model.ClientId, model.ClientSecrets);
-            //var tokenResponse = await tokenClient.RequestClientCredentialsAsync(model.Scope);
-
-            //if (tokenResponse.IsError)
-            //{
-            //    return Json(tokenResponse.Error);
-            //}
-
-            //return Json(tokenResponse.Json);
+            //Console.WriteLine(tokenResponse.Json);
+            //Console.WriteLine("\n\n");
+            return tokenResponse.AccessToken;
         }
 
         public async Task<bool> Register(RegisterRequest request)
