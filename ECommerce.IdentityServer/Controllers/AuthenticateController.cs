@@ -1,4 +1,5 @@
 ﻿using ECommerce.Models.Entities;
+using IdentityModel.Client;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ECommerce.IdentityServer.Controllers
@@ -52,9 +54,11 @@ namespace ECommerce.IdentityServer.Controllers
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(request.Username);
-                    if (user != null && context != null)
+                    if (user != null/* && context != null*/)
                     {
-                        return new JsonResult(new { RedirectUrl = request.ReturnUrl, IsOk = true });
+                        var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                        return new JsonResult(new { RedirectUrl = request.ReturnUrl, IsOk = true, token = accessToken });
                     }
                 }
             }

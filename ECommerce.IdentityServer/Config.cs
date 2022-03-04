@@ -20,7 +20,7 @@ namespace ECommerce.IdentityServer
             {
                 new ApiScope("scope1"),
                 new ApiScope("scope2"),
-                new ApiScope("swaggerApi", "Swagger API"),
+                new ApiScope("swaggerApi"),
             };
 
         public static IEnumerable<Client> Clients =>
@@ -30,22 +30,21 @@ namespace ECommerce.IdentityServer
                 new Client
                 {
                     ClientId = "admin",
-                    ClientSecrets = { new Secret("CC55E8B8-4A32-48D4-8853-6EDB1CD2EBA1".Sha256()) },
+                    ClientSecrets = { new Secret("secret".Sha256() )},
 
-                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
 
-                    AllowedCorsOrigins = { "https://localhost:7004" },
+                    AllowAccessTokensViaBrowser = true,
 
-                    RedirectUris = { "https://localhost:7004/" },
-                    FrontChannelLogoutUri = "https://localhost:7004/",
-                    PostLogoutRedirectUris = { "https://localhost:7004/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:44401/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44401/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44401/signout-callback-oidc" },
+
+                    AllowedCorsOrigins = new[] { "https://localhost:44401"},
 
                     AllowOfflineAccess = true,
 
-                    // no consent page
-                    RequireConsent = false,
-
-                    AllowedScopes = { "openid", "profile", "swaggerApi" }
+                    AllowedScopes = { "openid" }
                 },
 
                 // interactive client using code flow + pkce
