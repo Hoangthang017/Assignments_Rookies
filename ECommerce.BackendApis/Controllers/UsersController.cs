@@ -40,5 +40,20 @@ namespace ECommerce.BackendApis.Controllers
                 return BadRequest("register is unsuccess");
             return Ok();
         }
+
+        [HttpPost("info")]
+        [Authorize]
+        public async Task<IActionResult> UserInfo()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var token = HttpContext.Request.Headers["Authorization"];
+
+            var result = await _unitOfWork.User.GetUserInfo(token);
+            if (result == null)
+                return BadRequest();
+            return Ok(result);
+        }
     }
 }

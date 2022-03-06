@@ -2,10 +2,14 @@
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.Models.Entities;
 using ECommerce.Models.Request.Users;
+using ECommerce.Models.ViewModels.UserInfos;
+using ECommerce.Utilities;
 using IdentityModel.Client;
 using IdentityServer4;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 
 namespace ECommerce.DataAccess.Repository.UserRepo
 {
@@ -39,12 +43,7 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             var client = new HttpClient();
 
             // discover endpoints from metadata
-            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5001");
-            disco.Policy.ValidateIssuerName = false;
-            if (disco.IsError)
-            {
-                return (disco.IsError + disco.Error);
-            }
+            var disco = await GetDiscoveryDocument(client, "https://localhost:5001");
 
             // request token
             var tokenClient = new TokenClient(new HttpClient() { BaseAddress = new Uri(disco.TokenEndpoint) }, new TokenClientOptions { ClientId = request.ClientId, ClientSecret = request.ClientSecret });
@@ -78,14 +77,36 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             return false;
         }
 
-        public async Task<string> GetAccessToken()
+        public async Task<IEnumerable<Claim>> GetUserInfo(string token)
         {
-            var token = await _tools.IssueClientJwtAsync(
-                clientId: "BackendApi",
-                lifetime: 3600,
-                audiences: new[] { "api.BackendApi" }
-            );
-            return token.ToString();
+            var client = new HttpClient();
+
+            // discover endpoints from metadata
+            var disco = await GetDiscoveryDocument(client, "https://localhost:5001");
+
+            // get claims
+            var response = await client.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = disco.UserInfoEndpoint,
+                Token = token.Split()[1]
+            });
+
+            // check invalid respone
+            if (response.IsError)
+                throw new ECommerceException(response.Error);
+            return response.Claims;
+        }
+
+        private async Task<DiscoveryDocumentResponse> GetDiscoveryDocument(HttpClient client, string url)
+        {
+            // discover endpoints from metadata
+            var disco = await client.GetDiscoveryDocumentAsync(url);
+            disco.Policy.ValidateIssuerName = false;
+            if (disco.IsError)
+            {
+                throw new ECommerceException(disco.IsError + disco.Error);
+            }
+            return disco;
         }
     }
 }
