@@ -73,10 +73,7 @@ namespace ECommerce.DataAccess.EF
             modelBuilder.Entity<IdentityRoleClaim<Guid>>()
                 .ToTable("RoleClaims");
             modelBuilder.Entity<IdentityUserToken<Guid>>()
-                .ToTable("USerTokens");
-            modelBuilder.Entity<IdentityUserRole<Guid>>()
-                .ToTable("UserRoles")
-                .HasKey(x => x.UserId);
+                .ToTable("UserTokens");
 
             #endregion Fluent API
 

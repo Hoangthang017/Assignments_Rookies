@@ -1,6 +1,4 @@
-﻿import Login from "../login/Login";
-
-export default function Logout({ setToken }) {
+﻿export default function Logout({ setToken }) {
     function handleLogout() {
         setToken({});
         sessionStorage.clear();
