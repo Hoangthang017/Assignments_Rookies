@@ -1,0 +1,77 @@
+﻿.topbar {
+    position: relative;
+}
+
+.topbarTitle {
+    font-weight: bold;
+    font-size: 30px;
+    color: darkblue;
+    cursor: pointer;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdownUserImage {
+    border-radius: 50%;
+    padding: 0px;
+    margin: 0px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0,0,0,0) !important;
+    border: none !important;
+}
+
+.accountAvatar {
+    padding: 0px;
+    margin: 0px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.topbarWrapper {
+    color: rgba(249, 250, 251, 0.72)
+}
+
+#basic-navbar-nav {
+    position: fixed;
+    right: 50px;
+}
+
+@media screen and (max-width: 992px) {
+    #basic-navbar-nav {
+        position: inherit;
+    }
+
+    #basic-nav-dropdown .logoutWrapper {
+        padding: 0 40% !important;
+    }
+}
+
+#basic-nav-dropdown .userInfo {
+    padding: 0 16px;
+}
+
+#basic-nav-dropdown .userName {
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+#basic-nav-dropdown .logoutWrapper {
+    padding: 0 18%;
+    margin: 0 10%;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    width: auto;
+}
+
+#basic-nav-dropdown .iconProfile {
+    width: 30px;
+    padding-right: 10px;
+}
+
+#basic-navbar-nav .languageWrapper {
+    margin-right: 10px;
+}

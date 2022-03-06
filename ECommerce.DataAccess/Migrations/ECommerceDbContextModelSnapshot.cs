@@ -33,7 +33,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("AppConfigs", (string)null);
+                    b.ToTable("AppConfigs");
 
                     b.HasData(
                         new
@@ -82,7 +82,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.Category", b =>
@@ -109,7 +109,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -171,7 +171,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("LanguageId");
 
-                    b.ToTable("CategoryTranslations", (string)null);
+                    b.ToTable("CategoryTranslations");
 
                     b.HasData(
                         new
@@ -249,7 +249,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.Language", b =>
@@ -269,7 +269,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Languages", (string)null);
+                    b.ToTable("Languages");
 
                     b.HasData(
                         new
@@ -328,7 +328,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.OrderDetail", b =>
@@ -349,7 +349,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails", (string)null);
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.ProductImage", b =>
@@ -389,7 +389,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.ProductInCategory", b =>
@@ -404,7 +404,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductInCategories", (string)null);
+                    b.ToTable("ProductInCategories");
 
                     b.HasData(
                         new
@@ -445,7 +445,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductReviews", (string)null);
+                    b.ToTable("ProductReviews");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.ProductTranslation", b =>
@@ -500,7 +500,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductTranslations", (string)null);
+                    b.ToTable("ProductTranslations");
 
                     b.HasData(
                         new
@@ -569,7 +569,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Promotions", (string)null);
+                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.Role", b =>
@@ -607,7 +607,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"),
-                            ConcurrencyStamp = "903bd230-f821-4c08-9e7f-9ff93509d07f",
+                            ConcurrencyStamp = "3ed82d6f-117f-4e85-ae77-d9518b9e1e9e",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -695,7 +695,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "624a50ca-6f8e-4406-9e08-742117fe8f30",
+                            ConcurrencyStamp = "7922c7d8-38b0-434f-a222-8c8283abc2de",
                             DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "thangnh1394@gmail.com",
                             EmailConfirmed = true,
@@ -704,7 +704,7 @@ namespace ECommerce.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "thangnh1394@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFQIPjWIniEqa8f+PEQvbKVpte2fcWDg0IPPxythII8yvd0Q1UQ88nMJrFTkDeRfNQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELnXbSJpZmV3UO/yYoCiyIlJldlFVBAMvJcHqlGRtgHFpZmllEl22CDQM+B8Xva7cg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -787,7 +787,7 @@ namespace ECommerce.DataAccess.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId");
+                    b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
@@ -817,7 +817,7 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("USerTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Product", b =>
@@ -852,13 +852,13 @@ namespace ECommerce.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2022, 2, 22, 15, 52, 35, 988, DateTimeKind.Local).AddTicks(5202),
+                            CreatedDate = new DateTime(2022, 3, 5, 22, 18, 35, 377, DateTimeKind.Local).AddTicks(6206),
                             OriginalPrice = 100000m,
                             Price = 200000m,
                             Stock = 0,
@@ -907,13 +907,13 @@ namespace ECommerce.DataAccess.Migrations
 
             modelBuilder.Entity("ECommerce.Models.Entities.Order", b =>
                 {
-                    b.HasOne("ECommerce.Models.Entities.User", "USer")
+                    b.HasOne("ECommerce.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("USer");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.OrderDetail", b =>

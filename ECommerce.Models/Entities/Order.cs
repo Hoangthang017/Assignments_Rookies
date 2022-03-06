@@ -35,6 +35,6 @@ namespace ECommerce.Models.Entities
         public Guid UserId { set; get; }
 
         [ForeignKey("UserId")]
-        public User USer { get; set; }
+        public User User { get; set; }
     }
 }
