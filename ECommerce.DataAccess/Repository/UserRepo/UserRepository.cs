@@ -77,7 +77,7 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             return false;
         }
 
-        public async Task<IEnumerable<Claim>> GetUserInfo(string token)
+        public async Task<Dictionary<string, string>> GetUserInfo(string token)
         {
             var client = new HttpClient();
 
@@ -94,7 +94,11 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             // check invalid respone
             if (response.IsError)
                 throw new ECommerceException(response.Error);
-            return response.Claims;
+
+            var result = new Dictionary<string, string>();
+            response.Claims.ToList().ForEach(x => result.Add(x.Type, x.Value));
+
+            return result;
         }
 
         private async Task<DiscoveryDocumentResponse> GetDiscoveryDocument(HttpClient client, string url)

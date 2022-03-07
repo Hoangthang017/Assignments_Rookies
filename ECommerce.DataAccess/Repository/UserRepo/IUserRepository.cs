@@ -12,6 +12,6 @@ namespace ECommerce.DataAccess.Repository.UserRepo
 
         Task<bool> Register(RegisterRequest request);
 
-        Task<IEnumerable<Claim>> GetUserInfo(string token);
+        Task<Dictionary<string, string>> GetUserInfo(string token);
     }
 }

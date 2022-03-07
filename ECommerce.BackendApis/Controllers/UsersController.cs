@@ -1,5 +1,6 @@
 ﻿using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request.Users;
+using ECommerce.Models.ViewModels.UserInfos;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,7 @@ namespace ECommerce.BackendApis.Controllers
             return Ok();
         }
 
-        [HttpPost("info")]
+        [HttpPost]
         [Authorize]
         public async Task<IActionResult> UserInfo()
         {
@@ -53,6 +54,7 @@ namespace ECommerce.BackendApis.Controllers
             var result = await _unitOfWork.User.GetUserInfo(token);
             if (result == null)
                 return BadRequest();
+
             return Ok(result);
         }
     }

@@ -45,6 +45,8 @@ namespace ECommerce.IdentityServer
                 .AddEntityFrameworkStores<ECommerceDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddTransient<IProfileService, ProfileService>();
+
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
 
             services.AddCors(options =>
@@ -53,13 +55,6 @@ namespace ECommerce.IdentityServer
                 builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader());
-                //setup.AddDefaultPolicy(policy =>
-                //{
-                //    policy.AllowAnyHeader();
-                //    policy.AllowAnyMethod();
-                //    policy.WithOrigins("https://localhost:5001/api/authenticate", "https://localhost:44401");
-                //    policy.AllowCredentials();
-                //});
             });
 
             var builder = services.AddIdentityServer(options =>
@@ -71,17 +66,14 @@ namespace ECommerce.IdentityServer
 
                 // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
                 options.EmitStaticAudienceClaim = true;
-
-                //options.UserInteraction.LoginUrl = "https://localhost:5001";
-                //options.UserInteraction.ErrorUrl = "https://localhost:5001/error";
-                //options.UserInteraction.LogoutUrl = "https://localhost:5001/logout";
             })
                 .AddDeveloperSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
-                .AddAspNetIdentity<User>();
+                .AddAspNetIdentity<User>()
+                .AddProfileService<ProfileService>();
 
             // not recommended for production - you need to store your key material somewhere secure
             //builder.AddDeveloperSigningCredential();
