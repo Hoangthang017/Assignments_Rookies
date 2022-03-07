@@ -9,11 +9,14 @@ namespace ECommerce.IdentityServer
     public static class Config
     {
         public static IEnumerable<IdentityResource> IdentityResources =>
-                   new IdentityResource[]
-                   {
+               new IdentityResource[]
+               {
                     new IdentityResources.OpenId(),
                     new IdentityResources.Profile(),
-                   };
+                    new IdentityResources.Email(),
+                    new IdentityResources.Phone(),
+                    new IdentityResource("userInfor", new[]{"role", "FirstName", "LastName", "DateOfBirth"})
+                };
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
@@ -76,7 +79,7 @@ namespace ECommerce.IdentityServer
                     PostLogoutRedirectUris = { "https://localhost:7159/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "swaggerApi" }
+                    AllowedScopes = { "openid", "profile", "swaggerApi" , "userInfor", "email", "phone" }
                 },
             };
     }
