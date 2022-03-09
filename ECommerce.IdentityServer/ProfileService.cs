@@ -1,4 +1,5 @@
 ﻿using ECommerce.Models.Entities;
+using ECommerce.Utilities;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Extensions;
@@ -34,23 +35,17 @@ namespace ECommerce.IdentityServer
 
             var claims = principal.Claims.ToList();
 
-            claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
-
-            //var user = await _userManager.GetUserAsync(context.Subject);
-
             claims.AddRange(new List<Claim>()
             {
-                new Claim(JwtClaimTypes.GivenName, user.UserName),
                 new Claim("displayName", user.LastName + " "+ user.FirstName ),
                 new Claim("firstName", user.FirstName),
                 new Claim("lastName", user.LastName),
-                new Claim("dateOfBirth", user.DateOfBirth.ToString()),
-                new Claim(IdentityServerConstants.StandardScopes.Email, user.Email),
-                new Claim(IdentityServerConstants.StandardScopes.Phone, user.PhoneNumber)
+                new Claim("dateOfBirth", user.DateOfBirth.ToString())
             });
 
-            var role = await _userManager.GetRolesAsync(user);
-            var isAdmin = role.Contains("admin");
+            // specific role of user
+            var roles = await _userManager.GetRolesAsync(user);
+            var isAdmin = roles.Contains("admin");
 
             if (isAdmin)
             {
@@ -58,8 +53,14 @@ namespace ECommerce.IdentityServer
             }
             else
             {
-                claims.Add(new Claim(JwtClaimTypes.Role, "user"));
+                claims.Add(new Claim(JwtClaimTypes.Role, "customer"));
             }
+
+            //
+            claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
+
+            //if (claims == null)
+            //    throw new ECommerceException("Don't have claim to request");
 
             context.IssuedClaims.AddRange(claims);
         }

@@ -40,7 +40,7 @@ DashboardNavbar.propTypes = {
   onOpenSidebar: PropTypes.func
 };
 
-export default function DashboardNavbar({ onOpenSidebar, account }) {
+export default function DashboardNavbar({ onOpenSidebar }) {
   return (
     <RootStyle>
       <ToolbarStyle>
@@ -58,7 +58,7 @@ export default function DashboardNavbar({ onOpenSidebar, account }) {
           <LanguagePopover />
           {/* thông báo components */}
           {/* <NotificationsPopover /> */}
-          <AccountPopover account={account} />
+          <AccountPopover/>
         </Stack>
       </ToolbarStyle>
     </RootStyle>

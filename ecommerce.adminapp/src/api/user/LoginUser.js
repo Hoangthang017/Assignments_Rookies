@@ -7,7 +7,7 @@ async function LoginUser(credentials) {
       JSON.stringify({
         ClientId: 'react-admin',
         ClientSecret: 'D013F030-0177-4F0D-AECA-1206D0608408',
-        Scope: 'openid profile swaggerApi',
+        Scope: 'openid profile swaggerApi userInfor email phone',
         ...credentials
       }),
       {
@@ -20,7 +20,8 @@ async function LoginUser(credentials) {
     return reponse.data;
   }
   catch(err) {
-    console.log(err);
+
+    return err.response;
   }
 }
 

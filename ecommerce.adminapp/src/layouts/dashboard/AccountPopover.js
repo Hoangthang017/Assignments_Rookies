@@ -9,7 +9,6 @@ import Iconify from '../../components/Iconify';
 import MenuPopover from '../../components/MenuPopover';
 //
 // import account from '../../_mocks_/account';
-import getInfo from '../../api/user/getInfo'
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +32,7 @@ const MENU_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function AccountPopover({account}) {
+export default function AccountPopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -45,10 +44,11 @@ export default function AccountPopover({account}) {
     setOpen(false);
   };
 
-  //const account = getInfo();
+  const account = JSON.parse(sessionStorage.getItem("account"));
 
   function handleLogout() {
     sessionStorage.clear("token");
+    sessionStorage.clear("account");
     return navigate('/', { replace: true });
   }
 

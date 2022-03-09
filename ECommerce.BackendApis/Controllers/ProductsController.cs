@@ -176,7 +176,7 @@ namespace ECommerce.BackendApis.Controllers
         }
 
         [HttpPost("{productId}/images")]
-        public async Task<IActionResult> Create(int productId, [FromForm] CreateProductImageRequest request)
+        public async Task<IActionResult> Create(int productId, [FromForm] CreateImageRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -195,7 +195,7 @@ namespace ECommerce.BackendApis.Controllers
         }
 
         [HttpPut("{productId}/images/{imageId}")]
-        public async Task<IActionResult> UpdateImage(int imageId, [FromForm] UpdateProductImageRequest request)
+        public async Task<IActionResult> UpdateImage(int imageId, [FromForm] UpdateImageRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

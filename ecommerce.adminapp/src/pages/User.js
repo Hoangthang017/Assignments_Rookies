@@ -1,6 +1,6 @@
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
@@ -25,22 +25,29 @@ import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
+import GetAllUser from 'src/api/user/GetAllUser';
 //
-import USERLIST from '../_mocks_/user';
+// import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
+// call api
 
+// cài đặt các trường cho bảng
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' }
+  { id: 'dateOfBirth', label: 'Date Of Birth', alignRight: false },
+  { id: 'userName', label: 'User Name', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
+  { id: 'phoneNumber', label: 'Phone', alignRight: false },
+  { id: 'role', label: 'Role', alignRight: false }, 
+  // { id: 'isVerified', label: 'Verified', alignRight: false },
+  // { id: 'status', label: 'Status', alignRight: false },
+    { id: '' }
 ];
 
 // ----------------------------------------------------------------------
 
+// sắp xếp 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -70,13 +77,29 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+
+
+//--------------------------------------------------------------------------------------------
 export default function User() {
+  // các state 
+  const [idRemoveUser, setIdRemoveUser] = useState(false);
+  const [USERLIST, setUSERLIST] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    // call api  
+    useEffect(async () => {
+      console.log("call api")
+      const users = await GetAllUser()
+      if (users){
+        setUSERLIST(users);
+        setIdRemoveUser(false);
+      }
+    },[idRemoveUser])
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -140,7 +163,7 @@ export default function User() {
           <Button
             variant="contained"
             component={RouterLink}
-            to="#"
+            to="/user/create"
             startIcon={<Iconify icon="eva:plus-fill" />}
           >
             New User
@@ -149,14 +172,18 @@ export default function User() {
 
         <Card>
           <UserListToolbar
+            selected = {selected}
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
+            setSelected={setSelected}
+            setIdRemoveUser={setIdRemoveUser} 
           />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
+                {/* setting for table databae */}
                 <UserListHead
                   order={order}
                   orderBy={orderBy}
@@ -167,11 +194,13 @@ export default function User() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
+                  {/* map to row of table */}
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                      const isItemSelected = selected.indexOf(name) !== -1;
+                      
+                      const { id, avatarUrl, name,dateOfBirth,  userName, email, phoneNumber ,role } = row;
+                      const isItemSelected = selected.indexOf(id) !== -1;
 
                       return (
                         <TableRow
@@ -182,12 +211,15 @@ export default function User() {
                           selected={isItemSelected}
                           aria-checked={isItemSelected}
                         >
+                          {/* cột checkbox */}
                           <TableCell padding="checkbox">
                             <Checkbox
                               checked={isItemSelected}
-                              onChange={(event) => handleClick(event, name)}
+                              onChange={(event) => handleClick(event, id)}
                             />
                           </TableCell>
+
+                          {/* cột avatar + names */}
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt={name} src={avatarUrl} />
@@ -196,9 +228,22 @@ export default function User() {
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left">{company}</TableCell>
+
+                          {/* cột company */}
+                          <TableCell align="left">{dateOfBirth.split(' ')[0]}</TableCell>
+
+                          {/* cột company */}
+                          <TableCell align="left">{userName}</TableCell>
+
+                          {/* cột password */}
+                          <TableCell align="left">{email}</TableCell>
+
+                          {/* cột role */}
+                          <TableCell align="left">{phoneNumber}</TableCell>
+
+                          {/* cột role */}
                           <TableCell align="left">{role}</TableCell>
-                          <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
@@ -206,10 +251,10 @@ export default function User() {
                             >
                               {sentenceCase(status)}
                             </Label>
-                          </TableCell>
+                          </TableCell> */}
 
                           <TableCell align="right">
-                            <UserMoreMenu />
+                            <UserMoreMenu id = {id} setIdRemoveUser={setIdRemoveUser} />
                           </TableCell>
                         </TableRow>
                       );

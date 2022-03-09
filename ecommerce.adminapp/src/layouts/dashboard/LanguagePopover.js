@@ -9,14 +9,14 @@ import MenuPopover from '../../components/MenuPopover';
 
 const LANGS = [
   {
-    value: 'vi',
-    label: 'Vietnamese', 
-    icon: '/static/icons/ic_flag_vi.svg'
-  },
-  {
     value: 'en',
     label: 'English',
     icon: '/static/icons/ic_flag_en.svg'
+  },
+  {
+    value: 'vi',
+    label: 'Vietnamese', 
+    icon: '/static/icons/ic_flag_vi.svg'
   }
 ];
 

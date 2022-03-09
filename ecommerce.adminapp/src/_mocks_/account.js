@@ -1,4 +1,4 @@
-import getInfor from '../api/user/getInfo'
+
 // ----------------------------------------------------------------------
 
 // const account = {
@@ -9,4 +9,4 @@ import getInfor from '../api/user/getInfo'
 
 //account = getInfor();
 
-export default account;
+// export default account;

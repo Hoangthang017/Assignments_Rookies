@@ -47,6 +47,7 @@ namespace ECommerce.DataAccess.Infrastructure
                 userManager,
                 signInManager,
                 roleManager,
+                mapper,
                 configuration);
         }
 

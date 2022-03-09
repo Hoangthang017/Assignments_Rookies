@@ -5,11 +5,11 @@ using ECommerce.Models.ViewModels.ProductImages;
 
 namespace ECommerce.DataAccess.Repository.ProductRepo
 {
-    public interface IProductImageRepository : IRepository<ProductImage>
+    public interface IProductImageRepository : IRepository<Image>
     {
-        Task<int> AddImage(int productId, CreateProductImageRequest request);
+        Task<int> AddImage(int productId, CreateImageRequest request);
 
-        Task<int> UpdateImage(int imageId, UpdateProductImageRequest request);
+        Task<int> UpdateImage(int imageId, UpdateImageRequest request);
 
         Task<int> RemoveImage(int imageId);
 

@@ -30,19 +30,55 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(new { token = resultToken });
         }
 
+        [HttpPost("register/admin")]
+        [Authorize]
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = await _unitOfWork.User.CreateUser(request);
+
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest("register is unsuccess");
+
+            // create a admin account
+            if (request.IsAdmin)
+            {
+                await _unitOfWork.User.UpdateRole(userId, "admin");
+            }
+
+            var userInfoVM = await _unitOfWork.User.GetById(userId);
+
+            return CreatedAtAction(
+                        nameof(GetById),
+                        new { id = userId },
+                        userInfoVM
+                    );
+        }
+
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var result = await _unitOfWork.User.Register(request);
-            if (!result)
+
+            var userId = await _unitOfWork.User.CreateUser(request);
+
+            if (string.IsNullOrEmpty(userId))
                 return BadRequest("register is unsuccess");
-            return Ok();
+
+            var userInfoVM = await _unitOfWork.User.GetById(userId);
+
+            return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = userId },
+                    userInfoVM
+                );
         }
 
-        [HttpPost]
+        [HttpGet("account")]
         [Authorize]
         public async Task<IActionResult> UserInfo()
         {
@@ -51,11 +87,69 @@ namespace ECommerce.BackendApis.Controllers
 
             var token = HttpContext.Request.Headers["Authorization"];
 
-            var result = await _unitOfWork.User.GetUserInfo(token);
-            if (result == null)
+            var response = await _unitOfWork.User.GetUserInfo(token);
+            if (response == null)
                 return BadRequest();
 
-            return Ok(result);
+            return Ok(response.Raw);
+        }
+
+        [HttpGet()]
+        [Authorize]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var response = await _unitOfWork.User.GetAll();
+            if (response == null)
+                return BadRequest();
+
+            return Ok(response);
+        }
+
+        [HttpGet("{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetById(string userId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var response = await _unitOfWork.User.GetById(userId);
+            if (response == null)
+                return BadRequest();
+
+            return Ok(response);
+        }
+
+        [HttpPut("{userId}")]
+        [Authorize]
+        public async Task<IActionResult> Update(string userId, [FromBody] UpdateUserRequest request)
+        {
+            var isSucess = await _unitOfWork.User.UpdateUser(userId, request);
+            if (!isSucess)
+                return BadRequest();
+            return Ok();
+        }
+
+        [HttpDelete("{userId}")]
+        [Authorize]
+        public async Task<IActionResult> Delete(string userId)
+        {
+            var isSucess = await _unitOfWork.User.RemoveUser(userId);
+            if (!isSucess)
+                return BadRequest();
+            return Ok();
+        }
+
+        [HttpPatch("deleteMulti")]
+        [Authorize]
+        public async Task<IActionResult> DeleteMulti([FromBody] List<string> userIds)
+        {
+            var isSucess = await _unitOfWork.User.RemoveRangeUser(userIds);
+            if (!isSucess)
+                return BadRequest();
+            return Ok();
         }
     }
 }

@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 //
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
-import getInfo from 'src/api/user/getInfo';
 // ----------------------------------------------------------------------
 
 const APP_BAR_MOBILE = 64;
@@ -34,28 +33,18 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-  const [account, setAccount] = useState({});
 
 
-  // get account signed
-  useEffect(async () => {
-    var userInfor = await getInfo();
-
-    if (!!userInfor) {
-      setAccount(userInfor);
-    }
-    else {
-      console.log("Fail to load user information!!!");
-    }
-  }, []);
+  if (!sessionStorage.getItem("token")) {
+    return <Navigate to="/login" replace />
+  }
 
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} account={account} />
+      <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
       <DashboardSidebar
         isOpenSidebar={open}
         onCloseSidebar={() => setOpen(false)}
-        account={account}
       />
       <MainStyle>
         <Outlet />
