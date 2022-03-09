@@ -56,6 +56,10 @@ namespace ECommerce.DataAccess.EF
                 .HasOne(t => t.Product)
                 .WithMany(pc => pc.OrderDetails)
                 .HasForeignKey(pc => pc.ProductId);
+            modelBuilder.Entity<ProductImage>()
+                .HasKey(t => new { t.ProductId, t.ImageId });
+            modelBuilder.Entity<UserImage>()
+                .HasKey(t => new { t.userId, t.ImageId });
 
             // Identity configuration
             modelBuilder.Entity<User>()
@@ -107,7 +111,11 @@ namespace ECommerce.DataAccess.EF
 
         public DbSet<Promotion> Promotions { get; set; }
 
+        public DbSet<Image> Images { get; set; }
+
         public DbSet<ProductImage> ProductImages { get; set; }
+
+        public DbSet<UserImage> UserImages { get; set; }
 
         public DbSet<ProductReview> ProductReviews { get; set; }
 

@@ -40,17 +40,24 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             // handler image
             if (request.Image != null)
             {
+                var image = new Image()
+                {
+                    Caption = "Thumbnail image",
+                    DateCreated = DateTime.Now,
+                    FileSize = request.Image.Length,
+                    ImagePath = await this.SaveFile(request.Image),
+                    SortOrder = 1
+                };
+
                 product.ProductImages = new List<ProductImage>()
                 {
-                    new ProductImage()
-                    {
-                        Caption = "Thumbnail image",
-                        DateCreated = DateTime.Now,
-                        FileSize = request.Image.Length,
-                        ImagePath = await this.SaveFile(request.Image),
-                        IsDefault = true,
-                        SortOrder = 1
-                    }
+                  new ProductImage()
+                  {
+                      ProductId = product.Id,
+                      Product = product,
+                      Image = image,
+                      ImageId = image.Id,
+                  }
                 };
             }
 
@@ -69,8 +76,13 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                 throw new ECommerceException("Cannot find product");
 
             // find all image of product and delete it out wwwroot
-            var images = _context.ProductImages.Where(i => i.ProductId == productId);
-            foreach (var image in images)
+            var images = from p in _context.Products
+                         join pi in _context.ProductImages on p.Id equals pi.ProductId
+                         join i in _context.Images on pi.ImageId equals i.Id
+                         where p.Id == productId
+                         select i;
+
+            foreach (Image image in images.ToList())
             {
                 await _storageService.DeleteFileAsync(image.ImagePath);
             }

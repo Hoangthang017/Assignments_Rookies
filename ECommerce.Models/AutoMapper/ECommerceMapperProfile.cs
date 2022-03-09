@@ -2,8 +2,10 @@
 using ECommerce.Models.Entities;
 using ECommerce.Models.Request.ProductImages;
 using ECommerce.Models.Request.Products;
+using ECommerce.Models.Request.Users;
 using ECommerce.Models.ViewModels.ProductImages;
 using ECommerce.Models.ViewModels.Products;
+using ECommerce.Models.ViewModels.UserInfos;
 
 namespace ECommerce.Models.AutoMapper
 {
@@ -20,8 +22,11 @@ namespace ECommerce.Models.AutoMapper
                 .ForMember(x => x.Categories, opt => opt.MapFrom(x => x.Name));
             CreateMap<ProductTranslation, ProductViewModel>();
             CreateMap<CategoryTranslation, ProductViewModel>();
-            CreateMap<ProductImage, ProductImageViewModel>();
-            CreateMap<UpdateProductImageRequest, ProductImage>();
+            CreateMap<Image, ProductImageViewModel>();
+            CreateMap<UpdateImageRequest, Image>();
+
+            CreateMap<User, UserInfoViewModel>()
+                .ForMember(x => x.Name, opt => opt.MapFrom(x => (x.LastName + " " + x.FirstName)));
         }
     }
 }

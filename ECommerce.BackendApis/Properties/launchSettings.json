@@ -11,7 +11,7 @@
     "ECommerce.BackendApis": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7195;http://localhost:5195",
       "environmentVariables": {
