@@ -7,18 +7,16 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Models.Entities
 {
-    public class ProductImage
+    public class UserImage
     {
-        public int ProductId { get; set; }
+        public Guid userId { get; set; }
 
-        [ForeignKey("ProductId")]
-        public Product Product { get; set; }
+        [ForeignKey("userId")]
+        public User User { get; set; }
 
         public int ImageId { get; set; }
 
         [ForeignKey("ImageId")]
         public Image Image { get; set; }
-
-        public bool IsDefault { get; set; }
     }
 }

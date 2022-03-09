@@ -19,12 +19,14 @@ import Iconify from '../../../components/Iconify';
 
 // Api
 import LoginUser from '../../../api/user/LoginUser';
+import GetAccountInfo from '../../../api/user/GetAccountInfo';
 import { string } from 'prop-types';
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const LoginSchema = Yup.object().shape({
     username: Yup.string().required('Tài khoản không được bỏ trống'),
@@ -39,17 +41,28 @@ export default function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: async () => {
-      const token = await LoginUser({
-        UserName: values.username,
-        Password: values.password
-      });
-      
-      if (token){
-        sessionStorage.setItem('token', JSON.stringify("Bearer " + token));
-        navigate('/dashboard/app', { replace: true });
+      const response = await LoginUser(
+        {
+          UserName: values.username,
+          Password: values.password
+        }
+      );
+
+      if (response.token) {
+        var account = await GetAccountInfo(response.token);
+
+        if (account.role === 'admin') {
+          sessionStorage.setItem('token', 'Bearer ' + response.token);
+          sessionStorage.setItem('account', JSON.stringify(account));
+          navigate('/dashboard/app', { replace: true });
+        } else {
+          setError('Bạn không có quyền truy cập');
+        }
       }
-      else {
-        Alert("fail to login");
+      else{
+        if (response.status === 400){
+          setError('Sai tài khoản hoặc mật khẩu');
+        }
       }
     }
   });
@@ -61,58 +74,61 @@ export default function LoginForm() {
   };
 
   return (
-    <FormikProvider value={formik}>
-      <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <TextField
-            fullWidth
-            label="Tên đăng nhập"
-            {...getFieldProps('username')}
-            error={Boolean(touched.username && errors.username)}
-            helperText={touched.username && errors.username}
-          />
+    <Stack>
+      {error && <Alert severity="error" sx={{mb: '3rem'}}>{error}</Alert>} 
+      <FormikProvider value={formik}>
+        <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <Stack spacing={3}>
+            <TextField
+              fullWidth
+              label="Tên đăng nhập"
+              {...getFieldProps('username')}
+              error={Boolean(touched.username && errors.username)}
+              helperText={touched.username && errors.username}
+            />
 
-          <TextField
-            fullWidth
-            autoComplete="current-password"
-            type={showPassword ? 'text' : 'password'}
-            label="Mật khẩu"
-            {...getFieldProps('password')}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleShowPassword} edge="end">
-                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
-          />
-        </Stack>
+            <TextField
+              fullWidth
+              autoComplete="current-password"
+              type={showPassword ? 'text' : 'password'}
+              label="Mật khẩu"
+              {...getFieldProps('password')}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleShowPassword} edge="end">
+                      <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              error={Boolean(touched.password && errors.password)}
+              helperText={touched.password && errors.password}
+            />
+          </Stack>
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-          <FormControlLabel
-            control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
-            label="Nhớ mật khẩu"
-          />
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+            <FormControlLabel
+              control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
+              label="Nhớ mật khẩu"
+            />
 
-          {/* <Link component={RouterLink} variant="subtitle2" to="#" underline="hover">
+            {/* <Link component={RouterLink} variant="subtitle2" to="#" underline="hover">
             Forgot password?
           </Link> */}
-        </Stack>
+          </Stack>
 
-        <LoadingButton
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          loading={isSubmitting}
-        >
-          Đăng nhập
-        </LoadingButton>
-      </Form>
-    </FormikProvider>
+          <LoadingButton
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            Đăng nhập
+          </LoadingButton>
+        </Form>
+      </FormikProvider>
+    </Stack>
   );
 }

@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
+import DeleteRangeUser from 'src/api/user/DeleteRangeUser';
 
 // ----------------------------------------------------------------------
 
@@ -37,12 +38,25 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 UserListToolbar.propTypes = {
+  selected : PropTypes.array,
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
-  onFilterName: PropTypes.func
+  onFilterName: PropTypes.func,
+  setIdRemoveUser: PropTypes.func,
+  setSelected: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserListToolbar({setSelected, selected, numSelected, filterName, onFilterName, setIdRemoveUser }) {
+
+  async function removeRangeUser() {
+    var result = await DeleteRangeUser({userIds: selected})
+    if (result)
+    {
+      setIdRemoveUser(true);
+      setSelected([]);
+    } 
+  }
+
   return (
     <RootStyle
       sx={{
@@ -70,8 +84,8 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
       )}
 
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
+        <Tooltip title="Delete" >
+          <IconButton onClick={removeRangeUser}>
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>

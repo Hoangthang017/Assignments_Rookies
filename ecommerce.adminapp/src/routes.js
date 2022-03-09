@@ -10,15 +10,12 @@ import Products from './pages/Products';
 import Blog from './pages/Blog';
 import User from './pages/User';
 import NotFound from './pages/Page404';
+import CreateUser from './sections/user/CreateUser';
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  return useRoutes([,
-    {
-      path: '/',
-      element: <Login />,
-    },
+  return useRoutes([
     {
       path: '/dashboard',
       element: <DashboardLayout />,
@@ -27,6 +24,16 @@ export default function Router() {
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> }
+      ]
+    },
+    { 
+      path: '/user',
+      element: <DashboardLayout />,
+      children: [
+        { path: '', element: <User /> },
+        { path: 'create', element: <CreateUser /> },
+        { path: 'edit/:id', element: <CreateUser /> },
+
       ]
     },
     {

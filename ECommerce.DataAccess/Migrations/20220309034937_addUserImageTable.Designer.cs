@@ -4,6 +4,7 @@ using ECommerce.DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.DataAccess.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    partial class ECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220309034937_addUserImageTable")]
+    partial class addUserImageTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,10 +278,23 @@ namespace ECommerce.DataAccess.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("userId");
 
                     b.ToTable("Images");
                 });
@@ -382,24 +397,6 @@ namespace ECommerce.DataAccess.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderDetails");
-                });
-
-            modelBuilder.Entity("ECommerce.Models.Entities.ProductImage", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
-
-                    b.HasKey("ProductId", "ImageId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.ProductInCategory", b =>
@@ -617,7 +614,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"),
-                            ConcurrencyStamp = "808227c4-94bb-44c6-a1a9-938136bdb99c",
+                            ConcurrencyStamp = "6c8475fd-f69d-40a2-9176-ec92feb848e0",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -705,7 +702,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1debabbe-adb4-4f5d-8004-2e09a6133765",
+                            ConcurrencyStamp = "5b314fcc-b9d9-4e2c-b2a8-a3b1ce5a686a",
                             DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "thangnh1394@gmail.com",
                             EmailConfirmed = true,
@@ -714,27 +711,12 @@ namespace ECommerce.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "thangnh1394@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHtj5OjCUYz5WpFFrSSb8k7faTLnpUxnc2xpj12+qtD8iHKXFml4QY2GoMvyBLrW2g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGSfk+W0BqXL4o9G67o8ZrXemOE23lZQdBlUfo3F5b8a/nIjLxtv6GtShHGw0E5FJQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
-                });
-
-            modelBuilder.Entity("ECommerce.Models.Entities.UserImage", b =>
-                {
-                    b.Property<Guid>("userId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("userId", "ImageId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("UserImages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -883,7 +865,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2022, 3, 9, 11, 31, 17, 817, DateTimeKind.Local).AddTicks(2327),
+                            CreatedDate = new DateTime(2022, 3, 9, 10, 49, 37, 45, DateTimeKind.Local).AddTicks(2572),
                             OriginalPrice = 100000m,
                             Price = 200000m,
                             Stock = 0,
@@ -930,6 +912,25 @@ namespace ECommerce.DataAccess.Migrations
                     b.Navigation("Language");
                 });
 
+            modelBuilder.Entity("ECommerce.Models.Entities.Image", b =>
+                {
+                    b.HasOne("Product", "Product")
+                        .WithMany("Images")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ECommerce.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ECommerce.Models.Entities.Order", b =>
                 {
                     b.HasOne("ECommerce.Models.Entities.User", "User")
@@ -956,25 +957,6 @@ namespace ECommerce.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Order");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("ECommerce.Models.Entities.ProductImage", b =>
-                {
-                    b.HasOne("ECommerce.Models.Entities.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Product", "Product")
-                        .WithMany("ProductImages")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Image");
 
                     b.Navigation("Product");
                 });
@@ -1034,25 +1016,6 @@ namespace ECommerce.DataAccess.Migrations
                     b.Navigation("Language");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("ECommerce.Models.Entities.UserImage", b =>
-                {
-                    b.HasOne("ECommerce.Models.Entities.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ECommerce.Models.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("userId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Image");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1129,9 +1092,9 @@ namespace ECommerce.DataAccess.Migrations
                 {
                     b.Navigation("Carts");
 
-                    b.Navigation("OrderDetails");
+                    b.Navigation("Images");
 
-                    b.Navigation("ProductImages");
+                    b.Navigation("OrderDetails");
 
                     b.Navigation("ProductInCategories");
 

@@ -98,15 +98,15 @@ namespace ECommerce.Tests.ControllerTests
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
-            mockUnitOfWork.Verify(x => x.User.Register(It.IsAny<RegisterRequest>()), Times.Never());
+            mockUnitOfWork.Verify(x => x.User.CreateUser(It.IsAny<RegisterRequest>()), Times.Never());
         }
 
         [Fact]
         public async Task Register_WithRegisterError_ReturnBadRequest()
         {
             // Arrage
-            mockUnitOfWork.Setup(x => x.User.Register(It.IsAny<RegisterRequest>()))
-                    .ReturnsAsync(false);
+            mockUnitOfWork.Setup(x => x.User.CreateUser(It.IsAny<RegisterRequest>()))
+                    .ReturnsAsync(It.IsAny<string>());
             var controller = new UsersController(mockUnitOfWork.Object);
 
             // Act
@@ -114,17 +114,19 @@ namespace ECommerce.Tests.ControllerTests
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
-            mockUnitOfWork.Verify(x => x.User.Register(It.IsAny<RegisterRequest>()), Times.Once());
+            mockUnitOfWork.Verify(x => x.User.CreateUser(It.IsAny<RegisterRequest>()), Times.Once());
         }
 
         [Fact]
         public async Task Register_WithLoginRequest_ReturnOkResult()
         {
             // Arrage
+            var sampleUserId = Guid.NewGuid();
+
             var sampleRequest = new RegisterRequest()
             {
                 FirstName = Guid.NewGuid().ToString(),
-                ConfirmPassword = Guid.NewGuid().ToString(),
+                //ConfirmPassword = Guid.NewGuid().ToString(),
                 DateOfBirth = DateTime.Now,
                 Email = Guid.NewGuid().ToString() + "@gmail.com",
                 LastName = Guid.NewGuid().ToString() + "@",
@@ -133,8 +135,8 @@ namespace ECommerce.Tests.ControllerTests
                 UserName = Guid.NewGuid().ToString(),
             };
 
-            mockUnitOfWork.Setup(x => x.User.Register(sampleRequest))
-                    .ReturnsAsync(true);
+            mockUnitOfWork.Setup(x => x.User.CreateUser(sampleRequest))
+                    .ReturnsAsync(sampleUserId.ToString());
 
             var controller = new UsersController(mockUnitOfWork.Object);
 
@@ -143,7 +145,7 @@ namespace ECommerce.Tests.ControllerTests
 
             // Assert
             var result = Assert.IsType<OkResult>(actionResult);
-            mockUnitOfWork.Verify(x => x.User.Register(sampleRequest), Times.Once);
+            mockUnitOfWork.Verify(x => x.User.CreateUser(sampleRequest), Times.Once);
         }
 
         #endregion Register

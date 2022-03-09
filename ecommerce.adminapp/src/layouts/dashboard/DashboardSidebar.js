@@ -5,7 +5,6 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
 // mocks_
-import getInfo from '../../api/user/getInfo'
 // hooks
 import useResponsive from '../../hooks/useResponsive';
 // components
@@ -41,12 +40,12 @@ DashboardSidebar.propTypes = {
   onCloseSidebar: PropTypes.func
 };
 
-export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, account }) {
+export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
 
-  //const account = getInfo();
+  const account = JSON.parse(sessionStorage.getItem("account"));
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -84,9 +83,9 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, accoun
 
       <NavSection navConfig={sidebarConfig} />
 
-      <Box sx={{ flexGrow: 1 }} />
+      {/* <Box sx={{ flexGrow: 1 }} /> */}
 
-      <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
+      {/* <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
         <Stack
           alignItems="center"
           spacing={3}
@@ -114,8 +113,8 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar, accoun
           >
             Upgrade to Pro
           </Button>
-        </Stack>
-      </Box>
+        </Stack> */}
+      {/* </Box> */}
     </Scrollbar>
   );
 

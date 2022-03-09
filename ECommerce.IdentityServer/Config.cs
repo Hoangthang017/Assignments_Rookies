@@ -15,13 +15,20 @@ namespace ECommerce.IdentityServer
                     new IdentityResources.Profile(),
                     new IdentityResources.Email(),
                     new IdentityResources.Phone(),
-                    new IdentityResource("userInfor", new[]{"role", "FirstName", "LastName", "DateOfBirth"})
+
+                    // customize claims
+                    new IdentityResource("userInfor", new[]{ "role", "displayName", "firstName","lastName", "dateOfBirth"})
                 };
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("swaggerApi"),
+                new ApiScope("swaggerApi")
+                {
+                    UserClaims =
+                    {
+                    }
+                }
             };
 
         public static IEnumerable<Client> Clients =>
@@ -45,7 +52,14 @@ namespace ECommerce.IdentityServer
 
                     AllowOfflineAccess = true,
 
-                    AllowedScopes = { "openid", "profile", "swaggerApi" }
+                    AllowedScopes = {
+                        "openid",
+                        "profile",
+                        "swaggerApi",
+                        "userInfor",
+                        "email",
+                        "phone"
+                    }
                 },
 
                 // interactive client using code flow + pkce
@@ -79,7 +93,13 @@ namespace ECommerce.IdentityServer
                     PostLogoutRedirectUris = { "https://localhost:7159/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "swaggerApi" , "userInfor", "email", "phone" }
+                    AllowedScopes = {
+                        "openid",
+                        "profile",
+                        "swaggerApi" ,
+                        "userInfor",
+                        "email",
+                        "phone" }
                 },
             };
     }
