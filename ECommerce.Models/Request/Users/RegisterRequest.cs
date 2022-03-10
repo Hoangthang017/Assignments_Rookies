@@ -1,4 +1,7 @@
-﻿namespace ECommerce.Models.Request.Users
+﻿using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
+
+namespace ECommerce.Models.Request.Users
 {
     public class RegisterRequest
     {

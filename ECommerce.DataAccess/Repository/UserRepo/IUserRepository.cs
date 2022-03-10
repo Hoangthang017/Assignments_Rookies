@@ -1,6 +1,8 @@
 ﻿using ECommerce.DataAccess.Infrastructure;
 using ECommerce.Models.Entities;
+using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Users;
+using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.UserInfos;
 using IdentityModel.Client;
 using System.Security.Claims;
@@ -18,6 +20,8 @@ namespace ECommerce.DataAccess.Repository.UserRepo
         Task<UserInfoViewModel> GetById(string UserId);
 
         Task<IEnumerable<UserInfoViewModel>> GetAll();
+
+        Task<PageResult<UserInfoViewModel>> GetAllPaging(GetUserPagingRequest request);
 
         Task<string> UpdateRole(string userId, string role);
 

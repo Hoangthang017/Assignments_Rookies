@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure.Common;
+using ECommerce.DataAccess.Repository.ImageRepo;
 using ECommerce.DataAccess.Repository.ProductRepo;
 using ECommerce.DataAccess.Repository.UserRepo;
 using ECommerce.DataAccess.Respository.Common;
@@ -41,12 +42,15 @@ namespace ECommerce.DataAccess.Infrastructure
 
             CategoryTranslation = new CategoryTranslationRepository(context);
 
+            Image = new ImageRepository(context, storageService);
+
             User = new UserRepository(
                 context,
                 tools,
                 userManager,
                 signInManager,
                 roleManager,
+                storageService,
                 mapper,
                 configuration);
         }
@@ -70,6 +74,8 @@ namespace ECommerce.DataAccess.Infrastructure
         public ICategoryTranslationRepository CategoryTranslation { get; private set; }
 
         public IUserRepository User { get; private set; }
+
+        public IImageRepository Image { get; private set; }
 
         // save method
         async Task<bool> IUnitOfWork.Save()

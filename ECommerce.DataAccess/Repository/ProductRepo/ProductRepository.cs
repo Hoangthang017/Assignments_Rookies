@@ -192,7 +192,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
-            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
+            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName, "product");
             return fileName;
         }
 
