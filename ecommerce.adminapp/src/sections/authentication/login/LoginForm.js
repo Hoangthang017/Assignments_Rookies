@@ -24,10 +24,12 @@ import { string } from 'prop-types';
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
+  // states
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
+  // validation user pasword
   const LoginSchema = Yup.object().shape({
     username: Yup.string().required('Tài khoản không được bỏ trống'),
     password: Yup.string().required('Mật khẩu không được bỏ trống')

@@ -12,23 +12,7 @@ import MenuPopover from '../../components/MenuPopover';
 
 // ----------------------------------------------------------------------
 
-const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-    linkTo: '/'
-  },
-  {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-    linkTo: '#'
-  },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
-    linkTo: '#'
-  }
-];
+
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +35,20 @@ export default function AccountPopover() {
     sessionStorage.clear("account");
     return navigate('/', { replace: true });
   }
+
+  // menu
+  const MENU_OPTIONS = [
+    {
+      label: 'Home',
+      icon: 'eva:home-fill',
+      linkTo: '/'
+    },
+    {
+      label: 'Profile',
+      icon: 'eva:person-fill',
+      linkTo: `/user/edit/${account.sub}`
+    },
+  ];
 
   return (
     <>

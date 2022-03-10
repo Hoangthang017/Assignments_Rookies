@@ -1,4 +1,5 @@
 ﻿using ECommerce.DataAccess.Respository.Common;
+using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Users;
 using ECommerce.Models.ViewModels.UserInfos;
 using Microsoft.AspNetCore.Authentication;
@@ -18,6 +19,7 @@ namespace ECommerce.BackendApis.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        // login
         [HttpPost("authenticate")]
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
@@ -30,6 +32,7 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(new { token = resultToken });
         }
 
+        // register
         [HttpPost("register/admin")]
         [Authorize]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRequest request)
@@ -78,6 +81,7 @@ namespace ECommerce.BackendApis.Controllers
                 );
         }
 
+        // Get information
         [HttpGet("account")]
         [Authorize]
         public async Task<IActionResult> UserInfo()
@@ -94,7 +98,7 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(response.Raw);
         }
 
-        [HttpGet()]
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAll()
         {
@@ -106,6 +110,20 @@ namespace ECommerce.BackendApis.Controllers
                 return BadRequest();
 
             return Ok(response);
+        }
+
+        [HttpGet("paging")]
+        [Authorize]
+        public async Task<IActionResult> GetAllPaging([FromQuery] GetUserPagingRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userInfoVMs = await _unitOfWork.User.GetAllPaging(request);
+            if (userInfoVMs == null)
+                return BadRequest();
+
+            return Ok(userInfoVMs);
         }
 
         [HttpGet("{userId}")]
@@ -122,6 +140,7 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(response);
         }
 
+        // update
         [HttpPut("{userId}")]
         [Authorize]
         public async Task<IActionResult> Update(string userId, [FromBody] UpdateUserRequest request)
@@ -132,6 +151,7 @@ namespace ECommerce.BackendApis.Controllers
             return Ok();
         }
 
+        // delete
         [HttpDelete("{userId}")]
         [Authorize]
         public async Task<IActionResult> Delete(string userId)

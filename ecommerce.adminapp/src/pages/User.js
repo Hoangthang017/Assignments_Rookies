@@ -26,6 +26,7 @@ import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
 import GetAllUser from 'src/api/user/GetAllUser';
+import GetAllPaging from 'src/api/user/GetAllPaging';
 //
 // import USERLIST from '../_mocks_/user';
 
@@ -90,32 +91,38 @@ export default function User() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [count, setCount] = useState(0);
 
     // call api  
-    useEffect(async () => {
-      console.log("call api")
-      const users = await GetAllUser()
-      if (users){
-        setUSERLIST(users);
-        setIdRemoveUser(false);
-      }
-    },[idRemoveUser])
+  useEffect(async () => {
+    const response = await GetAllPaging(page + 1, rowsPerPage);
+    if (response.items){
+      setUSERLIST(response.items);
+      setCount(response.totalRecords)
+    }
+    if (idRemoveUser) {
+      setIdRemoveUser(false);
+    }
+  },[idRemoveUser,page, rowsPerPage])
 
+    // xử lí sắp xếp tăng giảm 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
+  // chọn tất cả checkbox
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = USERLIST.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
+  // chọn 1 checkbox
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
@@ -134,27 +141,33 @@ export default function User() {
     setSelected(newSelected);
   };
 
+  // thay đổ số trang
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  // thay đổi số dòng
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
+  // sắp xếp theo tên 
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  // thêm cột trống để căn chỉnh bảng
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - count) : 0;
 
+  // sắp xếp theo tên 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
+  // không có dòng nào
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
-    <Page title="User | Minimal-UI">
+    <Page title="User | CHAPTER-INFINITY">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
@@ -188,7 +201,7 @@ export default function User() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={count}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
@@ -196,7 +209,7 @@ export default function User() {
                 <TableBody>
                   {/* map to row of table */}
                   {filteredUsers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       
                       const { id, avatarUrl, name,dateOfBirth,  userName, email, phoneNumber ,role } = row;
@@ -281,7 +294,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={count}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

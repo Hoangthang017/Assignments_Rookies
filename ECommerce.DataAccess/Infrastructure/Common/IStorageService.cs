@@ -2,10 +2,10 @@
 {
     public interface IStorageService
     {
-        string GetFileUrl(string fileName);
+        string GetFileUrl(string fileName, string folder);
 
-        Task SaveFileAsync(Stream mediaBinaryStream, string fileName);
+        Task SaveFileAsync(Stream mediaBinaryStream, string fileName, string folder);
 
-        Task DeleteFileAsync(string fileName);
+        Task DeleteFileAsync(string filePath);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request.Common;
-using ECommerce.Models.Request.ProductImages;
+using ECommerce.Models.Request.Images;
 using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Products;
 using ECommerce.Utilities;
@@ -161,65 +161,5 @@ namespace ECommerce.BackendApis.Controllers
         }
 
         #endregion PRODUCT
-
-        #region IMAGE
-
-        [HttpGet("{productId}/images/{imageId}")]
-        public async Task<IActionResult> GetImageById(int productId, int imageId)
-        {
-            var image = await _unitOfWork.ProductImage.GetImageById(imageId);
-
-            if (image == null)
-                return BadRequest();
-
-            return Ok(image);
-        }
-
-        [HttpPost("{productId}/images")]
-        public async Task<IActionResult> Create(int productId, [FromForm] CreateImageRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var imageId = await _unitOfWork.ProductImage.AddImage(productId, request);
-            if (imageId == 0)
-                return BadRequest();
-
-            var image = await _unitOfWork.ProductImage.GetImageById(imageId);
-
-            return CreatedAtAction(nameof(GetImageById),
-                                   new { id = imageId },
-                                   image);
-        }
-
-        [HttpPut("{productId}/images/{imageId}")]
-        public async Task<IActionResult> UpdateImage(int imageId, [FromForm] UpdateImageRequest request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var result = await _unitOfWork.ProductImage.UpdateImage(imageId, request);
-
-            if (result == 0)
-                return BadRequest();
-
-            return Ok();
-        }
-
-        [HttpDelete("{productId}/images/{imageId}")]
-        public async Task<IActionResult> DeleteImage(int imageId)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var result = await _unitOfWork.ProductImage.RemoveImage(imageId);
-
-            if (result == 0)
-                return BadRequest();
-
-            return Ok();
-        }
-
-        #endregion IMAGE
     }
 }
