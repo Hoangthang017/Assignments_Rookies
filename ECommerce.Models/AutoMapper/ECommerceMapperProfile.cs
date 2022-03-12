@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.Models.Entities;
 using ECommerce.Models.Request.Categories;
+
 using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Products;
 using ECommerce.Models.ViewModels.UserInfos;
@@ -20,7 +21,6 @@ namespace ECommerce.Models.AutoMapper
                 .ForMember(x => x.CategoryName, opt => opt.MapFrom(x => x.Name));
             CreateMap<ProductTranslation, ProductViewModel>();
             CreateMap<CategoryTranslation, ProductViewModel>();
-
             CreateMap<User, UserInfoViewModel>()
                 .ForMember(x => x.Name, opt => opt.MapFrom(x => (x.LastName + " " + x.FirstName)))
                 .ForAllMembers(x => x.UseDestinationValue());
@@ -31,6 +31,7 @@ namespace ECommerce.Models.AutoMapper
             CreateMap<CreateCategoryRequest, Category>();
             CreateMap<CreateCategoryRequest, CategoryTranslation>();
             CreateMap<UpdateCategoryRequest, Category>();
+
         }
     }
 }

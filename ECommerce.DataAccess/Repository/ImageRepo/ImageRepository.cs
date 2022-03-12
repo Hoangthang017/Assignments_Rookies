@@ -234,6 +234,7 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName, type);
             return _storageService.GetFileUrl(fileName, type);
+
         }
     }
 }
