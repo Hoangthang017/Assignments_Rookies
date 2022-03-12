@@ -10,7 +10,7 @@ async function CreateUserAvatar(props) {
 
     try {
         const reponse = await axios.post(
-          "api/user/avatar",
+          "api/images/user",
           bodyFormData,
           {
             headers: {

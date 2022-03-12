@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Models.Request.Images
 {
-    public class UpdateProductImageRequest : UpdateImageBaseRequest
+    public class UpdateProductImageRequest
     {
-        public int ProductId { get; set; }
         public bool IsDefault { get; set; }
+        public string Caption { get; set; }
+        public int SortOrder { get; set; }
     }
 }

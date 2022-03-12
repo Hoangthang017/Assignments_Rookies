@@ -10,7 +10,7 @@ async function UpdateUserAvatar(props) {
 
     try {
         const reponse = await axios.put(
-          "api/user/avatar",
+          "api/images/user",
           bodyFormData,
           {
             headers: {

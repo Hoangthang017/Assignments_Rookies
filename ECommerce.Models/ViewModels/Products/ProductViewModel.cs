@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Models.ViewModels.Products
+﻿using Microsoft.AspNetCore.Http;
+
+namespace ECommerce.Models.ViewModels.Products
 {
     public class ProductViewModel
     {
@@ -13,9 +15,9 @@
 
         public int ViewCount { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public string CreatedDate { get; set; }
 
-        public DateTime UpdatedDate { get; set; }
+        public string UpdatedDate { get; set; }
 
         // product translation
         public string Name { set; get; }
@@ -33,6 +35,11 @@
         public string LanguageId { set; get; }
 
         // category
-        public List<string> Categories { get; set; }
+        public int categoryId { get; set; }
+
+        public string CategoryName { get; set; }
+
+        // image
+        public List<string> imagePaths { get; set; }
     }
 }

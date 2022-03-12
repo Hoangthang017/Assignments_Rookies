@@ -2,7 +2,7 @@ import axios from "../axios"
 
 async function GetUserImagePath(userId) {
     try {
-        const user = await axios.get(`api/User/${userId}/avatar`,
+        const user = await axios.get(`api/images/user/${userId}`,
         { headers: { Authorization: sessionStorage.getItem("token")} 
        })
 

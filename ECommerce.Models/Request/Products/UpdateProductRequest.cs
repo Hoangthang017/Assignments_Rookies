@@ -15,7 +15,5 @@ namespace ECommerce.Models.Request.Products
         public string SeoTitle { set; get; }
 
         public string SeoAlias { get; set; }
-
-        public IFormFile Image { set; get; }
     }
 }
