@@ -20,7 +20,6 @@
 
         public string Role { get; set; }
 
-        public string avatarUrl { get; set; } =
-            "https://localhost:7195/user-content/user/smapleAvatar.jpg";
+        public string avatarUrl { get; set; }
     }
 }

@@ -10,9 +10,9 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
     {
         Task<int> Create(CreateProductRequest request);
 
-        Task<PageResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request);
+        Task<PageResult<ProductViewModel>> GetAllPaging(string languageId, GetProductPagingRequest request);
 
-        Task<ProductViewModel> GetById(int productId);
+        Task<ProductViewModel> GetById(int productId, string languageId);
 
         Task<int> Update(int productId, string languageId, UpdateProductRequest request);
 
@@ -23,5 +23,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
         Task<bool> UpdateViewCount(int productId);
 
         Task<bool> Delete(int productId);
+
+        Task<bool> DeleteRange(List<int> productIds);
     }
 }

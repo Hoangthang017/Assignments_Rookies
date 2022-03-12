@@ -24,6 +24,6 @@ namespace ECommerce.Models.Request.Products
 
         public string LanguageId { set; get; }
 
-        public IFormFile Image { set; get; }
+        public int CategoryId { set; get; }
     }
 }

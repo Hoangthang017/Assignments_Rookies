@@ -1,15 +1,20 @@
 ﻿using AutoMapper;
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
+using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.Models.Entities;
+using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Users;
+using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.UserInfos;
 using ECommerce.Utilities;
 using IdentityModel.Client;
 using IdentityServer4;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 
 namespace ECommerce.DataAccess.Repository.UserRepo
@@ -21,8 +26,12 @@ namespace ECommerce.DataAccess.Repository.UserRepo
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly IStorageService _storageService;
         private readonly IMapper _mapper;
         private readonly IConfiguration _config;
+
+        private string AvatarDefault { get; }
+        private string IdentityServerHost { get; }
 
         public UserRepository(
             ECommerceDbContext context,
@@ -30,6 +39,7 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             RoleManager<Role> roleManager,
+            IStorageService storageService,
             IMapper mapper,
             IConfiguration config) : base(context)
         {
@@ -40,6 +50,11 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             _roleManager = roleManager;
             _mapper = mapper;
             _config = config;
+            _storageService = storageService;
+
+            // get url defautl
+            IdentityServerHost = _config.GetSection("IdentityServerHost").Value;
+            AvatarDefault = _config.GetSection("AvatarDefault").Value;
         }
 
         public async Task<string> Authencate(LoginRequest request)
@@ -47,7 +62,7 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             var client = new HttpClient();
 
             // discover endpoints from metadata
-            var disco = await GetDiscoveryDocument(client, "https://localhost:5001");
+            var disco = await GetDiscoveryDocument(client, IdentityServerHost);
 
             // request token
             var tokenClient = new TokenClient(new HttpClient() { BaseAddress = new Uri(disco.TokenEndpoint) }, new TokenClientOptions { ClientId = request.ClientId, ClientSecret = request.ClientSecret });
@@ -59,9 +74,28 @@ namespace ECommerce.DataAccess.Repository.UserRepo
                 return null;
             }
 
-            //Console.WriteLine(tokenResponse.Json);
-            //Console.WriteLine("\n\n");
             return tokenResponse.AccessToken;
+        }
+
+        public async Task<UserInfoResponse> GetUserInfo(string token)
+        {
+            var client = new HttpClient();
+
+            // discover endpoints from metadata
+            var disco = await GetDiscoveryDocument(client, IdentityServerHost);
+
+            // get claims
+            var response = await client.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = disco.UserInfoEndpoint,
+                Token = token.Split()[1]
+            });
+
+            // check invalid respone
+            if (response.IsError)
+                throw new ECommerceException(response.Error);
+
+            return response;
         }
 
         public async Task<string> CreateUser(RegisterRequest request)
@@ -90,43 +124,6 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             throw new ECommerceException(userRespone.Errors.ToString());
         }
 
-        public async Task<UserInfoResponse> GetUserInfo(string token)
-        {
-            var client = new HttpClient();
-
-            // discover endpoints from metadata
-            var disco = await GetDiscoveryDocument(client, "https://localhost:5001");
-
-            // get claims
-            var response = await client.GetUserInfoAsync(new UserInfoRequest
-            {
-                Address = disco.UserInfoEndpoint,
-                Token = token.Split()[1]
-            });
-
-            // check invalid respone
-            if (response.IsError)
-                throw new ECommerceException(response.Error);
-
-            //var check = response;
-            //var result = new Dictionary<string, string>();
-            //response.Claims.ToList().ForEach(x => result.Add(x.Type, x.Value));
-
-            return response;
-        }
-
-        private async Task<DiscoveryDocumentResponse> GetDiscoveryDocument(HttpClient client, string url)
-        {
-            // discover endpoints from metadata
-            var disco = await client.GetDiscoveryDocumentAsync(url);
-            disco.Policy.ValidateIssuerName = false;
-            if (disco.IsError)
-            {
-                throw new ECommerceException(disco.IsError + disco.Error);
-            }
-            return disco;
-        }
-
         public async Task<UserInfoViewModel> GetById(string UserId)
         {
             var user = await _userManager.FindByIdAsync(UserId);
@@ -134,10 +131,16 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             if (user == null)
                 throw new ECommerceException($"Cannot find user with id: {UserId}");
 
-            var roles = await _userManager.GetRolesAsync(user);
-
             var userInfoVM = ECommerceMapper.Map<UserInfoViewModel>(_mapper, user);
+
+            // find roles
+            var roles = await _userManager.GetRolesAsync(user);
             userInfoVM.Role = roles.FirstOrDefault();
+
+            // find avatar
+            var image = await GetImageByUserId(UserId);
+            userInfoVM.avatarUrl = (image == null ? AvatarDefault : image.ImagePath);
+
             return userInfoVM;
         }
 
@@ -151,6 +154,8 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             {
                 var roles = await _userManager.GetRolesAsync(users[i]);
                 userInfoVMs[i].Role = roles.FirstOrDefault();
+                var image = await GetImageByUserId(users[i].Id.ToString());
+                userInfoVMs[i].avatarUrl = (image == null ? AvatarDefault : image.ImagePath);
             }
 
             return userInfoVMs;
@@ -218,7 +223,18 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
+                // delete image
+                var image = await GetImageByUserId(userId);
+
+                if (image != null)
+                {
+                    _context.Images.Remove(image);
+
+                    await _storageService.DeleteFileAsync(image.ImagePath);
+                }
+
                 var result = await _userManager.DeleteAsync(user);
+
                 if (result.Succeeded)
                     return true;
             }
@@ -230,10 +246,87 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             foreach (var userId in userIds)
             {
                 var result = await RemoveUser(userId);
+
                 if (!result)
                     return false;
             }
             return true;
         }
+
+        public async Task<PageResult<UserInfoViewModel>> GetAllPaging(GetUserPagingRequest request)
+        {
+            // get list user
+            var query = from u in _context.Users
+                        join ur in _context.UserRoles on u.Id equals ur.UserId
+                        join r in _context.Roles on ur.RoleId equals r.Id
+                        join ui in _context.UserImages on u.Id equals ui.userId into us
+                        from ui in us.DefaultIfEmpty()
+                        join i in _context.Images on ui.ImageId equals i.Id into uis
+                        from i in uis.DefaultIfEmpty()
+                        select new { u, r, ImagePath = (i == null ? AvatarDefault : i.ImagePath) };
+
+            // paging
+            int totalRow = await query.CountAsync();
+            var data = query.Skip((request.PageIndex - 1) * request.PageSize)
+                            .Take(request.PageSize);
+
+            // conver to viewmodel
+            var userInfoVMs = data.Select(x => new UserInfoViewModel()
+            {
+                UserName = x.u.UserName,
+                DateOfBirth = x.u.DateOfBirth.ToShortDateString(),
+                Email = x.u.Email,
+                FirstName = x.u.FirstName,
+                LastName = x.u.LastName,
+                Id = x.u.Id.ToString(),
+                Name = x.u.LastName + " " + x.u.FirstName,
+                PhoneNumber = x.u.PhoneNumber,
+                Role = x.r.Name,
+                avatarUrl = x.ImagePath
+            });
+
+            // select and projection
+            var pageResult = new PageResult<UserInfoViewModel>()
+            {
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                TotalRecords = totalRow,
+                Items = userInfoVMs
+            };
+
+            return pageResult;
+        }
+
+        #region method utilities
+
+        private async Task<string> SaveFile(IFormFile file)
+        {
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName, "user");
+            return fileName;
+        }
+
+        private async Task<Image> GetImageByUserId(string userId)
+        {
+            return await (from ui in _context.UserImages
+                          join i in _context.Images on ui.ImageId equals i.Id
+                          where ui.userId.ToString() == userId
+                          select (i)).FirstOrDefaultAsync();
+        }
+
+        private async Task<DiscoveryDocumentResponse> GetDiscoveryDocument(HttpClient client, string url)
+        {
+            // discover endpoints from metadata
+            var disco = await client.GetDiscoveryDocumentAsync(url);
+            disco.Policy.ValidateIssuerName = false;
+            if (disco.IsError)
+            {
+                throw new ECommerceException(disco.IsError + disco.Error);
+            }
+            return disco;
+        }
+
+        #endregion method utilities
     }
 }

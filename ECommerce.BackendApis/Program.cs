@@ -25,10 +25,10 @@ builder.Services.AddControllers()
 
 // add dbcontext
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
-{
-    string connectstring = builder.Configuration.GetConnectionString("ECommerceDB");
-    options.UseSqlServer(connectstring);
-});
+    {
+        string connectstring = builder.Configuration.GetConnectionString("ECommerceDB");
+        options.UseSqlServer(connectstring);
+    });
 
 // DI services
 // add unit of work pattern
