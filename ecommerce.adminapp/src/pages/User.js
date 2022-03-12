@@ -83,7 +83,7 @@ function applySortFilter(array, comparator, query) {
 //--------------------------------------------------------------------------------------------
 export default function User() {
   // các state 
-  const [idRemoveUser, setIdRemoveUser] = useState(false);
+  const [idRemoveRow, setIdRemoveRow] = useState(false);
   const [USERLIST, setUSERLIST] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -100,10 +100,10 @@ export default function User() {
       setUSERLIST(response.items);
       setCount(response.totalRecords)
     }
-    if (idRemoveUser) {
-      setIdRemoveUser(false);
+    if (idRemoveRow) {
+      setIdRemoveRow(false);
     }
-  },[idRemoveUser,page, rowsPerPage])
+  },[idRemoveRow,page, rowsPerPage])
 
     // xử lí sắp xếp tăng giảm 
   const handleRequestSort = (event, property) => {
@@ -190,7 +190,8 @@ export default function User() {
             filterName={filterName}
             onFilterName={handleFilterByName}
             setSelected={setSelected}
-            setIdRemoveUser={setIdRemoveUser} 
+            setIdRemoveRow={setIdRemoveRow} 
+            type={'user'}
           />
 
           <Scrollbar>
@@ -267,7 +268,7 @@ export default function User() {
                           </TableCell> */}
 
                           <TableCell align="right">
-                            <UserMoreMenu id = {id} setIdRemoveUser={setIdRemoveUser} />
+                            <UserMoreMenu id = {id} setIdRemoveRow={setIdRemoveRow} type="user" />
                           </TableCell>
                         </TableRow>
                       );

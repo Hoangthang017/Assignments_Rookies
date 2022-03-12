@@ -176,7 +176,7 @@ function CreateUser() {
   }
 
   return (
-    <Page title="New User | Minimal-UI">
+    <Page title={`${params.id ? 'Edit User' : 'New User'} | CHAPTER-INFINITY`}>
       <Container>
         <Typography variant="h4" gutterBottom>
           {params.id ? 'Edit User' : 'New User'}
@@ -223,6 +223,7 @@ function CreateUser() {
                   onChange={UploadHandler}
                 />
                 <Button
+                  color="secondary"
                   sx={{
                     mb: '1rem'
                   }}
@@ -278,8 +279,9 @@ function CreateUser() {
                       <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                           label="Date Of Birth"
-                          onChange={(dateOfBirth) => {
-                            setDateOfBirth(dateOfBirth);
+                          value={dateOfBirth}
+                          onChange={(newValue) => {
+                            setDateOfBirth(newValue);
                           }}
                           //{...getFieldProps('dateOfBirth')}
                           renderInput={(params) => <TextField {...params} />}

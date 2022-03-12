@@ -3,12 +3,6 @@ using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.Models.Entities;
-using ECommerce.Models.Request.Images;
-using ECommerce.Models.ViewModels.ProductImages;
-using ECommerce.Utilities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Http.Headers;
 
 namespace ECommerce.DataAccess.Repository.ProductRepo
 {

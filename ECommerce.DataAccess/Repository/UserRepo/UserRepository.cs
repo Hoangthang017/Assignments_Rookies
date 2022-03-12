@@ -223,8 +223,6 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-                var result = await _userManager.DeleteAsync(user);
-
                 // delete image
                 var image = await GetImageByUserId(userId);
 
@@ -234,6 +232,8 @@ namespace ECommerce.DataAccess.Repository.UserRepo
 
                     await _storageService.DeleteFileAsync(image.ImagePath);
                 }
+
+                var result = await _userManager.DeleteAsync(user);
 
                 if (result.Succeeded)
                     return true;
@@ -264,8 +264,6 @@ namespace ECommerce.DataAccess.Repository.UserRepo
                         join i in _context.Images on ui.ImageId equals i.Id into uis
                         from i in uis.DefaultIfEmpty()
                         select new { u, r, ImagePath = (i == null ? AvatarDefault : i.ImagePath) };
-
-            var check = query.ToList();
 
             // paging
             int totalRow = await query.CountAsync();

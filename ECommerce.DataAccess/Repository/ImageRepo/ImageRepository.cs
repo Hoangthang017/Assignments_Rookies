@@ -2,16 +2,14 @@
 using ECommerce.DataAccess.Infrastructure;
 using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.Models.Entities;
+using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Images;
+using ECommerce.Models.ViewModels.Common;
+using ECommerce.Models.ViewModels.Images;
 using ECommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.DataAccess.Repository.ImageRepo
 {
@@ -31,7 +29,7 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
         {
             if (request.ImageFile != null)
             {
-                var image = await AddInforImage(request);
+                var image = await AddInforImage(request, "user");
 
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == request.UserId);
 
@@ -53,6 +51,39 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
             return 0;
         }
 
+        public async Task<int> AddImage(CreateProductImageRequest request)
+        {
+            if (request.ImageFile != null)
+            {
+                var image = await AddInforImage(request, "product");
+
+                // get product
+                var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == request.ProductId);
+                if (product == null)
+                    throw new ECommerceException("Cannot find product");
+
+                // remove old thumbnail if have new thumbnail
+                if (request.IsDefault)
+                {
+                    var thumbnail = _context.ProductImages.Where(x => x.ProductId == request.ProductId && x.IsDefault == true);
+                    await thumbnail.ForEachAsync(x => x.IsDefault = false);
+                }
+
+                _context.ProductImages.Add(new ProductImage()
+                {
+                    ProductId = product.Id,
+                    Image = image,
+                    ImageId = image.Id,
+                    IsDefault = request.IsDefault
+                });
+
+                await _context.SaveChangesAsync();
+                return image.Id;
+            }
+
+            return 0;
+        }
+
         public async Task<bool> DeleteImage(int id)
         {
             // delete image
@@ -64,10 +95,43 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
 
                 await _storageService.DeleteFileAsync(image.ImagePath);
 
-                return true;
+                return await _context.SaveChangesAsync() > 0;
             }
 
             throw new ECommerceException("Cannot find the image");
+        }
+
+        public async Task<PageResult<ImageViewModel>> GetAllPaging(int productId, PagingRequestBase request)
+        {
+            var imageProduct = (from pi in _context.ProductImages
+                                join i in _context.Images on pi.ImageId equals i.Id
+                                where pi.ProductId == productId
+                                orderby pi.IsDefault descending
+                                select new ImageViewModel()
+                                {
+                                    Caption = i.Caption,
+                                    Id = i.Id,
+                                    ImagePath = i.ImagePath,
+                                    IsDefault = pi.IsDefault
+                                });
+
+            // paging
+            if (imageProduct == null) return new PageResult<ImageViewModel>();
+
+            int totalRow = await imageProduct.CountAsync();
+            var data = imageProduct.Skip((request.PageIndex - 1) * request.PageSize)
+                            .Take(request.PageSize);
+
+            // select and projection
+            var pageResult = new PageResult<ImageViewModel>()
+            {
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                TotalRecords = totalRow,
+                Items = data
+            };
+
+            return pageResult;
         }
 
         public async Task<string> GetUserImagePathByUserId(string userId)
@@ -106,7 +170,7 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
                     Caption = request.Caption,
                     ImageFile = request.ImageFile,
                     SortOrder = request.SortOrder,
-                });
+                }, "user");
 
                 await _context.UserImages.AddAsync(new UserImage()
                 {
@@ -122,24 +186,54 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
             return false;
         }
 
-        private async Task<Image> AddInforImage(CreateImageBaseRequest request)
+        public async Task<bool> UpdateImage(int imageId, int productId, UpdateProductImageRequest request)
+        {
+            // get all image of product
+            var images = (from pi in _context.ProductImages
+                          join i in _context.Images on pi.ImageId equals i.Id
+                          where pi.ProductId == productId
+                          select new { pi, i });
+
+            if (images == null) throw new ECommerceException("Product don't have any image");
+
+            // remove old image default
+            if (request.IsDefault)
+            {
+                var oldDefaultImage = images.Where(x => x.pi.IsDefault == true);
+                if (oldDefaultImage != null)
+                {
+                    await oldDefaultImage.ForEachAsync(x => x.pi.IsDefault = false);
+                }
+            }
+
+            // update new value for image
+            var image = await images.Where(x => x.i.Id == imageId).FirstOrDefaultAsync();
+            if (image == null) throw new ECommerceException("Cannot find the image");
+            image.i.Caption = request.Caption;
+            image.i.SortOrder = request.SortOrder;
+            image.pi.IsDefault = request.IsDefault;
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        private async Task<Image> AddInforImage(CreateImageBaseRequest request, string type)
         {
             return new Image()
             {
                 Caption = request.Caption,
                 DateCreated = DateTime.Now,
                 FileSize = request.ImageFile.Length,
-                ImagePath = await this.SaveFile(request.ImageFile),
+                ImagePath = await this.SaveFile(request.ImageFile, type),
                 SortOrder = 1
             };
         }
 
-        private async Task<string> SaveFile(IFormFile file)
+        private async Task<string> SaveFile(IFormFile file, string type)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
-            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName, "user");
-            return _storageService.GetFileUrl(fileName, "user");
+            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName, type);
+            return _storageService.GetFileUrl(fileName, type);
         }
     }
 }

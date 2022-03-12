@@ -6,18 +6,29 @@ import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/mat
 import Iconify from '../../../components/Iconify';
 import { func } from 'prop-types';
 import DeleteUser from 'src/api/user/DeleteUser';
+import DeleteCategory from 'src/api/category/DeleteCategory';
+import DeleteProduct from 'src/api/product/DeleteProduct';
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({id, setIdRemoveUser}) {
+export default function UserMoreMenu({id, setIdRemoveRow, type}) {
   const navigate = useNavigate();
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   
-  async function handleRemoveUser() {
-    var result = await DeleteUser(id);
+  async function handleRemove() {
+    var result = null;
+    if (type === "user") {
+      result = await DeleteUser(id);  
+    }
+    else if (type === "category"){
+      result = await DeleteCategory(id);
+    }
+    else if (type === "product") {
+      result = await DeleteProduct(id)
+    }
     if (result)
-      setIdRemoveUser(true);
+      setIdRemoveRow(true);
   }
 
   return (
@@ -36,14 +47,14 @@ export default function UserMoreMenu({id, setIdRemoveUser}) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem sx={{ color: 'text.secondary' }} onClick={handleRemoveUser}>
+        <MenuItem sx={{ color: 'text.secondary' }} onClick={handleRemove}>
           <ListItemIcon>
             <Iconify icon="eva:trash-2-outline" width={24} height={24} />
           </ListItemIcon>
           <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
 
-        <MenuItem component={RouterLink} to={`/user/edit/${id}`} sx={{ color: 'text.secondary' }}>
+        <MenuItem component={RouterLink} to={`/${type}/edit/${id}`} sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:edit-fill" width={24} height={24} />
           </ListItemIcon>

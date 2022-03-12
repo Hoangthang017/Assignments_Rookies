@@ -38,7 +38,7 @@ namespace ECommerce.DataAccess.Infrastructure
 
             ProductTranslation = new ProductTranslationRepository(context);
 
-            Category = new CategoryRepository(context);
+            Category = new CategoryRepository(context, mapper);
 
             CategoryTranslation = new CategoryTranslationRepository(context);
 

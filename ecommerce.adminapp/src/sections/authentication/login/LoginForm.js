@@ -31,8 +31,8 @@ export default function LoginForm() {
 
   // validation user pasword
   const LoginSchema = Yup.object().shape({
-    username: Yup.string().required('Tài khoản không được bỏ trống'),
-    password: Yup.string().required('Mật khẩu không được bỏ trống')
+    username: Yup.string().required('User name is required'),
+    password: Yup.string().required('Password is required')
   });
 
   const formik = useFormik({
@@ -56,14 +56,14 @@ export default function LoginForm() {
         if (account.role === 'admin') {
           sessionStorage.setItem('token', 'Bearer ' + response.token);
           sessionStorage.setItem('account', JSON.stringify(account));
-          navigate('/dashboard/app', { replace: true });
+          navigate('/dashboard', { replace: true });
         } else {
-          setError('Bạn không có quyền truy cập');
+          setError("You don't have permission to access");
         }
       }
       else{
         if (response.status === 400){
-          setError('Sai tài khoản hoặc mật khẩu');
+          setError('User name or Password is wrong');
         }
       }
     }
@@ -83,7 +83,7 @@ export default function LoginForm() {
           <Stack spacing={3}>
             <TextField
               fullWidth
-              label="Tên đăng nhập"
+              label="User Name"
               {...getFieldProps('username')}
               error={Boolean(touched.username && errors.username)}
               helperText={touched.username && errors.username}
@@ -93,7 +93,7 @@ export default function LoginForm() {
               fullWidth
               autoComplete="current-password"
               type={showPassword ? 'text' : 'password'}
-              label="Mật khẩu"
+              label="Password"
               {...getFieldProps('password')}
               InputProps={{
                 endAdornment: (
@@ -112,7 +112,7 @@ export default function LoginForm() {
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
             <FormControlLabel
               control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
-              label="Nhớ mật khẩu"
+              label="Remember me"
             />
 
             {/* <Link component={RouterLink} variant="subtitle2" to="#" underline="hover">
@@ -127,7 +127,7 @@ export default function LoginForm() {
             variant="contained"
             loading={isSubmitting}
           >
-            Đăng nhập
+            Login
           </LoadingButton>
         </Form>
       </FormikProvider>

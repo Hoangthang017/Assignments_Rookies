@@ -7,11 +7,18 @@ import {
   IconButton,
   Typography,
   OutlinedInput,
-  InputAdornment
+  InputAdornment,
+  Stack
 } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
 import DeleteRangeUser from 'src/api/user/DeleteRangeUser';
+import GetAllName from 'src/api/category/GetAllName';
+import DeleteRangeCategory from 'src/api/category/DeleteRangeCategory';
+import { useState } from 'react';
+import UnstyledSelectObjectValues from 'src/sections/product/Dropdown';
+import DeleteProduct from 'src/api/product/DeleteProduct';
+import DeleteRangeProduct from 'src/api/product/DeleteRangeProduct';
 
 // ----------------------------------------------------------------------
 
@@ -38,23 +45,40 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 UserListToolbar.propTypes = {
-  selected : PropTypes.array,
+  selected: PropTypes.array,
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
   setIdRemoveUser: PropTypes.func,
   setSelected: PropTypes.func,
+  setCategoryId: PropTypes.func
 };
 
-export default function UserListToolbar({setSelected, selected, numSelected, filterName, onFilterName, setIdRemoveUser }) {
+export default function UserListToolbar({
+  setSelected,
+  selected,
+  numSelected,
+  filterName,
+  onFilterName,
+  setIdRemoveRow,
+  type,
+  setCategoryId
+}) {
+  async function removeRange() {
+    var result = null;
+    if (type === 'user') {
+      result = await DeleteRangeUser({ userIds: selected });
+    } else if (type === 'category') {
+      result = await DeleteRangeCategory({ categoryIds: selected });
+    }
+    else if (type === 'product') {
+      result = await DeleteRangeProduct({productIds: selected})
+    }
 
-  async function removeRangeUser() {
-    var result = await DeleteRangeUser({userIds: selected})
-    if (result)
-    {
-      setIdRemoveUser(true);
+    if (result) {
+      setIdRemoveRow(true);
       setSelected([]);
-    } 
+    }
   }
 
   return (
@@ -74,7 +98,7 @@ export default function UserListToolbar({setSelected, selected, numSelected, fil
         <SearchStyle
           value={filterName}
           onChange={onFilterName}
-          placeholder="Search user..."
+          placeholder={`Search ${type} ...`}
           startAdornment={
             <InputAdornment position="start">
               <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
@@ -83,9 +107,20 @@ export default function UserListToolbar({setSelected, selected, numSelected, fil
         />
       )}
 
+      {type === 'product' && numSelected === 0 && (
+        <>
+          <Stack direction="row" justifyContent="center" alignItems="center">
+            <Typography component="div" variant="subtitle1" sx={{mr:"5px"}}>
+              Category: 
+            </Typography>
+            <UnstyledSelectObjectValues setCategoryId={setCategoryId} />
+          </Stack>
+        </>
+      )}
+
       {numSelected > 0 ? (
-        <Tooltip title="Delete" >
-          <IconButton onClick={removeRangeUser}>
+        <Tooltip title="Delete">
+          <IconButton onClick={removeRange}>
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>

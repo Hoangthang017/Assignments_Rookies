@@ -40,7 +40,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function Login({setToken}) {
   return (
-    <RootStyle title="Login | Minimal-UI">
+    <RootStyle title="Login | CHAPTER-INFINITY">
       {/* <AuthLayout>
         Don’t have an account? &nbsp;
         <Link underline="none" variant="subtitle2" component={RouterLink} to="/register">
@@ -59,10 +59,10 @@ export default function Login({setToken}) {
         <ContentStyle>
           <Stack sx={{ mb: 5 }}>
             <Typography variant="h4" gutterBottom>
-              Đăng nhập vào CHAPTER INFINITY 
+              Login to CHAPTER INFINITY 
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}>
-              Nhập thông tin của bạn bên dưới
+              Please enter your account information at below
             </Typography>
           </Stack>
 
