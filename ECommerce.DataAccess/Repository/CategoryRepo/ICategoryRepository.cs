@@ -12,9 +12,11 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
     {
         Task<int> Create(CreateCategoryRequest request);
 
-        Task<IEnumerable<GetAllCategoryViewModel>> GetAllName(string languageId);
+        Task<IEnumerable<BaseCategoryViewModel>> GetAllName(string languageId);
 
         Task<PageResult<CategoryViewModel>> GetAllPaging(string languageId, GetCategoryPagingRequest request);
+
+        Task<List<BaseCategoryViewModel>> GetFeaturedCategory(string languageId, int take);
 
         Task<CategoryViewModel> GetById(int categoryId, string languageId);
 

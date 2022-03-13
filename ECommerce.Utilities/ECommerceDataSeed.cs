@@ -2,11 +2,6 @@
 using ECommerce.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.Utilities
 {
@@ -88,14 +83,23 @@ namespace ECommerce.Utilities
                 );
 
             // seeding data for identity
-            var ROLE_ID = new Guid("F972B64F-6780-4657-9AE2-4BB4BA262024");
+            var ROLE_ADMIN_ID = new Guid("F972B64F-6780-4657-9AE2-4BB4BA262024");
+            var ROLE_CUSTOMER_ID = new Guid("16A33B7F-8765-4E91-8C8D-C8A2C979A9CD");
             var ADMIN_ID = new Guid("644F5CAA-4B11-44A0-AF41-0FD7A8DE18EE");
+            var CUSTOMER_ID = new Guid("DD9EFC6A-1CA0-4E0B-9362-5FB185558A33");
             modelBuilder.Entity<Role>().HasData(new Role
             {
-                Id = ROLE_ID,
+                Id = ROLE_ADMIN_ID,
                 Name = "admin",
                 NormalizedName = "admin",
                 Description = "Administrator role"
+            },
+            new Role
+            {
+                Id = ROLE_CUSTOMER_ID,
+                Name = "customer",
+                NormalizedName = "customer",
+                Description = "customer role"
             });
 
             var hasher = new PasswordHasher<User>();
@@ -112,13 +116,58 @@ namespace ECommerce.Utilities
                 FirstName = "Thang",
                 LastName = "Nguyen",
                 DateOfBirth = new DateTime(2000, 11, 13)
+            },
+            new User
+            {
+                Id = CUSTOMER_ID,
+                UserName = "customer",
+                NormalizedUserName = "customer",
+                Email = "thangnh1394@gmail.com",
+                NormalizedEmail = "thangnh1394@gmail.com",
+                EmailConfirmed = true,
+                PasswordHash = hasher.HashPassword(null, "123456"),
+                SecurityStamp = string.Empty,
+                FirstName = "Thang",
+                LastName = "Nguyen",
+                DateOfBirth = new DateTime(2000, 11, 13)
             });
 
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
             {
-                RoleId = ROLE_ID,
+                RoleId = ROLE_ADMIN_ID,
                 UserId = ADMIN_ID
+            },
+            new IdentityUserRole<Guid>
+            {
+                RoleId = ROLE_CUSTOMER_ID,
+                UserId = CUSTOMER_ID
             });
+
+            modelBuilder.Entity<Image>().HasData(
+              new Image()
+              {
+                  Id = 1,
+                  DateCreated = DateTime.Now,
+                  Caption = "We serve Fresh Vegestables",
+                  FileSize = 99999,
+                  ImagePath = SystemConstants.AppSettings.BackendApiAddress + "/user-content/slide/bg_1.jpg",
+                  SortOrder = 1,
+              },
+                new Image()
+                {
+                    Id = 2,
+                    DateCreated = DateTime.Now,
+                    Caption = "100% Fresh &amp; Organic Foods",
+                    FileSize = 99999,
+                    ImagePath = SystemConstants.AppSettings.BackendApiAddress + "/user-content/slide/bg_2.jpg",
+                    SortOrder = 1,
+                }
+           );
+
+            modelBuilder.Entity<Slide>().HasData(
+              new Slide() { Id = 1, Description = "We deliver organic vegetables &amp; fruits", ImageId = 1 },
+              new Slide() { Id = 2, Description = "We deliver organic vegetables &amp; fruits", ImageId = 2 }
+           );
         }
     }
 }

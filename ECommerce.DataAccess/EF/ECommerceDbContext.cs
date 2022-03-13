@@ -21,7 +21,7 @@ namespace ECommerce.DataAccess.EF
 
             // Entities Configuaration
             modelBuilder.Entity<Category>()
-                .Property(x => x.Status).HasDefaultValue(Status.Active);
+                .Property(x => x.Status);
             modelBuilder.Entity<CategoryTranslation>()
                 .Property(x => x.LanguageId).IsUnicode(false);
             modelBuilder.Entity<Language>()
@@ -118,6 +118,8 @@ namespace ECommerce.DataAccess.EF
         public DbSet<UserImage> UserImages { get; set; }
 
         public DbSet<ProductReview> ProductReviews { get; set; }
+
+        public DbSet<Slide> Slides { get; set; }
 
         #endregion Add Tables
     }

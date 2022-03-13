@@ -7,8 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\js\site.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ECommerce.ApiItegration\ECommerce.ApiItegration.csproj" />
+    <ProjectReference Include="..\ECommerce.BackendApis\ECommerce.BackendApis.csproj" />
+    <ProjectReference Include="..\ECommerce.Utilities\ECommerce.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

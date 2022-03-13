@@ -1,4 +1,5 @@
-﻿using ECommerce.WebApp.Models;
+﻿using ECommerce.ApiItegration;
+using ECommerce.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,15 +8,31 @@ namespace ECommerce.WebApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ISlideApiClient _slideApiClient;
+        private readonly IProductApiClient _productApiClient;
+        private readonly ICategoryApiClient _categoryApiClient;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(
+            ILogger<HomeController> logger,
+            ISlideApiClient slideApiClient,
+            IProductApiClient productApiClient,
+            ICategoryApiClient categoryApiClient)
         {
             _logger = logger;
+            _slideApiClient = slideApiClient;
+            _productApiClient = productApiClient;
+            _categoryApiClient = categoryApiClient;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var viewModel = new HomeViewModel
+            {
+                Slides = await _slideApiClient.GetAllSlide(2),
+                FeaturedProducts = await _productApiClient.GetFeaturedProduct(0, 8, "en-us"),
+                FeaturedCategories = await _categoryApiClient.GetFeaturedCategory("en-us", 4)
+            };
+            return View(viewModel);
         }
 
         public IActionResult Privacy()

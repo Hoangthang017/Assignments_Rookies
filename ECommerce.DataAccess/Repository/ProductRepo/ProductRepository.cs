@@ -90,7 +90,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                         join pic in _context.ProductInCategories on p.Id equals pic.ProductId
                         join c in _context.Categories on pic.CategoryId equals c.Id
                         join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
-                        where pt.LanguageId == languageId && ct.LanguageId == languageId
+                        where pt.LanguageId == languageId
                         select new { p, pt, pic, ct };
             // filter
             //if (!string.IsNullOrEmpty(request.Keyword))
@@ -111,6 +111,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             var productVMs = await data.Select(x => new ProductViewModel()
             {
                 Id = x.p.Id,
+                IsShowOnHome = x.p.IsShowOnHome,
                 ViewCount = x.p.ViewCount,
                 CreatedDate = x.p.CreatedDate.ToShortDateString(),
                 UpdatedDate = x.p.UpdatedDate.ToShortDateString(),
@@ -170,6 +171,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             var productVM = new ProductViewModel()
             {
                 Id = query.p.Id,
+                IsShowOnHome = query.p.IsShowOnHome,
                 CreatedDate = query.p.CreatedDate.ToShortDateString(),
                 OriginalPrice = query.p.OriginalPrice,
                 Price = query.p.Price,
@@ -203,6 +205,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                 throw new ECommerceException("Cannot find product");
             _mapper.Map(request, query.pt);
             query.p.UpdatedDate = DateTime.Now;
+            query.p.IsShowOnHome = request.IsShowOnHome;
             return await _context.SaveChangesAsync();
         }
 
@@ -261,6 +264,60 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             var products = _context.Products.Where(x => productIds.Contains(x.Id)).ToList();
             _context.Products.RemoveRange(products);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<ProductViewModel>> GetFeaturedProduct(string languageId, int take, int categoryId)
+        {
+            // get product from tables
+            var query = from p in _context.Products
+                        join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                        join pic in _context.ProductInCategories on p.Id equals pic.ProductId
+                        join c in _context.Categories on pic.CategoryId equals c.Id
+                        join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
+                        where pt.LanguageId == languageId && p.IsShowOnHome == true
+                        select new { p, pt, pic, ct };
+
+            // filter
+            if (categoryId != 0)
+            {
+                query = query.Where(x => x.ct.CategoryId == categoryId);
+            }
+
+            // get featured
+            var data = query.Take(take);
+
+            var productVMs = await data.Select(x => new ProductViewModel()
+            {
+                Id = x.p.Id,
+                IsShowOnHome = x.p.IsShowOnHome,
+                ViewCount = x.p.ViewCount,
+                CreatedDate = x.p.CreatedDate.ToShortDateString(),
+                UpdatedDate = x.p.UpdatedDate.ToShortDateString(),
+                OriginalPrice = x.p.OriginalPrice,
+                Price = x.p.Price,
+                Stock = x.p.Stock,
+                SeoAlias = x.pt.SeoAlias,
+                Description = x.pt.Description,
+                Details = x.pt.Details,
+                LanguageId = x.pt.LanguageId,
+                Name = x.pt.Name,
+                SeoDescription = x.pt.SeoDescription,
+                SeoTitle = x.pt.SeoTitle,
+                categoryId = x.ct.CategoryId,
+                CategoryName = x.ct.Name,
+                imagePaths = new List<string>(),
+            }).ToListAsync();
+
+            // add image path
+            foreach (var productVM in productVMs)
+            {
+                var imagePaths = await GetImagePaths(productVM.Id);
+                productVM.imagePaths = imagePaths;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return productVMs;
         }
 
         #endregion method to save image

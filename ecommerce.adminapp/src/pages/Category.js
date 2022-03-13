@@ -161,7 +161,7 @@ export default function Category() {
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
-    <Page title="Category | CHAPTER-INFINITY">
+    <Page title="Category | Mystic Green">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>

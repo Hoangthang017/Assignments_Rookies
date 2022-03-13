@@ -7,6 +7,7 @@ import { useFormik, Form, FormikProvider, yupToFormErrors } from 'formik';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // material
 import {
+  FormControlLabel,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -18,10 +19,12 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Switch  
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // component
+import { styled } from '@mui/material/styles';
 import UpdateUserAvatar from 'src/api/user/UpdateUserAvatar';
 import UnstyledSelectObjectValues from './Dropdown';
 import ImageProductTable from './ImageProductTable';
@@ -30,6 +33,39 @@ import GetProductById from 'src/api/product/GetProductById';
 import UpdateProduct from 'src/api/product/UpdateProduct';
 import UpdateProductPrice from 'src/api/product/UpdateProductPrice';
 import UpdateProductQuantity from 'src/api/product/UpdateProductQuantity';
+
+const Android12Switch = styled(Switch)(({ theme }) => ({
+  padding: 8,
+  '& .MuiSwitch-track': {
+    borderRadius: 22 / 2,
+    '&:before, &:after': {
+      content: '""',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 16,
+      height: 16
+    },
+    '&:before': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main)
+      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+      left: 12
+    },
+    '&:after': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main)
+      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+      right: 12
+    }
+  },
+  '& .MuiSwitch-thumb': {
+    boxShadow: 'none',
+    width: 16,
+    height: 16,
+    margin: 2
+  }
+}));
 
 const handleChange = (event) => {
   setLanguageId(event.target.value);
@@ -56,11 +92,13 @@ function CreateOrUpdateProduct() {
   const [originalPrice, setOriginalPrice] = useState(0);
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
-  const [languageId, setLanguageId] = useState('en-us');
+  const [languageId, setLanguageId] = useState('en-US');
+  const [isShowOnHome, setIsShowOnHome] = useState(true);
 
   // check changed
   const [priceChanged, setPriceChanged] = useState(false);
   const [stockChanged, setStockChanged] = useState(false);
+  
 
   // validation
   const RegisterSchema = Yup.object().shape({
@@ -74,7 +112,7 @@ function CreateOrUpdateProduct() {
   // call api
   useEffect(async () => {
     if (params.id) {
-      const response = await GetProductById(params.id, 'en-us');
+      const response = await GetProductById(params.id, 'en-US');
 
       if (response) {
         setInitalUser(response);
@@ -89,6 +127,7 @@ function CreateOrUpdateProduct() {
         setPrice(response.price);
         setStock(response.stock);
         setLanguageId(response.languageId);
+        setIsShowOnHome(response.isShowOnHome)
       }
     }
   }, []);
@@ -107,7 +146,8 @@ function CreateOrUpdateProduct() {
         details: values.details,
         seoTitle: values.seoTitle,
         seoAlias: values.seoAlias,
-        seoDescription: values.seoDescription
+        seoDescription: values.seoDescription,
+        isShowOnHome
       };
 
       // update
@@ -125,7 +165,6 @@ function CreateOrUpdateProduct() {
 
         if (result) {
           setUpdateSuccess(true);
-          SetHasChangeValue(false);
         } else {
           console.log('Fail to update');
         }
@@ -194,7 +233,7 @@ function CreateOrUpdateProduct() {
   }
 
   return (
-    <Page title={`${params.id ? 'Edit Product' : 'New Product'} | CHAPTER-INFINITY`} >
+    <Page title={`${params.id ? 'Edit Product' : 'New Product'} | Mystic Green`}>
       <Container>
         <Typography variant="h4" gutterBottom>
           {params.id ? 'Edit Product' : 'New Product'}
@@ -270,10 +309,17 @@ function CreateOrUpdateProduct() {
                       label="Language"
                       onChange={handleChange}
                     >
-                      <MenuItem value={'en-us'}>English</MenuItem>
+                      <MenuItem value={'en-US'}>English</MenuItem>
                       <MenuItem value={'vi-VN'}>Vietnamese</MenuItem>
                     </Select>
                   </FormControl>
+
+                  <FormControlLabel sx={{ml: "2rem"}}
+                    control={
+                      <Android12Switch checked={isShowOnHome} onChange={(e) => setIsShowOnHome(e.target.checked)} />
+                    }
+                    label="Show On Home"
+                  />
                 </Stack>
               </Form>
             </FormikProvider>
@@ -361,7 +407,7 @@ function CreateOrUpdateProduct() {
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                 <TextField
-                  disabled={params.id}
+                  disabled={!!params.id}
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
                   label="Original Price"

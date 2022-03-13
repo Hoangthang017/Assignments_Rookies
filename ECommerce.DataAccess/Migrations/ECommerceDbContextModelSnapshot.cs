@@ -103,9 +103,7 @@ namespace ECommerce.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -282,6 +280,26 @@ namespace ECommerce.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Caption = "We serve Fresh Vegestables",
+                            DateCreated = new DateTime(2022, 3, 13, 16, 37, 11, 652, DateTimeKind.Local).AddTicks(3747),
+                            FileSize = 99999L,
+                            ImagePath = "https://localhost:7195/user-content/slide/bg_1.jpg",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Caption = "100% Fresh &amp; Organic Foods",
+                            DateCreated = new DateTime(2022, 3, 13, 16, 37, 11, 652, DateTimeKind.Local).AddTicks(3762),
+                            FileSize = 99999L,
+                            ImagePath = "https://localhost:7195/user-content/slide/bg_2.jpg",
+                            SortOrder = 1
+                        });
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.Language", b =>
@@ -617,10 +635,54 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"),
-                            ConcurrencyStamp = "808227c4-94bb-44c6-a1a9-938136bdb99c",
+                            ConcurrencyStamp = "ff423e57-9f29-4f39-ad8b-df3400221513",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("16a33b7f-8765-4e91-8c8d-c8a2c979a9cd"),
+                            ConcurrencyStamp = "4662c8db-46b7-40fa-a69c-e4857c332f8d",
+                            Description = "customer role",
+                            Name = "customer",
+                            NormalizedName = "customer"
+                        });
+                });
+
+            modelBuilder.Entity("ECommerce.Models.Entities.Slide", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ImageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageId");
+
+                    b.ToTable("Slides");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "We deliver organic vegetables &amp; fruits",
+                            ImageId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "We deliver organic vegetables &amp; fruits",
+                            ImageId = 2
                         });
                 });
 
@@ -705,7 +767,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1debabbe-adb4-4f5d-8004-2e09a6133765",
+                            ConcurrencyStamp = "853c74d6-da1e-4fe5-a62e-fe0c19b80e31",
                             DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "thangnh1394@gmail.com",
                             EmailConfirmed = true,
@@ -714,11 +776,30 @@ namespace ECommerce.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "thangnh1394@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHtj5OjCUYz5WpFFrSSb8k7faTLnpUxnc2xpj12+qtD8iHKXFml4QY2GoMvyBLrW2g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENwLNIoP3WtGdV42UVN0fx283y31H0AQaMkqmhwtRWn8cRSqWtHeiriZQprxrgj2ng==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("dd9efc6a-1ca0-4e0b-9362-5fb185558a33"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "d46f5475-92a7-423b-b61c-a9f591913841",
+                            DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "thangnh1394@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "Thang",
+                            LastName = "Nguyen",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "thangnh1394@gmail.com",
+                            NormalizedUserName = "customer",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDF3BOrI+dp0rZyTHGHquHB7c3ZBAAK00SiGRNI3o06pgK0zECyqf99bbGTAlfnZ7w==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "",
+                            TwoFactorEnabled = false,
+                            UserName = "customer"
                         });
                 });
 
@@ -823,6 +904,11 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             UserId = new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"),
                             RoleId = new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024")
+                        },
+                        new
+                        {
+                            UserId = new Guid("dd9efc6a-1ca0-4e0b-9362-5fb185558a33"),
+                            RoleId = new Guid("16a33b7f-8765-4e91-8c8d-c8a2c979a9cd")
                         });
                 });
 
@@ -856,6 +942,9 @@ namespace ECommerce.DataAccess.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsShowOnHome")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("OriginalPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -883,7 +972,8 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2022, 3, 9, 11, 31, 17, 817, DateTimeKind.Local).AddTicks(2327),
+                            CreatedDate = new DateTime(2022, 3, 13, 16, 37, 11, 635, DateTimeKind.Local).AddTicks(2755),
+                            IsShowOnHome = false,
                             OriginalPrice = 100000m,
                             Price = 200000m,
                             Stock = 0,
@@ -1034,6 +1124,17 @@ namespace ECommerce.DataAccess.Migrations
                     b.Navigation("Language");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ECommerce.Models.Entities.Slide", b =>
+                {
+                    b.HasOne("ECommerce.Models.Entities.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Entities.UserImage", b =>

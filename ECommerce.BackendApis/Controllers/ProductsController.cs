@@ -84,6 +84,18 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(productsVMs);
         }
 
+        // GET: api/products/featured/1/4/en-us
+        [HttpGet("featured/{categoryId}/{take}/{languageId}")]
+        public async Task<IActionResult> GetFeaturedProduct(int categoryId, int take, string languageId)
+        {
+            var productsVMs = await _unitOfWork.Product.GetFeaturedProduct(languageId, take, categoryId);
+
+            if (productsVMs == null)
+                return BadRequest();
+
+            return Ok(productsVMs);
+        }
+
         [HttpGet("{productId}/{languageId}")]
         public async Task<IActionResult> GetById(int productId, string languageId)
         {

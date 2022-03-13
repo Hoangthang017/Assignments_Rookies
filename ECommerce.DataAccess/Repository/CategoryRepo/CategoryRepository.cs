@@ -57,11 +57,11 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<IEnumerable<GetAllCategoryViewModel>> GetAllName(string languageId)
+        public async Task<IEnumerable<BaseCategoryViewModel>> GetAllName(string languageId)
         {
             var categories = await _context.CategoryTranslations
                 .Where(x => x.LanguageId == languageId)
-                .Select(x => new GetAllCategoryViewModel()
+                .Select(x => new BaseCategoryViewModel()
                 {
                     Name = x.Name,
                     Id = x.CategoryId
@@ -134,6 +134,22 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                 throw new ECommerceException("Cannot find the category");
 
             return categoryVM;
+        }
+
+        public async Task<List<BaseCategoryViewModel>> GetFeaturedCategory(string languageId, int take)
+        {
+            var categories = await (from c in _context.Categories
+                                    join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
+                                    where c.IsShowOnHome == true && ct.LanguageId == languageId
+                                    select (new BaseCategoryViewModel()
+                                    {
+                                        Id = c.Id,
+                                        Name = ct.Name
+                                    })).Take(take).ToListAsync();
+            if (categories == null)
+                throw new ECommerceException("Faild to get all name categories");
+
+            return categories;
         }
 
         public async Task<bool> Update(int categoryId, string languageId, UpdateCategoryRequest request)

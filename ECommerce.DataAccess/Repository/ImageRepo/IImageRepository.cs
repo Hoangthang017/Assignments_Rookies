@@ -4,6 +4,7 @@ using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Images;
 using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.Images;
+using ECommerce.Models.ViewModels.Slides;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,8 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
         Task<PageResult<ImageViewModel>> GetAllPaging(int productId, PagingRequestBase request);
 
         Task<string> GetUserImagePathByUserId(string userId);
+
+        Task<List<SlideViewModel>> GetAllSlide(int take);
 
         Task<bool> DeleteImage(int id);
     }

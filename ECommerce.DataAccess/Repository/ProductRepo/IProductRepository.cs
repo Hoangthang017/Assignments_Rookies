@@ -12,6 +12,8 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
 
         Task<PageResult<ProductViewModel>> GetAllPaging(string languageId, GetProductPagingRequest request);
 
+        Task<List<ProductViewModel>> GetFeaturedProduct(string languageId, int take, int categoryId);
+
         Task<ProductViewModel> GetById(int productId, string languageId);
 
         Task<int> Update(int productId, string languageId, UpdateProductRequest request);
