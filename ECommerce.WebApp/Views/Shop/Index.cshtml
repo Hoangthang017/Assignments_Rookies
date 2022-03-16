@@ -1,0 +1,64 @@
+﻿@using ECommerce.Models.Request.Common
+@using ECommerce.Utilities;
+@model ShopVM
+@{
+    ViewData["Title"] = "Shop";
+    var pageIndex = Context.Request.Query["pageIndex"].FirstOrDefault("1");
+    var pageSize = Context.Request.Query["pageSize"].FirstOrDefault(SystemConstants.ProductSettings.pageSizePaging.ToString());
+    var categoryId = Context.Request.Query["categoryId"].FirstOrDefault("0");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            @await Component.InvokeAsync("CategoryNavBar")
+        </div>
+        <div class="row">
+            @foreach (var productVM in Model.ProductViewModels.Items)
+            {
+                @await Html.PartialAsync("_ProductCard", productVM)
+                ;
+            }
+        </div>
+        @if (Model.ProductViewModels.PageCount > 1)
+        {
+            <div class="row mt-5">
+                <div class="col text-center">
+                    <div class="block-27">
+                        <ul>
+                            @if (int.Parse(pageIndex) > 1)
+                            {
+                                <li>
+                                    <a asp-route-categoryId="@categoryId"
+                                       asp-route-pageIndex="@(int.Parse(pageIndex)-1)"
+                                       asp-route-pageSize="@pageSize">&lt;</a>
+                                </li>
+                            }
+
+                            @for (int i = 1; i <= Model.ProductViewModels.PageCount; i++)
+                            {
+                                <li class="@(i == Model.ProductViewModels.PageIndex ? "active" : "")">
+                                    <a asp-route-categoryId="@categoryId"
+                                       asp-route-pageIndex="@i"
+                                       asp-route-pageSize="@pageSize">@i</a>
+                                </li>
+                            }
+                            @if (int.Parse(pageIndex) < Model.ProductViewModels.PageCount)
+                            {
+                                <li>
+                                    <a asp-route-categoryId="@categoryId"
+                                       asp-route-pageIndex="@(int.Parse(pageIndex)+1)"
+                                       asp-route-pageSize="@pageSize">&gt;</a>
+                                </li>
+                            }
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</section>
+

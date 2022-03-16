@@ -1,0 +1,17 @@
+﻿@using ECommerce.Models.Request.Orders
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model CreateOrderRequest
+@{
+    var check = @Model;
+    var isAuthenticate = !string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("token"));
+}
+<form asp-controller="cart" asp-action="checkout" method="post" class="billing-form" style="padding-top: 2rem;">
+    <input hiden asp-for=Price/>
+    <input hiden asp-for=Quantity/>
+    <input hiden asp-for=ShipAddress/>
+    <input hiden asp-for=ShipEmail/>
+    <input hiden asp-for=ShipName/>
+    <input hiden asp-for=ShipPhoneNumber/>
+    <button class="btn btn-primary py-3 px-4">Place an order</button>
+</form>

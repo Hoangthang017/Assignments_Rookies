@@ -40,7 +40,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function Login({setToken}) {
   return (
-    <RootStyle title="Login | CHAPTER-INFINITY">
+    <RootStyle title="Login | Mystic Green">
       {/* <AuthLayout>
         Don’t have an account? &nbsp;
         <Link underline="none" variant="subtitle2" component={RouterLink} to="/register">
@@ -59,7 +59,7 @@ export default function Login({setToken}) {
         <ContentStyle>
           <Stack sx={{ mb: 5 }}>
             <Typography variant="h4" gutterBottom>
-              Login to CHAPTER INFINITY 
+              Login to Mystic Green
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}>
               Please enter your account information at below

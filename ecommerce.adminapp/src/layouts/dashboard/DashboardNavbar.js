@@ -44,12 +44,12 @@ export default function DashboardNavbar({ onOpenSidebar }) {
   return (
     <RootStyle>
       <ToolbarStyle>
-        {/* <IconButton
+        <IconButton
           onClick={onOpenSidebar}
           sx={{ mr: 1, color: 'text.primary', display: { lg: 'none' } }}
         >
           <Iconify icon="eva:menu-2-fill" />
-        </IconButton> */}
+        </IconButton>
 
         {/* <Searchbar /> */}
         <Box sx={{ flexGrow: 1 }} />

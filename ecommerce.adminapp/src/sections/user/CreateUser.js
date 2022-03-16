@@ -176,7 +176,7 @@ function CreateUser() {
   }
 
   return (
-    <Page title={`${params.id ? 'Edit User' : 'New User'} | CHAPTER-INFINITY`}>
+    <Page title={`${params.id ? 'Edit User' : 'New User'} | Mystic Green`}>
       <Container>
         <Typography variant="h4" gutterBottom>
           {params.id ? 'Edit User' : 'New User'}

@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Models.ViewModels.Categories
 {
-    public class CategoryViewModel
+    public class CategoryViewModel : BaseCategoryViewModel
     {
-        public int Id { get; set; }
-
         public bool IsShowOnHome { set; get; }
 
         public Status Status { set; get; }
-
-        public string Name { set; get; }
 
         public string SeoTitle { set; get; }
 

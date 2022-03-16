@@ -8,6 +8,8 @@ public class Product
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
+    public bool IsShowOnHome { get; set; }
+
     [Required]
     public decimal Price { get; set; }
 

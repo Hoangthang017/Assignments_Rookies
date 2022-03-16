@@ -1,0 +1,35 @@
+﻿.commentBox {
+    background-color: #efefef;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.starFade {
+    background-image: url("https://localhost:7195/user-content/rating/starFade.gif");
+    min-width: 30px;
+    min-height: 30px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.starFadeN {
+    background-image: url('https://localhost:7195/user-content/rating/StarFade.gif');
+    min-width: 30px;
+    min-height: 30px;
+    display: inline-block;
+}
+
+.starGlow {
+    background-image: url('https://localhost:7195/user-content/rating/starglow.gif');
+    min-width: 30px;
+    min-height: 30px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.starGlowN {
+    background-image: url('https://localhost:7195/user-content/rating/starglow.gif');
+    min-width: 30px;
+    min-height: 30px;
+    display: inline-block;
+}

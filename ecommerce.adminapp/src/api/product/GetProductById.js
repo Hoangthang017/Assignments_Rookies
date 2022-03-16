@@ -2,7 +2,7 @@ import axios from "../axios"
 
 async function GetProductById(productId,languageId) {
     try {
-        const product = await axios.get(`api/products/${productId}/${languageId}`,
+        const product = await axios.get(`api/products/${languageId}/${productId}`,
         { headers: { Authorization: sessionStorage.getItem("token")} 
        })
 

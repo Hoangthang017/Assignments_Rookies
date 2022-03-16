@@ -50,6 +50,28 @@ namespace ECommerce.BackendApis.Controllers
                                    product);
         }
 
+        // POST: api/products/1/review/asdasd-adasd
+        [HttpPost("{productId}/review/{customerId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateProductReview(int productId, string customerId, [FromBody] CreateProductReviewRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var reviewId = await _unitOfWork.Product.CreateProductReview(productId, customerId, request);
+
+            if (reviewId == 0)
+                return BadRequest();
+
+            var review = await _unitOfWork.Product.GetProductReviewById(reviewId);
+
+            return CreatedAtAction(nameof(GetProductReviewById),
+                                   new { id = reviewId },
+                                   review);
+        }
+
         // READ
         // GET: api/products
         [HttpGet]
@@ -72,7 +94,7 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(productsVMs);
         }
 
-        // GET: api/products/paging?pageIndex=1&pagSize=1&categoryId=1
+        // GET: api/products/paging/en-us?pageIndex=1&pagSize=1&categoryId=1
         [HttpGet("paging/{languageId}")]
         public async Task<IActionResult> GetAllPaging(string languageId, [FromQuery] GetProductPagingRequest request)
         {
@@ -84,15 +106,64 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(productsVMs);
         }
 
-        [HttpGet("{productId}/{languageId}")]
-        public async Task<IActionResult> GetById(int productId, string languageId)
+        // GET: api/products/featured/1/4/en-us
+        [HttpGet("featured/{categoryId}/{take}/{languageId}")]
+        public async Task<IActionResult> GetFeaturedProduct(int categoryId, int take, string languageId)
         {
-            var image = await _unitOfWork.Product.GetById(productId, languageId);
+            var productsVMs = await _unitOfWork.Product.GetFeaturedProduct(languageId, take, categoryId);
 
-            if (image == null)
+            if (productsVMs == null)
                 return BadRequest();
 
-            return Ok(image);
+            return Ok(productsVMs);
+        }
+
+        // GET: api/products/related/en-us/1/1/4
+        [HttpGet("related/{languageId}/{productId}/{categoryId}/{take}")]
+        public async Task<IActionResult> GetRelatedProduct(string languageId, int productId, int categoryId, int take)
+        {
+            var productsVMs = await _unitOfWork.Product.GetRelatedProducts(languageId, productId, categoryId, take);
+
+            if (productsVMs == null)
+                return BadRequest();
+
+            return Ok(productsVMs);
+        }
+
+        // GET: api/products/en-us/1
+        [HttpGet("{languageId}/{productId}")]
+        public async Task<IActionResult> GetById(int productId, string languageId)
+        {
+            var productVM = await _unitOfWork.Product.GetById(productId, languageId);
+
+            if (productVM == null)
+                return BadRequest();
+
+            return Ok(productVM);
+        }
+
+        // GET: api/products/1/review
+        [HttpGet("{productId}/review")]
+        public async Task<IActionResult> GetAllProductReview(int productId)
+        {
+            var reviewVMs = await _unitOfWork.Product.GetAllProductReview(productId);
+
+            if (reviewVMs == null)
+                return BadRequest();
+
+            return Ok(reviewVMs);
+        }
+
+        // GET: api/products/review/1
+        [HttpGet("review/{reviewId}")]
+        public async Task<IActionResult> GetProductReviewById(int reviewId)
+        {
+            var reviewVM = await _unitOfWork.Product.GetProductReviewById(reviewId);
+
+            if (reviewVM == null)
+                return BadRequest();
+
+            return Ok(reviewVM);
         }
 
         // UPDATE
