@@ -168,6 +168,23 @@ namespace ECommerce.Utilities
               new Slide() { Id = 1, Description = "We deliver organic vegetables &amp; fruits", ImageId = 1 },
               new Slide() { Id = 2, Description = "We deliver organic vegetables &amp; fruits", ImageId = 2 }
            );
+
+            // creat anonymous customer
+            var GUEST_ID = new Guid("00000000-0000-0000-0000-000000000001");
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                Id = GUEST_ID,
+                UserName = "guest",
+                NormalizedUserName = "guest",
+                Email = "",
+                NormalizedEmail = "",
+                EmailConfirmed = true,
+                PasswordHash = hasher.HashPassword(null, "00000000-0000-0000-0000-000000000001"),
+                SecurityStamp = string.Empty,
+                FirstName = "",
+                LastName = "",
+                DateOfBirth = new DateTime(2000, 11, 13)
+            });
         }
     }
 }

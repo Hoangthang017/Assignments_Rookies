@@ -6,10 +6,8 @@ namespace ECommerce.WebApp.Models
 {
     public class HomeViewModel
     {
-        public List<SlideViewModel> Slides { get; set; }
-
         public List<ProductViewModel> FeaturedProducts { get; set; }
 
-        public List<BaseCategoryViewModel> FeaturedCategories { get; set; }
+        public bool isFeatured { get; set; }
     }
 }

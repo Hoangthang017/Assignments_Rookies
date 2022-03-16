@@ -1,4 +1,6 @@
 ﻿using ECommerce.ApiItegration;
+using ECommerce.Models.ViewModels.Slides;
+using ECommerce.Utilities;
 using ECommerce.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -24,13 +26,14 @@ namespace ECommerce.WebApp.Controllers
             _categoryApiClient = categoryApiClient;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] int? categoryId, string culture)
         {
             var viewModel = new HomeViewModel
             {
-                Slides = await _slideApiClient.GetAllSlide(2),
-                FeaturedProducts = await _productApiClient.GetFeaturedProduct(0, 8, "en-us"),
-                FeaturedCategories = await _categoryApiClient.GetFeaturedCategory("en-us", 4)
+                FeaturedProducts = await _productApiClient.GetFeaturedProduct(
+                    categoryId != null ? (int)categoryId : 0,
+                    SystemConstants.ProductSettings.NumberOfFeaturedProducts,
+                    String.IsNullOrEmpty(culture) ? SystemConstants.LanguageSettings.DefaultLanguageId : culture)
             };
             return View(viewModel);
         }

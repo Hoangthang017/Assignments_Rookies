@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ECommerce.ApiItegration\ECommerce.ApiItegration.csproj" />
     <ProjectReference Include="..\ECommerce.DataAccess\ECommerce.DataAccess.csproj" />
   </ItemGroup>
 

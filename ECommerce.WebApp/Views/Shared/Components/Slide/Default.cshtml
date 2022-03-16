@@ -1,0 +1,25 @@
+﻿@using ECommerce.Models.ViewModels.Slides
+@model List<SlideViewModel>
+<!-- SLIDE  -->
+<section id="home-section" class="hero">
+	<div class="home-slider owl-carousel">
+        @foreach(var slide in Model)
+        {
+            <div class="slider-item" style="background-image: url(@slide.ImagePath);">
+			<div class="overlay"></div>
+			<div class="container">
+				<div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+
+					<div class="col-md-12 ftco-animate text-center">
+						<h1 class="mb-2">@slide.Name</h1>
+						<h2 class="subheading mb-4">@slide.Description</h2>
+						<!-- if we go to product hide button go to shop -->
+                        @if(ViewContext.RouteData.Values["productId"] == null) {<p><a href="#" class="btn btn-primary">View Details</a></p>}} 
+					</div>
+				</div>
+			</div>
+		</div>
+        }
+	</div>
+</section>
+<!-- END SLIDE  -->

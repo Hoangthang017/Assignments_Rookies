@@ -57,6 +57,22 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<List<BaseCategoryViewModel>> GetActiveCategory(string languageId)
+        {
+            var categories = await (from c in _context.Categories
+                                    join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
+                                    where c.Status == Status.Active && ct.LanguageId == languageId
+                                    select (new BaseCategoryViewModel()
+                                    {
+                                        Id = c.Id,
+                                        Name = ct.Name
+                                    })).ToListAsync();
+            if (categories == null)
+                throw new ECommerceException("Faild to get all name categories");
+
+            return categories;
+        }
+
         public async Task<IEnumerable<BaseCategoryViewModel>> GetAllName(string languageId)
         {
             var categories = await _context.CategoryTranslations

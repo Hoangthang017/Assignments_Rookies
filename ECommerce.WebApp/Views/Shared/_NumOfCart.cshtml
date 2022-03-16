@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Http
+@using ECommerce.Utilities;
+@using Newtonsoft.Json
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    var session = HttpContextAccessor.HttpContext.Session;
+    string jsoncart = session.GetString (SystemConstants.CartSessionKey);
+    if (jsoncart != null) {
+        var cart = JsonConvert.DeserializeObject<List<CartVM>> (jsoncart);
+        <label id="numOfCartItems">@cart.Count</label>
+    }
+    else
+    {
+        <label id="numOfCartItems">0</label>
+    }
+}

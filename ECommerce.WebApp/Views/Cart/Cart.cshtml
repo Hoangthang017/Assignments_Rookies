@@ -1,0 +1,162 @@
+﻿@using ECommerce.Models.Request.Orders
+@model List<CartVM>
+@{
+    ViewData["Title"] = "Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    decimal subTotal = 0;
+    foreach (var cart in @Model)
+    {
+        subTotal += cart.GetTotalPrice();
+    }
+    decimal delivery = 0;
+    decimal discount = 0;
+
+    var requestCreateOrderVM = new CheckoutVM();
+}
+
+<section class="ftco-section ftco-cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="cart-list">
+                    <table class="table">
+                        <thead class="thead-primary">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>Product name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cart in Model)
+                            {
+                                requestCreateOrderVM.ProductOrderRequests.Add(new BaseProductOrderRequest()
+                                    {
+                                        Price = cart.Product.Price,
+                                        Quantity = cart.Quantity
+                                    });
+                                <tr class="text-center">
+                                    <td class="product-remove"><a data-productId=@cart.Product.Id class="btn-remove-cart-item"><span class="ion-ios-close"></span></a></td>
+
+                                    <td class="image-prod"><div class="img" style="background-image:url(@cart.Product.imagePaths[0]);"></div></td>
+
+                                    <td class="product-name">
+                                        <h3>@cart.Product.Name</h3>
+                                        <p>@cart.Product.Description</p>
+                                    </td>
+
+                                    <td class="price">@cart.Product.Price</td>
+
+                                    <td class="quantity">
+                                        <div class="input-group mb-3">
+                                            <input data-productId=@cart.Product.Id
+                                               type="text"
+                                               class="quantity form-control input-number input-quantity-product-cart"
+                                               value=@cart.Quantity
+                                               min="1">
+                                        </div>
+                                    </td>
+
+                                    <td class="total">$@cart.GetTotalPrice()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-7 ftco-animate">
+                    <form asp-controller="cart" asp-action="checkout" class="billing-form" style="padding-top: 2rem;">
+                        <h3 class="mb-4 billing-heading">Billing Details</h3>
+                        <div class="row align-items-end">
+                            @if (false)
+                            {
+                                <!-- first and last name -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="firstname">Firt Name</label>
+                                        <input type="text" class="form-control" placeholder="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lastname">Last Name</label>
+                                        <input type="text" class="form-control" placeholder="">
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <!-- Full name -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="streetaddress">Your Name</label>
+                                        <input asp-for=@requestCreateOrderVM.ShipName type="text" class="form-control">
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- address -->
+                            <div class="w-100"></div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="streetaddress">Your Address</label>
+                                    <input asp-for=@requestCreateOrderVM.ShipAddress type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <!-- phone and email -->
+                            <div class="w-100"></div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input asp-for=@requestCreateOrderVM.ShipPhoneNumber type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="emailaddress">Email Address</label>
+                                    <input asp-for=@requestCreateOrderVM.ShipEmail type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary py-3 px-4">Place an order</button>
+                    </form>
+                </div>
+                <div class="col-xl-5">
+                    <div class="row mt-5 pt-3" style="padding-top: 5rem !important;">
+                        <div class="col-md-12 d-flex mb-5">
+                            <div class="cart-detail cart-total p-3 p-md-4">
+                                <h3>Cart Totals</h3>
+                                <p class="d-flex">
+                                    <span>Subtotal</span>
+                                    <span class="cart-items-subTotal">@subTotal</span>
+                                </p>
+                                <p class="d-flex">
+                                    <span>Delivery</span>
+                                    <span class="cart-items-delivery">$@delivery</span>
+                                </p>
+                                <p class="d-flex">
+                                    <span>Discount</span>
+                                    <span class="cart-items-discount">$@discount</span>
+                                </p>
+                                <hr>
+                                <p class="d-flex total-price">
+                                    <span>Total</span>
+                                    <span class="cart-items-totalPrice">$@(subTotal+delivery-discount)</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+

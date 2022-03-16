@@ -36,6 +36,7 @@ namespace ECommerce.DataAccess.EF
                 .Property(x => x.ViewCount).HasDefaultValue(0);
             modelBuilder.Entity<ProductTranslation>()
                  .Property(x => x.Id).IsUnicode(false);
+
             modelBuilder.Entity<ProductInCategory>()
                 .HasKey(t => new { t.CategoryId, t.ProductId });
             modelBuilder.Entity<ProductInCategory>()
@@ -46,16 +47,18 @@ namespace ECommerce.DataAccess.EF
                 .HasOne(t => t.Category)
                 .WithMany(pc => pc.ProductInCategories)
                 .HasForeignKey(pc => pc.CategoryId);
+
             modelBuilder.Entity<OrderDetail>()
                 .HasKey(t => new { t.OrderId, t.ProductId });
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(t => t.Order)
                 .WithMany(pc => pc.OrderDetails)
-                .HasForeignKey(pc => pc.ProductId);
+                .HasForeignKey(pc => pc.OrderId);
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(t => t.Product)
                 .WithMany(pc => pc.OrderDetails)
                 .HasForeignKey(pc => pc.ProductId);
+
             modelBuilder.Entity<ProductImage>()
                 .HasKey(t => new { t.ProductId, t.ImageId });
             modelBuilder.Entity<UserImage>()

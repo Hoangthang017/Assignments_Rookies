@@ -1,22 +1,25 @@
 ﻿using ECommerce.Models.ViewModels.Categories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.ApiItegration
 {
     public class CategoryApiClient : BaseApiClient, ICategoryApiClient
     {
-        public CategoryApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory, configuration)
+        private readonly string BaseApiUrl = "api/categories";
+
+        public CategoryApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, IHttpContextAccessor httpContextAccessor) : base(httpClientFactory, configuration, httpContextAccessor)
         {
+        }
+
+        public async Task<List<BaseCategoryViewModel>> GetActiveCategory(string languageId)
+        {
+            return await GetListAsync<BaseCategoryViewModel>(Path.Combine(BaseApiUrl, "active", languageId));
         }
 
         public async Task<List<BaseCategoryViewModel>> GetFeaturedCategory(string languageId, int take)
         {
-            return await GetListAsync<BaseCategoryViewModel>("api/categories/featured/" + take.ToString() + "/" + languageId);
+            return await GetListAsync<BaseCategoryViewModel>(Path.Combine(BaseApiUrl, "featured", take.ToString(), languageId));
         }
     }
 }

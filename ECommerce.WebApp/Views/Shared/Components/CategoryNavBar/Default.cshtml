@@ -1,0 +1,26 @@
+﻿@using ECommerce.Models.ViewModels.Categories
+@model CategoryVM
+@{
+    var currentCulture = "en-us";
+    var currentCategoryId = this.Context.Request.Query["categoryId"].FirstOrDefault("0");
+}
+<div class="col-md-10 mb-5 text-center" style="margin: auto">
+    <ul class="product-category">
+        <li>
+            <a  
+                asp-route-culture = "@currentCulture" 
+                class="@(currentCategoryId == "0" ? "active" : "")"
+                asp-all-route-data = "@Model.AllRouteData"
+            >All</a></li>
+        @foreach (var featuredCategory in Model.BaseCategoryViewModels)
+        {
+            Model.AllRouteData["categoryId"] = featuredCategory.Id.ToString();
+            <li>
+                <a class="@(currentCategoryId == featuredCategory.Id.ToString() ? "active" : "")"
+                asp-all-route-data = "@Model.AllRouteData"
+                asp-route-culture = "@currentCulture">
+                @featuredCategory.Name</a>
+            </li>
+        }
+    </ul>
+</div>

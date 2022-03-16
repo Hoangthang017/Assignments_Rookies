@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using ECommerce.ApiItegration;
 using ECommerce.DataAccess.EF;
 using ECommerce.Models.Entities;
 using IdentityServer4.Services;
@@ -74,9 +75,9 @@ namespace ECommerce.IdentityServer
                 .AddInMemoryClients(Config.Clients)
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
-
-            // not recommended for production - you need to store your key material somewhere secure
-            //builder.AddDeveloperSigningCredential();
+            services.AddTransient<ISlideApiClient, SlideApiClient>();
+            services.AddTransient<IProductApiClient, ProductApiClient>();
+            services.AddTransient<ICategoryApiClient, CategoryApiClient>();
 
             //services.AddAuthentication()
             //    .AddGoogle(options =>
@@ -104,7 +105,7 @@ namespace ECommerce.IdentityServer
 
             app.UseRouting();
             app.UseIdentityServer();
-
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

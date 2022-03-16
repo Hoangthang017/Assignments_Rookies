@@ -14,6 +14,8 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
 
         Task<List<ProductViewModel>> GetFeaturedProduct(string languageId, int take, int categoryId);
 
+        Task<List<ProductViewModel>> GetRelatedProducts(string languageId, int productId, int categoryId, int take);
+
         Task<ProductViewModel> GetById(int productId, string languageId);
 
         Task<int> Update(int productId, string languageId, UpdateProductRequest request);
@@ -27,5 +29,11 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
         Task<bool> Delete(int productId);
 
         Task<bool> DeleteRange(List<int> productIds);
+
+        Task<int> CreateProductReview(int productId, string customerId, CreateProductReviewRequest request);
+
+        Task<List<ProductReviewViewModel>> GetAllProductReview(int productId);
+
+        Task<ProductReviewViewModel> GetProductReviewById(int reviewId);
     }
 }

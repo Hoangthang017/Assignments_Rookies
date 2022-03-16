@@ -16,6 +16,8 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
 
         Task<PageResult<CategoryViewModel>> GetAllPaging(string languageId, GetCategoryPagingRequest request);
 
+        Task<List<BaseCategoryViewModel>> GetActiveCategory(string languageId);
+
         Task<List<BaseCategoryViewModel>> GetFeaturedCategory(string languageId, int take);
 
         Task<CategoryViewModel> GetById(int categoryId, string languageId);

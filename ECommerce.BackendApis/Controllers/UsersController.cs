@@ -32,6 +32,20 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(new { token = resultToken });
         }
 
+        // login
+        [HttpPost("revoke")]
+        [Authorize]
+        public async Task<IActionResult> RevokeToken([FromBody] InforClientRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var token = HttpContext.Request.Headers["Authorization"];
+            var resultToken = await _unitOfWork.User.RevokeToken(token, request);
+            if (!resultToken)
+                return BadRequest("Cannot revoke authorize token");
+            return Ok();
+        }
+
         // register
         [HttpPost("register/admin")]
         [Authorize]

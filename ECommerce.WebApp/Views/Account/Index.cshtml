@@ -1,0 +1,52 @@
+﻿@using ECommerce.Models.Request.Users
+@model LoginRequest
+@{
+    ViewData["title"] = "login";
+}
+<div class="col-sm-6" style="margin: auto; margin-bottom: 10%; margin-top: 10%">
+    <div class="card login-wrapper" style="align-content: center;">
+        @if (TempData["loginErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["loginErrorMessage"]
+            </div>
+        }
+
+        <div class="card-header">
+            <h2>Welcome to our website</h2>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="authenticate" asp-controller="account" method="post">
+                <input type="hidden" />
+
+                <div class="form-group">
+                    <label asp-for="UserName"></label>
+                    <input class="form-control" placeholder="Username" asp-for="UserName" autofocus>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password"></label>
+                    <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="RememberMe">
+                        <label class="form-check-label" asp-for="RememberMe">
+                            Remember Me
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <p>
+                        You don't have accoount?
+                        <a asp-controller="account" asp-action="register">Please Register</a>
+                    </p>
+                </div>
+
+                <button class="btn btn-primary" name="button" value="login" style="width: 10rem;">Login</button>
+                <a asp-controller="home" class="btn btn-danger" name="button" value="cancel" style="width: 10rem; color:#fff;">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

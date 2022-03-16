@@ -286,7 +286,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = 1,
                             Caption = "We serve Fresh Vegestables",
-                            DateCreated = new DateTime(2022, 3, 13, 16, 37, 11, 652, DateTimeKind.Local).AddTicks(3747),
+                            DateCreated = new DateTime(2022, 3, 16, 20, 45, 58, 978, DateTimeKind.Local).AddTicks(2809),
                             FileSize = 99999L,
                             ImagePath = "https://localhost:7195/user-content/slide/bg_1.jpg",
                             SortOrder = 1
@@ -295,7 +295,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = 2,
                             Caption = "100% Fresh &amp; Organic Foods",
-                            DateCreated = new DateTime(2022, 3, 13, 16, 37, 11, 652, DateTimeKind.Local).AddTicks(3762),
+                            DateCreated = new DateTime(2022, 3, 16, 20, 45, 58, 978, DateTimeKind.Local).AddTicks(2823),
                             FileSize = 99999L,
                             ImagePath = "https://localhost:7195/user-content/slide/bg_2.jpg",
                             SortOrder = 1
@@ -635,7 +635,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"),
-                            ConcurrencyStamp = "ff423e57-9f29-4f39-ad8b-df3400221513",
+                            ConcurrencyStamp = "c6cd468f-af76-46a4-a6dd-badd54ceab20",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -643,7 +643,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = new Guid("16a33b7f-8765-4e91-8c8d-c8a2c979a9cd"),
-                            ConcurrencyStamp = "4662c8db-46b7-40fa-a69c-e4857c332f8d",
+                            ConcurrencyStamp = "4be9b269-7f32-4193-81b5-1ce661b0fa20",
                             Description = "customer role",
                             Name = "customer",
                             NormalizedName = "customer"
@@ -767,7 +767,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "853c74d6-da1e-4fe5-a62e-fe0c19b80e31",
+                            ConcurrencyStamp = "df4781a3-00a9-4077-a7df-370d317f8c7c",
                             DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "thangnh1394@gmail.com",
                             EmailConfirmed = true,
@@ -776,7 +776,7 @@ namespace ECommerce.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "thangnh1394@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAENwLNIoP3WtGdV42UVN0fx283y31H0AQaMkqmhwtRWn8cRSqWtHeiriZQprxrgj2ng==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDvKNdqrN778E8kFdm2o0c6/jrSE4vOZjbxb1Vkm8WqlZ+DyKJFqniLMUwTAvcS+Cw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -786,7 +786,7 @@ namespace ECommerce.DataAccess.Migrations
                         {
                             Id = new Guid("dd9efc6a-1ca0-4e0b-9362-5fb185558a33"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d46f5475-92a7-423b-b61c-a9f591913841",
+                            ConcurrencyStamp = "a07b0d62-f57f-4395-ac6f-68fc19582370",
                             DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "thangnh1394@gmail.com",
                             EmailConfirmed = true,
@@ -795,11 +795,30 @@ namespace ECommerce.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "thangnh1394@gmail.com",
                             NormalizedUserName = "customer",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDF3BOrI+dp0rZyTHGHquHB7c3ZBAAK00SiGRNI3o06pgK0zECyqf99bbGTAlfnZ7w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJ4a5fpobxDvKOeYFnetlNQWFebBNY6ca7ZM+39a9NPNx+mTJprdNO80HqIeU790+g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "customer"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c7d722f0-542e-4a5f-963b-0734b3048f2d",
+                            DateOfBirth = new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "",
+                            EmailConfirmed = true,
+                            FirstName = "",
+                            LastName = "",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "",
+                            NormalizedUserName = "guest",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAtzgF3k8AI8qVuBAnSK/e6OsjhCOF/1s/BDUU51qU0nmiktldLgD7Mrjxdk0ilctA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "",
+                            TwoFactorEnabled = false,
+                            UserName = "guest"
                         });
                 });
 
@@ -972,7 +991,7 @@ namespace ECommerce.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2022, 3, 13, 16, 37, 11, 635, DateTimeKind.Local).AddTicks(2755),
+                            CreatedDate = new DateTime(2022, 3, 16, 20, 45, 58, 962, DateTimeKind.Local).AddTicks(8121),
                             IsShowOnHome = false,
                             OriginalPrice = 100000m,
                             Price = 200000m,
@@ -1035,7 +1054,7 @@ namespace ECommerce.DataAccess.Migrations
                 {
                     b.HasOne("ECommerce.Models.Entities.Order", "Order")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

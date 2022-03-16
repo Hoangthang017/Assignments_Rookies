@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ECommerce.DataAccess.Migrations
 {
-    public partial class initialDB : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -90,6 +90,7 @@ namespace ECommerce.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    IsShowOnHome = table.Column<bool>(type: "bit", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -523,8 +524,8 @@ namespace ECommerce.DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_OrderDetails", x => new { x.OrderId, x.ProductId });
                     table.ForeignKey(
-                        name: "FK_OrderDetails_Orders_ProductId",
-                        column: x => x.ProductId,
+                        name: "FK_OrderDetails_Orders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -560,8 +561,8 @@ namespace ECommerce.DataAccess.Migrations
                 columns: new[] { "Id", "Caption", "DateCreated", "FileSize", "ImagePath", "SortOrder" },
                 values: new object[,]
                 {
-                    { 1, "We serve Fresh Vegestables", new DateTime(2022, 3, 13, 12, 52, 27, 326, DateTimeKind.Local).AddTicks(3294), 99999L, "https://localhost:7195/user-content/slide/bg_1.jpg", 1 },
-                    { 2, "100% Fresh &amp; Organic Foods", new DateTime(2022, 3, 13, 12, 52, 27, 326, DateTimeKind.Local).AddTicks(3305), 99999L, "https://localhost:7195/user-content/slide/bg_2.jpg", 1 }
+                    { 1, "We serve Fresh Vegestables", new DateTime(2022, 3, 16, 20, 45, 58, 978, DateTimeKind.Local).AddTicks(2809), 99999L, "https://localhost:7195/user-content/slide/bg_1.jpg", 1 },
+                    { 2, "100% Fresh &amp; Organic Foods", new DateTime(2022, 3, 16, 20, 45, 58, 978, DateTimeKind.Local).AddTicks(2823), 99999L, "https://localhost:7195/user-content/slide/bg_2.jpg", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -575,16 +576,16 @@ namespace ECommerce.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CreatedDate", "OriginalPrice", "Price", "UpdatedDate" },
-                values: new object[] { 1, new DateTime(2022, 3, 13, 12, 52, 27, 310, DateTimeKind.Local).AddTicks(9351), 100000m, 200000m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                columns: new[] { "Id", "CreatedDate", "IsShowOnHome", "OriginalPrice", "Price", "UpdatedDate" },
+                values: new object[] { 1, new DateTime(2022, 3, 16, 20, 45, 58, 962, DateTimeKind.Local).AddTicks(8121), false, 100000m, 200000m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("16a33b7f-8765-4e91-8c8d-c8a2c979a9cd"), "3bc3ea66-e325-46ca-b9e7-a951f662a5b0", "customer role", "customer", "customer" },
-                    { new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"), "eb7af200-887c-49b0-9b22-29bc33c2a829", "Administrator role", "admin", "admin" }
+                    { new Guid("16a33b7f-8765-4e91-8c8d-c8a2c979a9cd"), "4be9b269-7f32-4193-81b5-1ce661b0fa20", "customer role", "customer", "customer" },
+                    { new Guid("f972b64f-6780-4657-9ae2-4bb4ba262024"), "c6cd468f-af76-46a4-a6dd-badd54ceab20", "Administrator role", "admin", "admin" }
                 });
 
             migrationBuilder.InsertData(
@@ -592,8 +593,9 @@ namespace ECommerce.DataAccess.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DateOfBirth", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"), 0, "758961a7-f282-4bcc-b72f-1911f8c8bf89", new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "thangnh1394@gmail.com", true, "Thang", "Nguyen", false, null, "thangnh1394@gmail.com", "admin", "AQAAAAEAACcQAAAAENqwxma3zXLr7dgJihO+s9hfjas7rntKYewrhUyYszOfLgLXqQS4av+D6WrgRthWGA==", null, false, "", false, "admin" },
-                    { new Guid("dd9efc6a-1ca0-4e0b-9362-5fb185558a33"), 0, "bce580a6-2c5f-4549-9119-d57522bc62a2", new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "thangnh1394@gmail.com", true, "Thang", "Nguyen", false, null, "thangnh1394@gmail.com", "customer", "AQAAAAEAACcQAAAAELWUY0yFOmOb4GvcjAwwvZcJ+0b35bhalXmYw5BsJnNQ+azYxDtXw2ct4fN9x0p9jw==", null, false, "", false, "customer" }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), 0, "c7d722f0-542e-4a5f-963b-0734b3048f2d", new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "", true, "", "", false, null, "", "guest", "AQAAAAEAACcQAAAAEAtzgF3k8AI8qVuBAnSK/e6OsjhCOF/1s/BDUU51qU0nmiktldLgD7Mrjxdk0ilctA==", null, false, "", false, "guest" },
+                    { new Guid("644f5caa-4b11-44a0-af41-0fd7a8de18ee"), 0, "df4781a3-00a9-4077-a7df-370d317f8c7c", new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "thangnh1394@gmail.com", true, "Thang", "Nguyen", false, null, "thangnh1394@gmail.com", "admin", "AQAAAAEAACcQAAAAEDvKNdqrN778E8kFdm2o0c6/jrSE4vOZjbxb1Vkm8WqlZ+DyKJFqniLMUwTAvcS+Cw==", null, false, "", false, "admin" },
+                    { new Guid("dd9efc6a-1ca0-4e0b-9362-5fb185558a33"), 0, "a07b0d62-f57f-4395-ac6f-68fc19582370", new DateTime(2000, 11, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "thangnh1394@gmail.com", true, "Thang", "Nguyen", false, null, "thangnh1394@gmail.com", "customer", "AQAAAAEAACcQAAAAEJ4a5fpobxDvKOeYFnetlNQWFebBNY6ca7ZM+39a9NPNx+mTJprdNO80HqIeU790+g==", null, false, "", false, "customer" }
                 });
 
             migrationBuilder.InsertData(

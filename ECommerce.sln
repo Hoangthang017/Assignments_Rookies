@@ -36,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.IdentityServer", 
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "ECommerce.AdminApp", "ECommerce.AdminApp\ECommerce.AdminApp.esproj", "{6CF69C4F-08E5-498D-BFEC-6A1AAD7DBD57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.ApiItegration", "ECommerce.ApiItegration\ECommerce.ApiItegration.csproj", "{0AB750F5-A0EB-4B1C-86A5-F274BA84783B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.ApiItegration", "ECommerce.ApiItegration\ECommerce.ApiItegration.csproj", "{0AB750F5-A0EB-4B1C-86A5-F274BA84783B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

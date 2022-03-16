@@ -1,4 +1,5 @@
 ﻿using ECommerce.DataAccess.Repository.ImageRepo;
+using ECommerce.DataAccess.Repository.OrderRepo;
 using ECommerce.DataAccess.Repository.ProductRepo;
 using ECommerce.DataAccess.Repository.UserRepo;
 
@@ -31,6 +32,8 @@ namespace ECommerce.DataAccess.Respository.Common
         #endregion User
 
         IImageRepository Image { get; }
+
+        IOrderRepository Order { get; }
 
         // save method
         Task<bool> Save();

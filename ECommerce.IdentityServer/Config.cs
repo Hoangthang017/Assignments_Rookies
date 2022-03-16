@@ -65,17 +65,18 @@ namespace ECommerce.IdentityServer
                 // interactive client using code flow + pkce
                 new Client
                 {
-                    ClientId = "interactive",
+                    ClientId = "web-app",
                     ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
 
-                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
 
-                    RedirectUris = { "https://localhost:7158/signin-oidc" },
+                    AllowedCorsOrigins = { "https://localhost:7158" },
+                    RedirectUris = { "https://localhost:7158/en-us/signin-oidc" },
                     FrontChannelLogoutUri = "https://localhost:7158/signout-oidc",
                     PostLogoutRedirectUris = { "https://localhost:7158/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile" }
+                    AllowedScopes = { "openid", "profile", "phone", "email" }
                 },
 
                 // interactive client using code flow + pkce
