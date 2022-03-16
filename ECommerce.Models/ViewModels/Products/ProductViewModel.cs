@@ -19,6 +19,8 @@ namespace ECommerce.Models.ViewModels.Products
 
         public string UpdatedDate { get; set; }
 
+        public bool IsShowOnHome { get; set; }
+
         // product translation
         public string Name { set; get; }
 

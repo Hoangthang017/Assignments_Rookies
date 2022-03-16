@@ -2,6 +2,7 @@
 using ECommerce.DataAccess.EF;
 using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.DataAccess.Repository.ImageRepo;
+using ECommerce.DataAccess.Repository.OrderRepo;
 using ECommerce.DataAccess.Repository.ProductRepo;
 using ECommerce.DataAccess.Repository.UserRepo;
 using ECommerce.DataAccess.Respository.Common;
@@ -53,6 +54,8 @@ namespace ECommerce.DataAccess.Infrastructure
                 storageService,
                 mapper,
                 configuration);
+
+            Order = new OrderRepository(context);
         }
 
         #region Product
@@ -76,6 +79,8 @@ namespace ECommerce.DataAccess.Infrastructure
         public IUserRepository User { get; private set; }
 
         public IImageRepository Image { get; private set; }
+
+        public IOrderRepository Order { get; private set; }
 
         // save method
         async Task<bool> IUnitOfWork.Save()

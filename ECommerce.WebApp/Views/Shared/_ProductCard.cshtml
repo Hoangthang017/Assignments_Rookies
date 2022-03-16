@@ -1,0 +1,37 @@
+﻿@using ECommerce.Models.ViewModels.Products
+@{
+    var currentCulture = "en-us";
+}
+
+
+<div class="col-md-6 col-lg-3 ftco-animate">
+    <div class="product">
+        <a class="img-prod" asp-route-culture = "@currentCulture" asp-controller="product" asp-route-productId = "@Model.Id">
+            <img class="img-fluid" src="@Model.imagePaths[0]" alt="@Model.Name" style="height: 220px;">
+            @*<span class="status">30%</span>*@
+            <div class="overlay"></div>
+        </a>
+        <div class="text py-3 pb-4 px-3 text-center">
+            <h3><a href="#">@Model.Name</a></h3>
+            <div class="d-flex">
+                <div class="pricing">
+                    <p class="price"><span>$@Model.Price</span></p>
+                </div>
+            </div>
+            <div class="bottom-area d-flex px-3">
+                <div class="m-auto d-flex">
+                    <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center btn-add-to-card" data-productId="@Model.Id">
+                        <span><i class="ion-ios-menu"></i></span>
+                    </a>
+                    <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+                        <span><i class="ion-ios-cart"></i></span>
+                    </a>
+                    <a href="#" class="heart d-flex justify-content-center align-items-center ">
+                        <span><i class="ion-ios-heart"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

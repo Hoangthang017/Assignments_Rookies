@@ -25,11 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ECommerce.ApiItegration\ECommerce.ApiItegration.csproj" />
     <ProjectReference Include="..\ECommerce.BackendApis\ECommerce.BackendApis.csproj" />
     <ProjectReference Include="..\ECommerce.DataAccess\ECommerce.DataAccess.csproj" />
     <ProjectReference Include="..\ECommerce.Models\ECommerce.Models.csproj" />
     <ProjectReference Include="..\ECommerce.Tests\ECommerce.Tests.csproj" />
     <ProjectReference Include="..\ECommerce.Utilities\ECommerce.Utilities.csproj" />
-    <ProjectReference Include="..\ECommerce.WebApp\ECommerce.WebApp.csproj" />
   </ItemGroup>
 </Project>

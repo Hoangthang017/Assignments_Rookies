@@ -91,6 +91,23 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(productsVMs);
         }
 
+        // GET: api/images/slide
+        [HttpGet("slide/{take}")]
+        public async Task<IActionResult> GetAllSlide(int take)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var slideVMs = await _unitOfWork.Image.GetAllSlide(take);
+
+            if (slideVMs == null)
+                return BadRequest();
+
+            return Ok(slideVMs);
+        }
+
         // UPDATE
         // PUT: api/images/user
         [HttpPut("user")]

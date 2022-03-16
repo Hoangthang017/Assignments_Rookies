@@ -13,6 +13,8 @@ namespace ECommerce.DataAccess.Repository.UserRepo
     {
         Task<string> Authencate(LoginRequest request);
 
+        Task<bool> RevokeToken(string token, InforClientRequest request);
+
         Task<string> CreateUser(RegisterRequest request);
 
         Task<UserInfoResponse> GetUserInfo(string token);

@@ -6,6 +6,7 @@ using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Images;
 using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.Images;
+using ECommerce.Models.ViewModels.Slides;
 using ECommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -134,6 +135,21 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
             return pageResult;
         }
 
+        public async Task<List<SlideViewModel>> GetAllSlide(int take)
+        {
+            var slides = from i in _context.Images
+                         join s in _context.Slides on i.Id equals s.ImageId
+                         select new SlideViewModel()
+                         {
+                             Id = i.Id,
+                             Description = s.Description,
+                             ImagePath = i.ImagePath,
+                             Name = i.Caption,
+                             SortOrder = i.SortOrder,
+                         };
+            return await slides.Take(take).ToListAsync();
+        }
+
         public async Task<string> GetUserImagePathByUserId(string userId)
         {
             var AvatarDefault = "https://localhost:7195/user-content/user/user-default.jpg";
@@ -234,7 +250,6 @@ namespace ECommerce.DataAccess.Repository.ImageRepo
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName, type);
             return _storageService.GetFileUrl(fileName, type);
-
         }
     }
 }

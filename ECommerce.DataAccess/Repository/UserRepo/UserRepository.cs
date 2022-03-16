@@ -297,16 +297,6 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             return pageResult;
         }
 
-        #region method utilities
-
-        private async Task<string> SaveFile(IFormFile file)
-        {
-            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
-            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName, "user");
-            return fileName;
-        }
-
         private async Task<Image> GetImageByUserId(string userId)
         {
             return await (from ui in _context.UserImages
@@ -327,6 +317,27 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             return disco;
         }
 
-        #endregion method utilities
+        public async Task<bool> RevokeToken(string token, InforClientRequest request)
+        {
+            var client = new HttpClient();
+
+            // discover endpoints from metadata
+            var disco = await GetDiscoveryDocument(client, IdentityServerHost);
+
+            var response = await client.RevokeTokenAsync(new TokenRevocationRequest
+            {
+                Address = disco.RevocationEndpoint,
+                ClientId = request.ClientId,
+                ClientSecret = request.ClientSecret,
+                Token = token
+            });
+
+            if (response.IsError)
+            {
+                throw new ECommerceException(response.Error);
+            }
+
+            return true;
+        }
     }
 }

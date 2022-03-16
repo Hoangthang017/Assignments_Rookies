@@ -73,6 +73,36 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(categoryVMs);
         }
 
+        // GET: api/category/featured/4/en-us
+        [HttpGet("featured/{take}/{languageId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetFeaturedCategory(int take, string languageId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var categoryVMs = await _unitOfWork.Category.GetFeaturedCategory(languageId, take);
+            if (categoryVMs == null)
+                return BadRequest();
+
+            return Ok(categoryVMs);
+        }
+
+        // GET: api/category/active/en-us
+        [HttpGet("active/{languageId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetActiveCategory(string languageId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var categoryVMs = await _unitOfWork.Category.GetActiveCategory(languageId);
+            if (categoryVMs == null)
+                return BadRequest();
+
+            return Ok(categoryVMs);
+        }
+
         // GET: api/category?categoryId=1&languageId=en-us
         [HttpGet("{categoryId}/{languageId}")]
         [Authorize]
