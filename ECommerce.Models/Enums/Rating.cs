@@ -8,6 +8,7 @@ namespace ECommerce.Models.Enums
 {
     public enum Rating
     {
+        ZeroStar,
         OneStar,
         TwoStars,
         ThreeStars,

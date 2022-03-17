@@ -39,8 +39,7 @@ namespace ECommerce.Utilities
         {
             public const int NumberOfFeaturedProducts = 8;
             public const int NumberOfRelatedProducts = 4;
-
-            public const int pageSizePaging = 4;
+            public const int pageSizePaging = 12;
         }
 
         public static class CategorySettings

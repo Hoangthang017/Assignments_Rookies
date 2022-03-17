@@ -17,11 +17,8 @@ namespace ECommerce.DataAccess.Repository.OrderRepo
             _context = context;
         }
 
-        public async Task<int> Create(int productId, Guid customerId, CreateOrderRequest request)
+        public async Task<int> Create(Guid customerId, CreateOrderRequest request)
         {
-            var product = await _context.Products.FindAsync(productId);
-            if (product == null) throw new ECommerceException("Cannot find the product");
-
             // check has customer and handle if it is anonymous account
             if (customerId == Guid.Empty) customerId = SystemConstants.AnonymousAccountSettings.Id;
             var customer = await _context.Users.FindAsync(customerId);
@@ -35,23 +32,29 @@ namespace ECommerce.DataAccess.Repository.OrderRepo
                 ShipPhoneNumber = request.ShipPhoneNumber,
                 OrderDate = DateTime.Now,
                 Status = request.Status,
-                User = customer,
+                User = customer
             };
 
-            var orderDetail = new OrderDetail()
+            // add list product
+            var orderDetails = new List<OrderDetail>();
+            foreach (var orderProduct in request.OrderProduct)
             {
-                Order = order,
-                OrderId = order.Id,
-                ProductId = productId,
-                Product = product,
-                Price = request.Price,
-                Quantity = request.Quantity
-            };
+                var product = await _context.Products.FindAsync(orderProduct.ProductId);
+                if (product == null) throw new ECommerceException($"Cannot find the product has id: {orderProduct.ProductId}");
 
-            order.OrderDetails = new List<OrderDetail>() { orderDetail };
+                orderDetails.Add(new OrderDetail()
+                {
+                    Order = order,
+                    OrderId = order.Id,
+                    ProductId = orderProduct.ProductId,
+                    Product = product,
+                    Price = orderProduct.Price,
+                    Quantity = orderProduct.Quantity
+                });
+            }
 
             await _context.Orders.AddAsync(order);
-
+            await _context.OrderDetails.AddRangeAsync(orderDetails);
             await _context.SaveChangesAsync();
 
             return order.Id;
@@ -59,27 +62,38 @@ namespace ECommerce.DataAccess.Repository.OrderRepo
 
         public async Task<OrderViewModel> GetById(Guid customerId, int orderId)
         {
+            // handle anonymous customer
             if (customerId == Guid.Empty) customerId = SystemConstants.AnonymousAccountSettings.Id;
-            var order = await (from o in _context.Orders
-                               join od in _context.OrderDetails on o.Id equals od.OrderId
-                               where o.Id == orderId && o.UserId == customerId
-                               select new OrderViewModel()
-                               {
-                                   Id = o.Id,
-                                   ShipName = o.ShipName,
-                                   ShipAddress = o.ShipAddress,
-                                   ShipEmail = o.ShipEmail,
-                                   ShipPhoneNumber = o.ShipPhoneNumber,
-                                   OrderDate = o.OrderDate,
-                                   Status = o.Status,
-                                   UserId = o.UserId,
-                                   Price = od.Price,
-                                   ProductId = od.ProductId,
-                                   Quantity = od.Quantity,
-                               }).FirstOrDefaultAsync();
-            if (order == null) throw new ECommerceException("Cannot find the order ");
 
-            return order;
+            // get order view model
+            var orderVM = await _context.Orders
+                    .Where(x => x.Id == orderId && x.UserId == customerId)
+                    .Select(x => new OrderViewModel()
+                    {
+                        Id = x.Id,
+                        ShipName = x.ShipName,
+                        ShipAddress = x.ShipAddress,
+                        ShipEmail = x.ShipEmail,
+                        ShipPhoneNumber = x.ShipPhoneNumber,
+                        OrderDate = x.OrderDate,
+                        Status = x.Status,
+                        UserId = x.UserId,
+                    }).FirstOrDefaultAsync();
+            if (orderVM == null) throw new ECommerceException("Cannot find the order");
+
+            // get all list order details
+            var orderDetails = await _context.OrderDetails
+                .Where(x => x.OrderId == orderVM.Id)
+                .Select(x => new OrderProductRequest()
+                {
+                    ProductId = x.ProductId,
+                    Price = x.Price,
+                    Quantity = x.Quantity
+                })
+                .ToListAsync();
+            orderVM.OrderProducts = new List<OrderProductRequest>(orderDetails);
+
+            return orderVM;
         }
     }
 }

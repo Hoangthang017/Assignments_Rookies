@@ -7,54 +7,40 @@ namespace ECommerce.ApiItegration
 {
     public class UserApiClient : BaseApiClient, IUserApiClient
     {
-        private Dictionary<string, object> loginRequest { get; set; }
-        private Dictionary<string, object> registerRequest { get; set; }
+        private readonly string _clientId = "web-app";
 
-        private readonly string baseApiUrl = "api/Users";
+        private readonly string _clientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
+
+        private readonly string _scope = "openid profile phone email";
+
+        private readonly string _baseApiUrl = "api/Users";
 
         public UserApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, IHttpContextAccessor httpContextAccessor) : base(httpClientFactory, configuration, httpContextAccessor)
         {
-            loginRequest = new Dictionary<string, object>()
-            {
-                {"clientId","web-app" },
-                {"clientSecret","49C1A7E1-0C79-4A89-A3D6-A37998FB86B0" },
-                {"scope", "openid profile phone email" }
-            };
-
-            registerRequest = new Dictionary<string, object>()
-            {
-                {"firstName","" },
-                {"lastName","" },
-                {"dateOfBirth", DateTime.Now } ,
-                {"email","" },
-                {"phoneNumber", "" },
-                {"isAdmin", false }
-            };
         }
 
         public async Task<Dictionary<string, string>> Authenticate(LoginRequest request)
         {
-            loginRequest.Add("userName", request.UserName);
-            loginRequest.Add("password", request.Password);
-            loginRequest.Add("rememberMe", request.RememberMe);
-            return await PostAsync<Dictionary<string, string>>(Path.Combine(baseApiUrl, "authenticate"), loginRequest);
+            request.ClientId = _clientId;
+            request.ClientSecret = _clientSecret;
+            request.Scope = _scope;
+            return await PostAsync<Dictionary<string, string>, LoginRequest>(Path.Combine(_baseApiUrl, "authenticate"), request);
         }
 
         public async Task<UserInfoViewModel> GetAccountInfor()
         {
-            return await GetAsync<UserInfoViewModel>(Path.Combine(baseApiUrl, "account"), true);
+            return await GetAsync<UserInfoViewModel>(Path.Combine(_baseApiUrl, "account"), true);
         }
 
         public async Task RevokeToken()
         {
-            await PostAsync(Path.Combine(baseApiUrl, "revoke"), loginRequest, true);
+            //await PostAsync(Path.Combine(_baseApiUrl, "revoke"), loginRequest, true);
         }
 
         public async Task<UserInfoViewModel> Register(string userName, string password)
         {
-            registerRequest.Add("userName", userName);
-            registerRequest.Add("password", password);
-            return await PostAsync<UserInfoViewModel>(Path.Combine(baseApiUrl, "register"), registerRequest);
+            var registerRequest = new RegisterRequest() { UserName = userName, Password = password };
+            return await PostAsync<UserInfoViewModel, RegisterRequest>(Path.Combine(_baseApiUrl, "register"), registerRequest);
         }
     }
 }
