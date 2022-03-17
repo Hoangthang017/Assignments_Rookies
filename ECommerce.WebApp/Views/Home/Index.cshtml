@@ -74,13 +74,13 @@
         </div>
     </div>
     <div class="container">
-        @await Component.InvokeAsync("CategoryNavBar",Model.isFeatured);
+        @await Component.InvokeAsync("CategoryNavBar",Model.isFeatured)
     </div>
     <div class="container">
         <div class="row">
             @foreach(var featuredProduct in Model.FeaturedProducts)
             {
-                @await Html.PartialAsync("_ProductCard", featuredProduct);
+                @await Html.PartialAsync("_ProductCard", featuredProduct)
             }
         </div>
     </div>

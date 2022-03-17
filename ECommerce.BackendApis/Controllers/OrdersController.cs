@@ -20,9 +20,9 @@ namespace ECommerce.BackendApis.Controllers
 
         // CREATE
         // POST: api/order/1
-        [HttpPost("{productId}")]
+        [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Create(int productId, CreateOrderRequest request)
+        public async Task<IActionResult> Create(CreateOrderRequest request)
         {
             var customerId = new Guid();
 
@@ -31,13 +31,13 @@ namespace ECommerce.BackendApis.Controllers
             if (!string.IsNullOrEmpty(token))
             {
                 var handler = new JwtSecurityTokenHandler();
-                var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-                if (jsonToken == null)
+                var jwtSecurityToken = handler.ReadJwtToken(token.FirstOrDefault("").Split(" ")[1]);
+                if (jwtSecurityToken == null)
                     return BadRequest("Fail to decode jwt token");
-                customerId = new Guid(jsonToken.Claims.First(claim => claim.Type == "sub").Value);
+                customerId = new Guid(jwtSecurityToken.Claims.First(claim => claim.Type == "sub").Value);
             }
 
-            var orderId = await _unitOfWork.Order.Create(productId, customerId, request);
+            var orderId = await _unitOfWork.Order.Create(customerId, request);
             if (orderId == 0)
                 return BadRequest("Fail to add order");
 

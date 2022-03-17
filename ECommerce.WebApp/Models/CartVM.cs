@@ -7,8 +7,6 @@ namespace ECommerce.WebApp.Models
     {
         public ProductViewModel Product { get; set; }
 
-        public CreateOrderRequest Request { get; set; }
-
         public int Quantity { get; set; }
 
         public decimal GetTotalPrice()
