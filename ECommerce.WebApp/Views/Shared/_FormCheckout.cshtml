@@ -1,17 +1,69 @@
 ﻿@using ECommerce.Models.Request.Orders
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
-@model CreateOrderRequest
+@model CheckoutVM
 @{
-    var check = @Model;
-    var isAuthenticate = !string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("token"));
+    var checkedOut = (Model.OrderId != null && Model.OrderId != 0);
 }
-<form asp-controller="cart" asp-action="checkout" method="post" class="billing-form" style="padding-top: 2rem;">
-    <input hiden asp-for=Price/>
-    <input hiden asp-for=Quantity/>
-    <input hiden asp-for=ShipAddress/>
-    <input hiden asp-for=ShipEmail/>
-    <input hiden asp-for=ShipName/>
-    <input hiden asp-for=ShipPhoneNumber/>
-    <button class="btn btn-primary py-3 px-4">Place an order</button>
+<form asp-controller="cart" asp-action="checkout" class="billing-form" style="padding-top: 2rem;">
+    <h3 class="mb-4 billing-heading"> @(checkedOut ? "Your Order Details" : "Billing Details")</h3>
+    <div class="row align-items-end">
+        @if (checkedOut)
+        {
+            <!-- code and status code -->
+            <div class="w-100"></div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="checkout-code">Code</label>
+                    <input disabled value=@("#"+Model.OrderId.ToString()) type="text" class="form-control" id="checkout-code">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="checkout-status">Status</label>
+                    <input disabled value=@Model.Status type="text" class="form-control" id="checkout-status">
+                </div>
+            </div>
+        }
+
+        <!-- Full name -->
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="checkout-shipName">Your Name</label>
+                <input disabled="@checkedOut" asp-for=ShipName type="text" class="form-control" id="checkout-shipName">
+            </div>
+        </div>
+
+        <!-- address -->
+        <div class="w-100"></div>
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="checkout-shipAddress">Your Address</label>
+                <input disabled="@checkedOut" asp-for=ShipAddress type="text" class="form-control" id="checkout-shipAddress">
+            </div>
+        </div>
+
+        <!-- phone and email -->
+        <div class="w-100"></div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="checkout-shipPhoneNumber">Phone</label>
+                <input disabled="@checkedOut" asp-for=ShipPhoneNumber type="text" class="form-control" id="checkout-shipPhoneNumber">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="checkout-shipEmail">Email Address</label>
+                <input disabled="@checkedOut" asp-for=ShipEmail type="text" class="form-control" id="checkout-shipEmail">
+            </div>
+        </div>
+    </div>
+
+    @if (!checkedOut)
+    {
+        <button class="btn btn-primary py-3 px-4">Place an order</button>
+    }
 </form>
+
+@if (checkedOut)
+{
+    <a asp-controller="home" asp-action="index" class="btn btn-primary py-3 px-4">Continue Shoping</a>
+}

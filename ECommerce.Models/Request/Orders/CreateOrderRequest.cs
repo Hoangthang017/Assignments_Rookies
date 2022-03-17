@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Models.Request.Orders
 {
-    public class CreateOrderRequest : BaseProductOrderRequest
+    public class CreateOrderRequest
     {
         public string ShipName { set; get; }
 
@@ -18,5 +18,7 @@ namespace ECommerce.Models.Request.Orders
         public string ShipPhoneNumber { set; get; }
 
         public OrderStatus Status { set; get; }
+
+        public List<OrderProductRequest> OrderProduct { get; set; }
     }
 }

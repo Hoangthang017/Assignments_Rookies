@@ -16,8 +16,6 @@ namespace ECommerce.ApiItegration
     {
         private readonly string BaseUrlApi = "api/products";
 
-        private readonly Dictionary<string, object> productReviewRequest = new Dictionary<string, object>() { };
-
         public ProductApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, IHttpContextAccessor httpContextAccessor) : base(httpClientFactory, configuration, httpContextAccessor)
         {
         }
@@ -25,9 +23,7 @@ namespace ECommerce.ApiItegration
         // POST: api/products/1/review/asdasd-adasd
         public async Task<ProductReviewViewModel> CreateProductReview(int productId, string customerId, CreateProductReviewRequest request)
         {
-            productReviewRequest.Add("rating", request.Rating);
-            productReviewRequest.Add("comment", request.Comment);
-            return await PostAsync<ProductReviewViewModel>(Path.Combine(BaseUrlApi, productId.ToString(), "review", customerId), productReviewRequest);
+            return await PostAsync<ProductReviewViewModel, CreateProductReviewRequest>(Path.Combine(BaseUrlApi, productId.ToString(), "review", customerId), request);
         }
 
         //paging/en-us?pageIndex=1&pagSize=1&categoryId=1

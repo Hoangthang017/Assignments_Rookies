@@ -31,7 +31,7 @@ namespace ECommerce.WebApp.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpPost("{productId}")]
         public async Task<IActionResult> Rating(int productId, CreateProductReviewRequest request)
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("token");
@@ -43,7 +43,7 @@ namespace ECommerce.WebApp.Controllers
                 var customerId = tokenS.Claims.FirstOrDefault(x => x.Type == "sub").Value;
                 var reviewVM = await _productApiClient.CreateProductReview(productId, customerId, request);
             }
-            return RedirectToAction(actionName: "detail", controllerName: "product", new { productId });
+            return RedirectToAction(actionName: "detail", controllerName: "product", routeValues: new { productId = productId });
         }
     }
 }

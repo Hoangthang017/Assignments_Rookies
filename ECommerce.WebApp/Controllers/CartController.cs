@@ -11,9 +11,12 @@ namespace ECommerce.WebApp.Controllers
     {
         private readonly IProductApiClient _productApiClient;
 
-        public CartController(IProductApiClient productApiClient)
+        private readonly IOrderApiClient _orderApiClient;
+
+        public CartController(IProductApiClient productApiClient, IOrderApiClient orderApiClient)
         {
             _productApiClient = productApiClient;
+            _orderApiClient = orderApiClient;
         }
 
         #region function for handle cart
@@ -47,8 +50,8 @@ namespace ECommerce.WebApp.Controllers
             return View(GetCartItems());
         }
 
-        [Route("{culture}/addcart/{productId:int}")]
-        public async Task<IActionResult> AddToCart([FromRoute] string culture, [FromRoute] int productId)
+        [Route("{culture}/addcart/{productId:int}/{quantity:int?}")]
+        public async Task<IActionResult> AddToCart(string culture, int productId, int? quantity)
         {
             var product = await _productApiClient.GetProductById(culture, productId);
             if (product == null)
@@ -59,12 +62,19 @@ namespace ECommerce.WebApp.Controllers
             if (cartItem != null)
             {
                 // had cart
-                cartItem.Quantity++;
+                if (quantity != null)
+                {
+                    cartItem.Quantity = (int)quantity;
+                }
+                else
+                {
+                    cartItem.Quantity++;
+                }
             }
             else
             {
                 // new cart
-                cart.Add(new CartVM { Product = product, Quantity = 1 });
+                cart.Add(new CartVM { Product = product, Quantity = (quantity == null ? 1 : (int)quantity) });
             }
 
             // save cart to session
@@ -121,11 +131,25 @@ namespace ECommerce.WebApp.Controllers
             return Json(new { redirectToUrl = Url.Action("cart", "cart") });
         }
 
-        public IActionResult Checkout(CheckoutVM request)
+        public async Task<IActionResult> Checkout(CreateOrderRequest request)
         {
-            var check = request;
+            // loop get all product in current order
+            var allItems = GetCartItems();
+            request.OrderProduct = new List<OrderProductRequest>();
+            foreach (var item in allItems)
+            {
+                request.OrderProduct.Add(new OrderProductRequest()
+                {
+                    Price = item.Product.Price,
+                    ProductId = item.Product.Id,
+                    Quantity = item.Quantity
+                });
+            }
 
-            return View();
+            var orderVM = await _orderApiClient.CreateOrder(request);
+            if (orderVM == null) throw new Exception("Order is unsuccess!!!");
+            ClearCart();
+            return View(orderVM);
         }
     }
 }

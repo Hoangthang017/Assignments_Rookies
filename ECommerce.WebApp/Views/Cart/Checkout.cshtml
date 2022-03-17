@@ -1,0 +1,57 @@
+﻿@using ECommerce.Models.Request.Orders
+@using ECommerce.Models.ViewModels.Orders
+@model OrderViewModel
+@{
+    ViewData["Title"] = "Review Checkout";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    decimal subTotal = 0;
+    decimal delivery = 0;
+    decimal discount = 0;
+
+    foreach(var product in Model.OrderProducts)
+    {
+        subTotal += (product.Price * product.Quantity);
+    }
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-7 ftco-animate">
+            @await Html.PartialAsync("_FormCheckout", new CheckoutVM(){
+                ShipAddress = Model.ShipAddress,
+                ShipName = Model.ShipName,
+                ShipEmail = Model.ShipEmail,
+                ShipPhoneNumber = Model.ShipPhoneNumber,
+                Status = Model.Status,
+                OrderId = Model.Id
+            })
+        </div>
+        <div class="col-xl-5">
+            <div class="row mt-5 pt-3" style="padding-top: 5rem !important;">
+                <div class="col-md-12 d-flex mb-5">
+                    <div class="cart-detail cart-total p-3 p-md-4">
+                        <h3>Cart Totals</h3>
+                        <p class="d-flex">
+                            <span>Subtotal</span>
+                            <span class="cart-items-subTotal">@subTotal</span>
+                        </p>
+                        <p class="d-flex">
+                            <span>Delivery</span>
+                            <span class="cart-items-delivery">$@delivery</span>
+                        </p>
+                        <p class="d-flex">
+                            <span>Discount</span>
+                            <span class="cart-items-discount">$@discount</span>
+                        </p>
+                        <hr>
+                        <p class="d-flex total-price">
+                            <span>Total</span>
+                            <span class="cart-items-totalPrice">$@(subTotal+delivery-discount)</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

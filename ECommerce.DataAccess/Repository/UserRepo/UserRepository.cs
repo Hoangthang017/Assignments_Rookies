@@ -103,11 +103,11 @@ namespace ECommerce.DataAccess.Repository.UserRepo
             var user = new User()
             {
                 DateOfBirth = request.DateOfBirth,
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
                 UserName = request.UserName,
-                PhoneNumber = request.PhoneNumber,
+                Email = request.Email ?? "",
+                FirstName = request.FirstName ?? "",
+                LastName = request.LastName ?? "",
+                PhoneNumber = request.PhoneNumber ?? "",
             };
 
             var userRespone = await _userManager.CreateAsync(user, request.Password);

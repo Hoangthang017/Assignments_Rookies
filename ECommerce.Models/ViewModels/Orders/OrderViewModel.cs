@@ -1,4 +1,5 @@
 ﻿using ECommerce.Models.Enums;
+using ECommerce.Models.Request.Orders;
 
 namespace ECommerce.Models.ViewModels.Orders
 {
@@ -20,10 +21,6 @@ namespace ECommerce.Models.ViewModels.Orders
 
         public Guid UserId { set; get; }
 
-        public int Quantity { set; get; }
-
-        public decimal Price { set; get; }
-
-        public int ProductId { set; get; }
+        public List<OrderProductRequest> OrderProducts { get; set; }
     }
 }

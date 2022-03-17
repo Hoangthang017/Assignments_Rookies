@@ -6,6 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
+
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSession(options =>
@@ -16,6 +21,7 @@ builder.Services.AddTransient<ISlideApiClient, SlideApiClient>();
 builder.Services.AddTransient<IProductApiClient, ProductApiClient>();
 builder.Services.AddTransient<ICategoryApiClient, CategoryApiClient>();
 builder.Services.AddTransient<IUserApiClient, UserApiClient>();
+builder.Services.AddTransient<IOrderApiClient, OrderApiClient>();
 
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 builder.Services.AddAuthentication();
@@ -75,18 +81,11 @@ app.UseEndpoints(endpoints =>
        });
     endpoints.MapControllerRoute(
         name: "Product Detail en-us",
-        pattern: "{culture=en-us}/product/{productId?}", new
+        pattern: "{culture=en-us}/product", new
         {
             controller = "Product",
             action = "Detail"
         });
-    endpoints.MapControllerRoute(
-       name: "product rating en-us",
-       pattern: "{culture=en-us}/product/{productId=0}/rating", new
-       {
-           controller = "product",
-           action = "rating"
-       });
     endpoints.MapControllerRoute(
         name: "Shop Index en-us",
         pattern: "{culture=en-us}/shop", new

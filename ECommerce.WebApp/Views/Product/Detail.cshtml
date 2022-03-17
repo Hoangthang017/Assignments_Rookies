@@ -1,10 +1,12 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿@using ECommerce.Models.Request.Products
+@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 @model ProductVM
 @{
     ViewData["Title"] = "Detail";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var totalRating = @Model.GetTotalRating();
+    int orderQuantity = 1;
 }
 
 <!-- product information -->
@@ -14,13 +16,13 @@
             <!-- slide show -->
             <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner" style="width: 540px; height: 432px;">
-                    <div class="carousel-item active">
-                        <img class="d-block style=" max-width: 540px; max-height: 432px;" " src="@Model.ProductViewModel.imagePaths[0]" alt="@Model.ProductViewModel.Name">
+                    <div class="carousel-item active" >
+                        <img class="d-block" style="width: 540px; height: 432px;" src="@Model.ProductViewModel.imagePaths[0]" alt="@Model.ProductViewModel.Name">
                     </div>
                     @for(int i =1; i < Model.ProductViewModel.imagePaths.Count(); i++)
                     {
                     <div class="carousel-item">
-                        <img class="d-block" style="max-width: 540px; max-height: 432px;" src="@Model.ProductViewModel.imagePaths[i]" alt="@Model.ProductViewModel.Name">
+                        <img class="d-block" style="width: 540px; height: 432px;" src="@Model.ProductViewModel.imagePaths[i]" alt="@Model.ProductViewModel.Name">
                     </div>
                     }
                 </div>
@@ -69,7 +71,7 @@
                                 <i class="ion-ios-remove"></i>
                             </button>
                         </span>
-                        <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100">
+                        <input type="text" id="quantity" name="quantity" class="form-control input-number input-order-quantity" value=@orderQuantity min="1" max="100">
                         <span class="input-group-btn ml-2">
                             <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
                                 <i class="ion-ios-add"></i>
@@ -81,7 +83,7 @@
                         <p style="color: #000;">@Model.ProductViewModel.Stock kg available</p>
                     </div>
                 </div>
-                <p><a href="cart.html" class="btn btn-black py-3 px-5">Add to Cart</a></p>
+                <p><a class="btn btn-black py-3 px-5 btn-add-to-card-productDetail" data-productId=@Model.ProductViewModel.Id>Add to Cart</a></p>
             </div>
         </div>
     </div>
@@ -143,8 +145,7 @@
     </div>
     }
     else{
-    @await Html.PartialAsync("_CommentBox")
-    ;
+        @await Html.PartialAsync("_CommentBox", new CreateProductReviewRequest())
     }
 </section>
 <!-- end -->
@@ -169,40 +170,3 @@
         </div>
     </div>
 </section>
-
-<script>
-        $(document).ready(function(){
-
-        var quantitiy=0;
-           $('.quantity-right-plus').click(function(e){
-
-                // Stop acting like a button
-                e.preventDefault();
-                // Get the field name
-                var quantity = parseInt($('#quantity').val());
-
-                // If is not undefined
-
-                    $('#quantity').val(quantity + 1);
-
-
-                    // Increment
-
-            });
-
-             $('.quantity-left-minus').click(function(e){
-                // Stop acting like a button
-                e.preventDefault();
-                // Get the field name
-                var quantity = parseInt($('#quantity').val());
-
-                // If is not undefined
-
-                    // Increment
-                    if(quantity>0){
-                    $('#quantity').val(quantity - 1);
-                    }
-            });
-
-        });
-</script>
