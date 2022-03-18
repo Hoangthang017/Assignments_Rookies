@@ -55,16 +55,15 @@
 
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item @(currentController=="home"?"active":"") " >
-                        <a 
-                            asp-controller="home" 
-                            asp-action="index" 
-                            asp-route-culture="@currentCulture" 
-                            class="nav-link">Home</a>
+                    <li class="nav-item @(currentController=="home"?"active":"") ">
+                        <a asp-controller="home"
+                           asp-action="index"
+                           asp-route-culture="@currentCulture"
+                           class="nav-link">Home</a>
                     </li>
                     <li class="nav-item @(currentController=="shop"?"active":"") ">
                         <a asp-controller="shop"
-                           asp-action = "index"
+                           asp-action="index"
                            asp-route-culture=@currentCulture
                            class="nav-link">
                             Shop
@@ -73,34 +72,28 @@
                     @if (isAuthenticate)
                     {
                         <li class="nav-item">
-                            <a 
-                                asp-controller="account" 
-                                asp-action="logout" 
-                                class="nav-link">Logout</a>
+                            <a class="nav-link btn-modal-logout" style="cursor: pointer">Logout</a>
                         </li>
                     }
                     else
                     {
-                        <li class="nav-item @(currentController=="account" && currentAction=="index" ?"active":"") ">
-                            <a 
-                                asp-controller="account" 
-                                asp-action="index" 
-                                class="nav-link">Login</a>
+                        <li class="nav-item @(currentController=="account" && currentAction=="login" ?"active":"") ">
+                            <a asp-controller="account"
+                           asp-action="login"
+                           class="nav-link">Login</a>
                         </li>
                         <li class="nav-item @(currentController=="account" && currentAction=="register" ?"active":"") ">
-                            <a 
-                                asp-controller="account" 
-                                asp-action="register" 
-                                class="nav-link">Register</a>
+                            <a asp-controller="account"
+                           asp-action="register"
+                           class="nav-link">Register</a>
                         </li>
                     }
                     <li class="nav-item cta cta-colored ">
-                        <a 
-                            asp-controller="cart" 
-                            asp-action="cart"
-                            class="nav-link" >
-                                <span class="icon-shopping_cart"></span>
-                                [ @await Html.PartialAsync("_NumOfCart") ]
+                        <a asp-controller="cart"
+                           asp-action="cart"
+                           class="nav-link">
+                            <span class="icon-shopping_cart"></span>
+                            [ @await Html.PartialAsync("_NumOfCart") ]
                         </a>
                     </li>
                 </ul>
@@ -116,14 +109,13 @@
     else
     {
         <hr class="dropdown-divider">
-
     }
+
     <!-- END SLIDE -->
     <!-- BODY -->
     @RenderBody()
     <!-- END BODY -->
     <!-- FOORTER -->
-
     <hr class="dropdown-divider">
 
     <footer class="ftco-footer ftco-section">
@@ -143,9 +135,9 @@
                         <h2 class="ftco-heading-2">@ViewData["title"]</h2>
                         <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
                         <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
-                            <li class="ftco-animate"><a href="https://twitter.com/twitter"><span class="icon-twitter"></span></a></li>
-                            <li class="ftco-animate"><a href="https://www.facebook.com/"><span class="icon-facebook"></span></a></li>
-                            <li class="ftco-animate"><a href="https://www.instagram.com/"><span class="icon-instagram"></span></a></li>
+                            <li class="ftco-animate"><a class="redirect-external-page" href="https://twitter.com/twitter"><span class="icon-twitter"></span></a></li>
+                            <li class="ftco-animate"><a class="redirect-external-page"  href="https://www.facebook.com/"><span class="icon-facebook"></span></a></li>
+                            <li class="ftco-animate"><a class="redirect-external-page"  href="https://www.instagram.com/"><span class="icon-instagram"></span></a></li>
                         </ul>
                     </div>
                 </div>
@@ -171,15 +163,17 @@
                 <div class="col-md-12 text-center">
 
                     <p>
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                         Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     </p>
                 </div>
             </div>
         </div>
     </footer>
     <!-- END FOORTER -->
+
+    <!-- MODAL alert -->
+    @await Html.PartialAsync("_AlertModal")
+
     <!-- loader -->
     <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
 
@@ -198,6 +192,7 @@
     <script src="~/js/aos.js"></script>
     <script src="~/js/main.js"></script>
     <script src="~/js/site.js"></script>
+    <script src="~/js/modalHandler.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

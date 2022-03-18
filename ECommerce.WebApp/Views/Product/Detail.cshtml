@@ -53,7 +53,7 @@
                         }
                     </div>
                     <p class="text-left mr-4" style="margin-left: 5%;">
-                        <aclass="mr-2" style="color: #000; font-size: 20px;">@Model.ProductReviewViewModels.Count() <span style="color: #bbb;">Rating</span></a>
+                        <a class="mr-2" style="color: #000; font-size: 20px;">@Model.ProductReviewViewModels.Count() <span style="color: #bbb;">Rating</span></a>
                     </p>
                     @*  <p class="text-left">
                         <a href="#" class="mr-2" style="color: #000;">500 <span style="color: #bbb;">Sold</span></a>
@@ -61,7 +61,7 @@
                 </div>
                 <p class="price"><span>$@Model.ProductViewModel.Price</span></p>
                 <p>
-                    @Model.ProductViewModel.Description
+                    @Model.ProductViewModel.Details
                 </p>
                 <div class="row mt-4">
                     <div class="w-100"></div>
@@ -80,10 +80,10 @@
                     </div>
                     <div class="w-100"></div>
                     <div class="col-md-12">
-                        <p style="color: #000;">@Model.ProductViewModel.Stock kg available</p>
+                        <p style="color: #000;"><span class="product-stock-availale">@Model.ProductViewModel.Stock</span> kg available</p>
                     </div>
                 </div>
-                <p><a class="btn btn-black py-3 px-5 btn-add-to-card-productDetail" data-productId=@Model.ProductViewModel.Id>Add to Cart</a></p>
+                <p><a class="btn btn-infor py-3 px-5 btn-add-to-card-productDetail" data-productId=@Model.ProductViewModel.Id>Add to Cart</a></p>
             </div>
         </div>
     </div>
@@ -126,7 +126,7 @@
                                 </div>
                                 <div class="text text-center">
                                     <p class="mb-5 pl-4 line">@review.Comment</p>
-                                    <p class="name">@review.CustomerName</p>
+                                    <p class="name">@(string.IsNullOrEmpty(review.CustomerName) ?  review.CustomerUsername : review.CustomerName)</p>
                                 </div>
                             </div>
                         </div>
@@ -165,7 +165,6 @@
             @foreach (var relatedProduct in @Model.RelatedProducts)
             {
             @await Html.PartialAsync("_ProductCard", relatedProduct)
-            ;
             }
         </div>
     </div>

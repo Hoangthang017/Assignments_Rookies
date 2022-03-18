@@ -20,6 +20,7 @@ namespace ECommerce.Utilities
 
         public static class AppSettings
         {
+            public const string ErrorResponseSessionKey = "ApiErrorResponse";
             public const string BackendApiAddress = "https://localhost:7195";
             public const string IdentityServerAddress = "https://localhost:5001";
             public const string DefaultAvatart = "https://localhost:7195/user-content/user/user-default.jpg";

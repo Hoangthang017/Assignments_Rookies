@@ -1,6 +1,6 @@
 ﻿using ECommerce.ApiItegration;
 using ECommerce.Models.Request.Users;
-using ECommerce.Models.ViewModels.UserInfos;
+using ECommerce.Utilities;
 using ECommerce.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,57 +15,66 @@ namespace ECommerce.WebApp.Controllers
             _userApiClient = userApiClient;
         }
 
+        // view of authenticate
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Login()
         {
             return View();
         }
 
-        [Route("login")]
-        [HttpPost]
-        public async Task<IActionResult> Authenticate(LoginRequest request)
+        //POST: /login
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             var response = await _userApiClient.Authenticate(request);
             if (response.Count == 0)
             {
-                TempData["loginErrorMessage"] = "User name or Password is incorrect!!!";
-                return RedirectToAction(actionName: "index", controllerName: "account");
+                TempData["loginErrorMessage"] = HttpContext.Session.GetString(SystemConstants.AppSettings.ErrorResponseSessionKey);
+                return View();
             }
             HttpContext.Session.SetString("token", response["token"]);
-            return RedirectToAction(actionName: "index", controllerName: "home");
+            return RedirectToAction(actionName: "login", controllerName: "home");
         }
 
-        public async Task<IActionResult> Logout()
+        //GET: /logout
+        [HttpGet]
+        public IActionResult Logout()
         {
             HttpContext.Session.Remove("token");
-            await _userApiClient.RevokeToken();
             return RedirectToAction(actionName: "index", controllerName: "home");
         }
 
+        // view of register
         [HttpGet]
-        public async Task<IActionResult> Register()
+        public IActionResult Register()
         {
             return View();
         }
 
-        [Route("register")]
-        [HttpPost]
+        //POST: /register
+        [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterVM register)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var response = await _userApiClient.Register(register.UserName, register.Password);
-                if (response != null)
-                {
-                    await Authenticate(new LoginRequest()
-                    {
-                        UserName = register.UserName,
-                        Password = register.Password
-                    });
-                    return RedirectToAction(actionName: "index", controllerName: "home");
-                }
+                return View();
             }
-            return View();
+            var response = await _userApiClient.Register(register.UserName, register.Password);
+            if (response == null)
+            {
+                TempData["registerErrorMessage"] = HttpContext.Session.GetString(SystemConstants.AppSettings.ErrorResponseSessionKey);
+                return View();
+            }
+            await Login(new LoginRequest()
+            {
+                UserName = register.UserName,
+                Password = register.Password
+            });
+            return RedirectToAction(actionName: "index", controllerName: "home");
         }
     }
 }

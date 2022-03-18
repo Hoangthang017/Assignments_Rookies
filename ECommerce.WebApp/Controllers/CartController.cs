@@ -111,7 +111,7 @@ namespace ECommerce.WebApp.Controllers
             }
 
             // return non-variable, only ajax call to handle
-            return Json(new { redirectToUrl = Url.Action("cart", "cart") });
+            return Json(new { productTotalPrice = cartItem.GetTotalPrice(), subTotal = cartTotalVM.SubTotal, total = cartTotalVM.GetTotalPrice() });
         }
 
         [HttpDelete("/cart/{productId}")]
@@ -122,17 +122,35 @@ namespace ECommerce.WebApp.Controllers
             if (cartItem != null)
             {
                 // had cart
+                var productTotalPrice = cartItem.GetTotalPrice();
                 cart.Remove(cartItem);
+
+                SaveCartSession(cart);
+
+                // for ajax call
+                return Json(new { removeProductTotalPrice = productTotalPrice });
             }
 
-            SaveCartSession(cart);
-
-            // for ajax call
-            return Json(new { redirectToUrl = Url.Action("cart", "cart") });
+            return BadRequest();
         }
 
         public async Task<IActionResult> Checkout(CreateOrderRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                var cartItems = GetCartItems();
+                foreach (var modelStateKey in ModelState.Keys)
+                {
+                    var modelStateVal = ModelState[modelStateKey];
+                    foreach (var error in modelStateVal.Errors)
+                    {
+                        var key = modelStateKey;
+                        var errorMessage = error.ErrorMessage;
+                        TempData[key] = errorMessage;
+                    }
+                }
+                return RedirectToAction(actionName: "cart", controllerName: "cart", cartItems);
+            }
             // loop get all product in current order
             var allItems = GetCartItems();
             request.OrderProduct = new List<OrderProductRequest>();

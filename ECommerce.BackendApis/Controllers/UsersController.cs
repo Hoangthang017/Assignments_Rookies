@@ -20,6 +20,7 @@ namespace ECommerce.BackendApis.Controllers
         }
 
         // login
+        // POST: api/users/authenticate
         [HttpPost("authenticate")]
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
@@ -28,7 +29,7 @@ namespace ECommerce.BackendApis.Controllers
                 return BadRequest(ModelState);
             var resultToken = await _unitOfWork.User.Authencate(request);
             if (string.IsNullOrEmpty(resultToken))
-                return BadRequest("User name or password is incorrect");
+                return BadRequest("User name or Password is incorrect");
             return Ok(new { token = resultToken });
         }
 

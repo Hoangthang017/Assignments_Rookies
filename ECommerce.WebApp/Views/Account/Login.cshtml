@@ -1,32 +1,31 @@
 ﻿@using ECommerce.Models.Request.Users
+@using ECommerce.Utilities
 @model LoginRequest
 @{
     ViewData["title"] = "login";
 }
 <div class="col-sm-6" style="margin: auto; margin-bottom: 10%; margin-top: 10%">
     <div class="card login-wrapper" style="align-content: center;">
-        @if (TempData["loginErrorMessage"] != null)
-        {
-            <div class="alert alert-danger" role="alert">
-                @TempData["loginErrorMessage"]
-            </div>
-        }
-
         <div class="card-header">
             <h2>Welcome to our website</h2>
         </div>
 
         <div class="card-body">
-            <form asp-action="authenticate" asp-controller="account" method="post">
-                <input type="hidden" />
+            @if (TempData["loginErrorMessage"] != null)
+            {
+                @await Html.PartialAsync("_AlertError", TempData["loginErrorMessage"])
+            }
+            <form asp-controller="account" asp-action="login" method="post">
 
                 <div class="form-group">
                     <label asp-for="UserName"></label>
-                    <input class="form-control" placeholder="Username" asp-for="UserName" autofocus>
+                    <input class="form-control" placeholder="User name" asp-for="UserName" autofocus>
+                    <span asp-validation-for=UserName style="color: red;"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Password"></label>
                     <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
+                    <span asp-validation-for=Password style="color: red;"></span>
                 </div>
                 <div class="form-group">
                     <div class="form-check">
