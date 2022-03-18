@@ -94,15 +94,22 @@ public class BaseApiClient : IBaseApiClinet
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
         }
 
-        var repsone = await client.PostAsync(url, httpContent);
-        var body = await repsone.Content.ReadAsStringAsync();
-        if (repsone.StatusCode == HttpStatusCode.Created && body.Contains("value"))
+        var response = await client.PostAsync(url, httpContent);
+
+        var body = await response.Content.ReadAsStringAsync();
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _httpContextAccessor.HttpContext.Session.SetString(SystemConstants.AppSettings.ErrorResponseSessionKey, body);
+            return (ReponseType)Activator.CreateInstance(typeof(ReponseType));
+        }
+
+        if (response.StatusCode == HttpStatusCode.Created && body.Contains("value"))
         {
             Dictionary<string, object> data = (Dictionary<string, object>)JsonConvert.DeserializeObject(body,
                 typeof(Dictionary<string, object>));
             body = data["value"].ToString();
         }
-        if (repsone.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             ReponseType myDeserializedObjList = (ReponseType)JsonConvert.DeserializeObject(body,
                 typeof(ReponseType));

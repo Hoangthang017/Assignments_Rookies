@@ -4,11 +4,11 @@
 	var isHome = (ViewContext.RouteData.Values["controller"].ToString().ToLower() == "home");
 }
 <!-- SLIDE  -->
-<section id="home-section" class="hero">
+<section id="home-section" class="hero" style="height: 70vh;">
 	<div class="home-slider owl-carousel">
         @foreach(var slide in Model)
         {
-            <div class="slider-item" style="background-image: url(@slide.ImagePath);">
+            <div class="slider-item" style="background-image: url(@slide.ImagePath); height: 70vh;">
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
@@ -17,7 +17,7 @@
 						<h1 class="mb-2">@slide.Name</h1>
 						<h2 class="subheading mb-4">@slide.Description</h2>
 						<!-- if we go to product hide button go to shop -->
-                        @if(isHome) {<p><a asp-controller="shop" asp-action="index" class="btn btn-primary">View Details</a></p>}} 
+                        @if(isHome) {<p><a asp-controller="shop" asp-action="index" class="btn btn-primary">View Details</a></p>}
 					</div>
 				</div>
 			</div>

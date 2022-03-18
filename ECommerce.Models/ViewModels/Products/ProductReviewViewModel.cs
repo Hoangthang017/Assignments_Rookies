@@ -1,9 +1,4 @@
 ﻿using ECommerce.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.Models.ViewModels.Products
 {
@@ -20,6 +15,8 @@ namespace ECommerce.Models.ViewModels.Products
         public Guid CustomerId { get; set; }
 
         public string CustomerName { get; set; }
+
+        public string CustomerUsername { get; set; }
 
         public string customerAvatar { get; set; }
     }
