@@ -5,6 +5,11 @@
 }
 <form asp-controller="cart" asp-action="checkout" class="billing-form" style="padding-top: 2rem;">
     <h3 class="mb-4 billing-heading"> @(checkedOut ? "Your Order Details" : "Billing Details")</h3>
+    @if (TempData["checkoutErrorMessage"] != null)
+    {
+        @await Html.PartialAsync("_AlertError", TempData["checkoutErrorMessage"])
+    }
+
     <div class="row align-items-end">
         @if (checkedOut)
         {
@@ -27,8 +32,12 @@
         <!-- Full name -->
         <div class="col-md-12">
             <div class="form-group">
-                <label for="checkout-shipName">Your Name</label>
+                <label asp-for="ShipName">Your Name</label>
                 <input disabled="@checkedOut" asp-for=ShipName type="text" class="form-control" id="checkout-shipName">
+                @if (TempData["ShipName"] != null)
+                {
+                    @await Html.PartialAsync("_AlertError", TempData["ShipName"])
+                }
             </div>
         </div>
 
@@ -36,8 +45,12 @@
         <div class="w-100"></div>
         <div class="col-md-12">
             <div class="form-group">
-                <label for="checkout-shipAddress">Your Address</label>
+                <label asp-for=ShipAddress>Your Address</label>
                 <input disabled="@checkedOut" asp-for=ShipAddress type="text" class="form-control" id="checkout-shipAddress">
+                @if (TempData["ShipAddress"] != null)
+                {
+                    @await Html.PartialAsync("_AlertError", TempData["ShipAddress"])
+                }
             </div>
         </div>
 
@@ -45,14 +58,22 @@
         <div class="w-100"></div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="checkout-shipPhoneNumber">Phone</label>
+                <label asp-for=ShipPhoneNumber>Phone</label>
                 <input disabled="@checkedOut" asp-for=ShipPhoneNumber type="text" class="form-control" id="checkout-shipPhoneNumber">
+                @if (TempData["ShipPhoneNumber"] != null)
+                {
+                    @await Html.PartialAsync("_AlertError", TempData["ShipPhoneNumber"])
+                }
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="checkout-shipEmail">Email Address</label>
+                <label asp-for=ShipEmail>Email Address</label>
                 <input disabled="@checkedOut" asp-for=ShipEmail type="text" class="form-control" id="checkout-shipEmail">
+                @if (TempData["ShipEmail"] != null)
+                {
+                    @await Html.PartialAsync("_AlertError", TempData["ShipEmail"])
+                }
             </div>
         </div>
     </div>

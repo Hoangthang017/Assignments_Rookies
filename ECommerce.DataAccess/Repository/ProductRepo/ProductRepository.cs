@@ -368,7 +368,8 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                                               Rating = pr.Rating,
                                               ReviewDate = pr.ReviewDate,
                                               Comment = pr.Comment,
-                                              CustomerName = u.FirstName + u.LastName,
+                                              CustomerUsername = u.UserName,
+                                              CustomerName = u.FirstName + " " + u.LastName,
                                               customerAvatar = i.ImagePath == null ? SystemConstants.AppSettings.DefaultAvatart : i.ImagePath,
                                           }).ToListAsync();
 
@@ -415,7 +416,8 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                                       Rating = pr.Rating,
                                       ReviewDate = pr.ReviewDate,
                                       CustomerId = u.Id,
-                                      CustomerName = u.FirstName + u.LastName,
+                                      CustomerUsername = u.UserName,
+                                      CustomerName = u.FirstName + " " + u.LastName,
                                       customerAvatar = i.ImagePath == null ? SystemConstants.AppSettings.DefaultAvatart : i.ImagePath,
                                   }).FirstOrDefaultAsync();
             if (reviewVM == null) throw new ECommerceException("Cannot find the review");

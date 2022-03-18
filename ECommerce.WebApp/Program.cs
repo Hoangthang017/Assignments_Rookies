@@ -70,7 +70,7 @@ app.UseEndpoints(endpoints =>
         pattern: "login", new
         {
             controller = "account",
-            action = "Index"
+            action = "login"
         });
     endpoints.MapControllerRoute(
        name: "acount register en-us",

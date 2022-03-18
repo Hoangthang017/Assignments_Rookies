@@ -18,7 +18,6 @@
             @foreach (var productVM in Model.ProductViewModels.Items)
             {
                 @await Html.PartialAsync("_ProductCard", productVM)
-                ;
             }
         </div>
         @if (Model.ProductViewModels.PageCount > 1)
