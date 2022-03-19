@@ -1,9 +1,5 @@
 ﻿using ECommerce.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommerce.Models.Request.Categories
 {
@@ -17,14 +13,8 @@ namespace ECommerce.Models.Request.Categories
 
         public Status Status { set; get; }
 
-        public string Name { set; get; }
-
-        public string SeoTitle { set; get; }
-
-        public string SeoAlias { set; get; }
-
-        public string SeoDescription { set; get; }
-
+        [Required(ErrorMessage = "LanguageId is required")]
+        [MaxLength(5, ErrorMessage = "Max length of languageId is 5 characters")]
         public string languageId { get; set; }
     }
 }

@@ -56,11 +56,7 @@ namespace ECommerce.IdentityServer
                 claims.Add(new Claim(JwtClaimTypes.Role, "customer"));
             }
 
-            //
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
-
-            //if (claims == null)
-            //    throw new ECommerceException("Don't have claim to request");
 
             context.IssuedClaims.AddRange(claims);
         }

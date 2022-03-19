@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ECommerce.Models.Request.Images
+﻿namespace ECommerce.Models.Request.Images
 {
-    public class CreateUserImageRequest : CreateImageBaseRequest
+    public class CreateUserImageRequest : BaseImageRequest
     {
         public string UserId { get; set; }
     }

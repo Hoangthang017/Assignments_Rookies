@@ -37,7 +37,7 @@ namespace ECommerce.WebApp.Controllers
                 return View();
             }
             HttpContext.Session.SetString("token", response["token"]);
-            return RedirectToAction(actionName: "login", controllerName: "home");
+            return RedirectToAction(actionName: "index", controllerName: "home");
         }
 
         //GET: /logout

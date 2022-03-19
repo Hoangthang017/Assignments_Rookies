@@ -7,7 +7,6 @@ using ECommerce.DataAccess.Repository.ProductRepo;
 using ECommerce.DataAccess.Repository.UserRepo;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Entities;
-using IdentityServer4;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -19,7 +18,6 @@ namespace ECommerce.DataAccess.Infrastructure
 
         public UnitOfWork(
             ECommerceDbContext context,
-            IdentityServerTools tools,
             IStorageService storageService,
             IMapper mapper,
             UserManager<User> userManager,
@@ -31,23 +29,12 @@ namespace ECommerce.DataAccess.Infrastructure
 
             Product = new ProductRepository(context, storageService, mapper);
 
-            ProductImage = new ProductImageRepository(context, storageService, mapper);
-
-            ProductInCategory = new ProductInCategoryRepository(context);
-
-            ProductReview = new ProductReviewRepository(context);
-
-            ProductTranslation = new ProductTranslationRepository(context);
-
             Category = new CategoryRepository(context, mapper);
-
-            CategoryTranslation = new CategoryTranslationRepository(context);
 
             Image = new ImageRepository(context, storageService);
 
             User = new UserRepository(
                 context,
-                tools,
                 userManager,
                 signInManager,
                 roleManager,
@@ -58,23 +45,9 @@ namespace ECommerce.DataAccess.Infrastructure
             Order = new OrderRepository(context);
         }
 
-        #region Product
-
         public IProductRepository Product { get; private set; }
 
-        public IProductImageRepository ProductImage { get; private set; }
-
-        public IProductInCategoryRepository ProductInCategory { get; private set; }
-
-        public IProductReviewRepository ProductReview { get; private set; }
-
-        public IProductTranslationRepository ProductTranslation { get; private set; }
-
-        #endregion Product
-
         public ICategoryRepository Category { get; private set; }
-
-        public ICategoryTranslationRepository CategoryTranslation { get; private set; }
 
         public IUserRepository User { get; private set; }
 

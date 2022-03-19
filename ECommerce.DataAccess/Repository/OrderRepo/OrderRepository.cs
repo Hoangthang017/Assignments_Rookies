@@ -24,6 +24,7 @@ namespace ECommerce.DataAccess.Repository.OrderRepo
             var customer = await _context.Users.FindAsync(customerId);
             if (customer == null) throw new ECommerceException("Cannot find the customer");
 
+            //add order
             var order = new Order()
             {
                 ShipName = request.ShipName,

@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ECommerce.Utilities
+﻿namespace ECommerce.Utilities
 {
     public static class SystemConstants
     {
-        public const string MainConnectionString = "ECommerceDB";
-        public const string CartSessionKey = "card";
-
         public static class AnonymousAccountSettings
         {
             public static Guid Id = new Guid("00000000-0000-0000-0000-000000000001");
@@ -20,15 +11,34 @@ namespace ECommerce.Utilities
 
         public static class AppSettings
         {
+            public const string MainConnectionString = "ECommerceDB";
             public const string ErrorResponseSessionKey = "ApiErrorResponse";
             public const string BackendApiAddress = "https://localhost:7195";
             public const string IdentityServerAddress = "https://localhost:5001";
-            public const string DefaultAvatart = "https://localhost:7195/user-content/user/user-default.jpg";
         }
 
-        public static class SlideSettings
+        public static class ImageSettings
         {
+            public const string FolderSaveImage = "user-content";
+            public const string FolderSaveUserImage = "user";
+            public const string FolderSaveProductImage = "product";
+
+            public const string NameOfDefaultAvatart = "user-default.jpg";
+            public const string NameOfDefaultProductImage = "default-product-image.png";
+
             public const int NumberOfSlide = 2;
+
+            public static string DefaultAvatart = Path.Combine(
+                AppSettings.BackendApiAddress,
+                FolderSaveImage,
+                FolderSaveUserImage,
+                NameOfDefaultAvatart);
+
+            public static string DefaultProductImage = Path.Combine(
+                AppSettings.BackendApiAddress,
+                FolderSaveImage,
+                FolderSaveProductImage,
+                NameOfDefaultProductImage);
         }
 
         public static class LanguageSettings
@@ -45,6 +55,7 @@ namespace ECommerce.Utilities
 
         public static class CategorySettings
         {
+            public const string CartSessionKey = "card";
             public const int NumberOfFeaturedCategory = 4;
         }
     }

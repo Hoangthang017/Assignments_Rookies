@@ -44,11 +44,11 @@ namespace ECommerce.IdentityServer
 
                     AllowAccessTokensViaBrowser = true,
 
-                    RedirectUris = { "https://localhost:44401/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44401/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:44401/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:3000/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:3000/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:3000/signout-callback-oidc" },
 
-                    AllowedCorsOrigins = new[] { "https://localhost:44401"},
+                    AllowedCorsOrigins = new[] { "https://localhost:3000"},
 
                     AllowOfflineAccess = true,
 

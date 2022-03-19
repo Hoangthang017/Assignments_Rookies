@@ -1,12 +1,14 @@
 ﻿using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Images;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.BackendApis.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ImagesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -19,19 +21,19 @@ namespace ECommerce.BackendApis.Controllers
         // CREATE
         // POST: api/images/user
         [HttpPost("user")]
+        [AllowAnonymous]
         public async Task<IActionResult> Create([FromForm] CreateUserImageRequest request)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var imageId = await _unitOfWork.Image.AddImage(request);
-
             if (imageId == 0)
-                return BadRequest();
+                return BadRequest("Error to create the image");
 
             var image = _unitOfWork.Image.GetSingleById(imageId);
+            if (image == null)
+                return BadRequest("Cannot get the image view model");
 
             return CreatedAtAction(
                 nameof(GetById),
@@ -44,16 +46,15 @@ namespace ECommerce.BackendApis.Controllers
         public async Task<IActionResult> Create([FromForm] CreateProductImageRequest request)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var imageId = await _unitOfWork.Image.AddImage(request);
-
             if (imageId == 0)
-                return BadRequest();
+                return BadRequest("Error to create product image");
 
             var image = _unitOfWork.Image.GetSingleById(imageId);
+            if (image == null)
+                return BadRequest("Cannot get the image view model");
 
             return CreatedAtAction(
                 nameof(GetById),
@@ -64,46 +65,36 @@ namespace ECommerce.BackendApis.Controllers
         // GET
         // GET: api/images/user/5346D030-7824-4A41-9070-E7924B008D67
         [HttpGet("user/{userId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(string userId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var imagePath = await _unitOfWork.Image.GetUserImagePathByUserId(userId);
 
             if (string.IsNullOrEmpty(imagePath))
-                return BadRequest();
+                return BadRequest("Dont have any image path match in database");
 
             return Ok(imagePath);
         }
 
-        // GET: api/images/paging?pageIndex=1&pagSize=1
+        // GET: api/images/paging/1?pageIndex=1&pagSize=1
         [HttpGet("paging/{productId}")]
         public async Task<IActionResult> GetAllPaging(int productId, [FromQuery] PagingRequestBase request)
         {
-            var productsVMs = await _unitOfWork.Image.GetAllPaging(productId, request);
+            var imageVMs = await _unitOfWork.Image.GetAllPaging(productId, request);
+            if (imageVMs == null)
+                return BadRequest("Dont have any image product in database");
 
-            if (productsVMs == null)
-                return BadRequest();
-
-            return Ok(productsVMs);
+            return Ok(imageVMs);
         }
 
-        // GET: api/images/slide
+        // GET: api/images/slide/1
         [HttpGet("slide/{take}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllSlide(int take)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var slideVMs = await _unitOfWork.Image.GetAllSlide(take);
-
             if (slideVMs == null)
-                return BadRequest();
+                return BadRequest("Dont have any slide in database");
 
             return Ok(slideVMs);
         }
@@ -111,11 +102,15 @@ namespace ECommerce.BackendApis.Controllers
         // UPDATE
         // PUT: api/images/user
         [HttpPut("user")]
+        [AllowAnonymous]
         public async Task<IActionResult> Update([FromForm] UpdateUserImageRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var isSucess = await _unitOfWork.Image.UpdateImage(request);
             if (!isSucess)
-                return BadRequest();
+                return BadRequest("Error to update image");
             return Ok();
         }
 
@@ -123,9 +118,12 @@ namespace ECommerce.BackendApis.Controllers
         [HttpPut("product/{productId}/{imageId}")]
         public async Task<IActionResult> Update(int productId, int imageId, [FromForm] UpdateProductImageRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var isSucess = await _unitOfWork.Image.UpdateImage(imageId, productId, request);
             if (!isSucess)
-                return BadRequest();
+                return BadRequest("Error to update product image");
             return Ok();
         }
 
@@ -136,7 +134,7 @@ namespace ECommerce.BackendApis.Controllers
         {
             var isSuccess = await _unitOfWork.Image.DeleteImage(imageId);
             if (!isSuccess)
-                return BadRequest();
+                return BadRequest("Error to delete image");
             return Ok();
         }
     }

@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using ECommerce.Utilities;
+using Microsoft.AspNetCore.Hosting;
 
 namespace ECommerce.DataAccess.Infrastructure.Common
 {
     public class FileStorageService : IStorageService
     {
         private readonly string _userContentFolder;
-        private const string USER_CONTENT_FOLDER_NAME = "user-content";
-        private const string HOST_URL = "https://localhost:7195";
+        private const string USER_CONTENT_FOLDER_NAME = SystemConstants.ImageSettings.FolderSaveImage;
+        private const string HOST_URL = SystemConstants.AppSettings.BackendApiAddress;
 
         public FileStorageService(IWebHostEnvironment webHostEnvironment)
         {

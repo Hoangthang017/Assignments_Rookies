@@ -2,11 +2,6 @@
 using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.ApiItegration
 {

@@ -23,7 +23,7 @@ namespace ECommerce.WebApp.Controllers
 
         private List<CartVM> GetCartItems()
         {
-            var jsonCart = HttpContext.Session.GetString(SystemConstants.CartSessionKey);
+            var jsonCart = HttpContext.Session.GetString(SystemConstants.CategorySettings.CartSessionKey);
             if (jsonCart != null)
             {
                 return JsonConvert.DeserializeObject<List<CartVM>>(jsonCart);
@@ -33,13 +33,13 @@ namespace ECommerce.WebApp.Controllers
 
         private void ClearCart()
         {
-            HttpContext.Session.Remove(SystemConstants.CartSessionKey);
+            HttpContext.Session.Remove(SystemConstants.CategorySettings.CartSessionKey);
         }
 
         private void SaveCartSession(List<CartVM> lst)
         {
             var jsonCart = JsonConvert.SerializeObject(lst);
-            HttpContext.Session.SetString(SystemConstants.CartSessionKey, jsonCart);
+            HttpContext.Session.SetString(SystemConstants.CategorySettings.CartSessionKey, jsonCart);
         }
 
         #endregion function for handle cart
@@ -136,9 +136,10 @@ namespace ECommerce.WebApp.Controllers
 
         public async Task<IActionResult> Checkout(CreateOrderRequest request)
         {
+            var allItems = GetCartItems();
+
             if (!ModelState.IsValid)
             {
-                var cartItems = GetCartItems();
                 foreach (var modelStateKey in ModelState.Keys)
                 {
                     var modelStateVal = ModelState[modelStateKey];
@@ -149,11 +150,11 @@ namespace ECommerce.WebApp.Controllers
                         TempData[key] = errorMessage;
                     }
                 }
-                return RedirectToAction(actionName: "cart", controllerName: "cart", cartItems);
+                return RedirectToAction(actionName: "cart", controllerName: "cart", allItems);
             }
-            // loop get all product in current order
-            var allItems = GetCartItems();
+
             request.OrderProduct = new List<OrderProductRequest>();
+            // loop get all product in current order
             foreach (var item in allItems)
             {
                 request.OrderProduct.Add(new OrderProductRequest()

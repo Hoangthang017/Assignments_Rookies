@@ -6,7 +6,7 @@
 
 @{
     var session = HttpContextAccessor.HttpContext.Session;
-    string jsoncart = session.GetString (SystemConstants.CartSessionKey);
+    string jsoncart = session.GetString (SystemConstants.CategorySettings.CartSessionKey);
     if (jsoncart != null) {
         var cart = JsonConvert.DeserializeObject<List<CartVM>> (jsoncart);
         <label id="numOfCartItems">@cart.Count</label>
