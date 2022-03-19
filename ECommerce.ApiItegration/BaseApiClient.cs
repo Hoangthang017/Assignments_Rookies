@@ -11,8 +11,8 @@ namespace ECommerce.ApiItegration;
 public class BaseApiClient : IBaseApiClinet
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IConfiguration _configuration;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IConfiguration _configuration;
 
     public BaseApiClient(
                 IHttpClientFactory httpClientFactory,
@@ -141,5 +141,41 @@ public class BaseApiClient : IBaseApiClinet
             return true;
         }
         return false;
+    }
+
+    public async Task<ReponseType> PatchAsync<ReponseType, RequestType>(string url, RequestType values, bool isAuthenticate = false)
+    {
+        var content = JsonConvert.SerializeObject(values);
+        var httpContent = new StringContent(content, Encoding.UTF8, "application/json");
+        var client = _httpClientFactory.CreateClient();
+        client.BaseAddress = new Uri(SystemConstants.AppSettings.BackendApiAddress);
+
+        // check has authenticate
+        if (isAuthenticate)
+        {
+            var sessions = _httpContextAccessor
+                .HttpContext
+                .Session
+                .GetString("token");
+            if (!string.IsNullOrEmpty(sessions))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+        }
+
+        var response = await client.PatchAsync(url, httpContent);
+
+        var body = await response.Content.ReadAsStringAsync();
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _httpContextAccessor.HttpContext.Session.SetString(SystemConstants.AppSettings.ErrorResponseSessionKey, body);
+            return (ReponseType)Activator.CreateInstance(typeof(ReponseType));
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            ReponseType myDeserializedObjList = (ReponseType)JsonConvert.DeserializeObject(body,
+                typeof(ReponseType));
+            return myDeserializedObjList;
+        };
+        return (ReponseType)Activator.CreateInstance(typeof(ReponseType));
     }
 }

@@ -2,13 +2,12 @@
 using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.Products;
+using ECommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.ApiItegration
 {
@@ -16,8 +15,13 @@ namespace ECommerce.ApiItegration
     {
         private readonly string BaseUrlApi = "api/products";
 
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public ProductApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration, IHttpContextAccessor httpContextAccessor) : base(httpClientFactory, configuration, httpContextAccessor)
         {
+            _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // POST: api/products/1/review/asdasd-adasd
@@ -55,6 +59,33 @@ namespace ECommerce.ApiItegration
         public async Task<List<ProductViewModel>> GetRelatedProduct(string languageId, int productId, int categoryId, int take)
         {
             return await GetListAsync<ProductViewModel>(Path.Combine(BaseUrlApi, "related", languageId, productId.ToString(), categoryId.ToString(), take.ToString()));
+        }
+
+        public async Task<bool> UpdateViewCount(int productId)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(SystemConstants.AppSettings.BackendApiAddress);
+            var sessions = _httpContextAccessor
+                    .HttpContext
+                    .Session
+                    .GetString("token");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+            var httpContent = new StringContent("", Encoding.UTF8, "application/json");
+
+            var response = await client.PatchAsync(Path.Combine(BaseUrlApi, "viewcount", productId.ToString()), httpContent);
+
+            var body = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            };
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                _httpContextAccessor.HttpContext.Session.SetString(SystemConstants.AppSettings.ErrorResponseSessionKey, body);
+            }
+
+            return false;
         }
     }
 }

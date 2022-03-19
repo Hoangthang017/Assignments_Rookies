@@ -21,7 +21,7 @@ namespace ECommerce.WebApp.Controllers
         public async Task<IActionResult> Detail(string culture, int productId)
         {
             var productVM = await _productApiClient.GetProductById(culture, productId);
-
+            await _productApiClient.UpdateViewCount(productId);
             return View(new ProductVM()
             {
                 ProductViewModel = productVM,

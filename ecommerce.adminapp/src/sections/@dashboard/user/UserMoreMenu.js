@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import AlertModal from 'src/sections/Modal/AlertModal';
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
 // component
@@ -15,7 +16,8 @@ export default function UserMoreMenu({id, setIdRemoveRow, type}) {
   const navigate = useNavigate();
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  
+  const [isOpenModalConfirm, setIsOpenModalConfirm] = useState(false);
+
   async function handleRemove() {
     var result = null;
     if (type === "user") {
@@ -47,7 +49,10 @@ export default function UserMoreMenu({id, setIdRemoveRow, type}) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem sx={{ color: 'text.secondary' }} onClick={handleRemove}>
+        <MenuItem sx={{ color: 'text.secondary' }} onClick={() => {
+          setIsOpenModalConfirm(true);
+          setIsOpen(false);
+        }}>
           <ListItemIcon>
             <Iconify icon="eva:trash-2-outline" width={24} height={24} />
           </ListItemIcon>
@@ -61,6 +66,13 @@ export default function UserMoreMenu({id, setIdRemoveRow, type}) {
           <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
       </Menu>
+      <AlertModal
+        isOpen={isOpenModalConfirm}
+        setIsOpen={setIsOpenModalConfirm}
+        title={'Delete Confirm'}
+        message={'Are you sure want to delete your row'}
+        setAgreeAction={handleRemove}
+      ></AlertModal>
     </>
   );
 }

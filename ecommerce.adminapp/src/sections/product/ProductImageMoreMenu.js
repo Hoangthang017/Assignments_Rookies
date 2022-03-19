@@ -6,7 +6,7 @@ import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/mat
 import Iconify from '../../components/Iconify';
 import { func } from 'prop-types';
 import DeteleProductImage from '../../api/product/DeleteProductImage';
-
+import AlertModal from 'src/sections/Modal/AlertModal';
 // ----------------------------------------------------------------------
 
 export default function ProductImageMoreMenu({
@@ -22,6 +22,7 @@ export default function ProductImageMoreMenu({
   const navigate = useNavigate();
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenModalConfirm, setIsOpenModalConfirm] = useState(false);
 
   async function handleRemove() {
     var result = await DeteleProductImage({imageId:id})
@@ -61,7 +62,11 @@ export default function ProductImageMoreMenu({
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem sx={{ color: 'text.secondary' }} onClick={handleRemove}>
+        <MenuItem sx={{ color: 'text.secondary' }} onClick={() => 
+          {
+            setIsOpenModalConfirm(true);
+            setIsOpen(false);
+          }}>
           <ListItemIcon>
             <Iconify icon="eva:trash-2-outline" width={24} height={24} />
           </ListItemIcon>
@@ -78,6 +83,13 @@ export default function ProductImageMoreMenu({
           <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
       </Menu>
+      <AlertModal
+        isOpen={isOpenModalConfirm}
+        setIsOpen={setIsOpenModalConfirm}
+        title={'Delete Confirm'}
+        message={'Are you sure want to delete your row'}
+        setAgreeAction={handleRemove}
+      ></AlertModal>
     </>
   );
 }

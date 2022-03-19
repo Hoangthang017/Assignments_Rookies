@@ -40,6 +40,7 @@ import UpdateCategory from 'src/api/category/UpdateCategory';
 import CreateCategory from 'src/api/category/CreateCategory';
 import UpdateShowOnHome from 'src/api/category/UpdateShowOnHome';
 import UpdateStatus from 'src/api/category/UpdateStatus';
+import AlertModal from '../Modal/AlertModal';
 //-----------------------------------------------------------------------------------------------
 const Android12Switch = styled(Switch)(({ theme }) => ({
   padding: 8,
@@ -90,6 +91,7 @@ function CreateOrUpdateCategory() {
   const [showOnHomeChange, setShowOnHomeChange] = useState(false);
   const [status, setStatus] = useState(1);
   const [statusChange, setStatusChange] = useState(false);
+  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
 
   const handleChange = (event) => {
     setLanguageId(event.target.value);
@@ -106,14 +108,23 @@ function CreateOrUpdateCategory() {
     if (event.target.checked) value = 1;
     setStatus(value);
     setStatusChange(true);
+    if (value === 0) setIsShowOnHome(false);
   }
 
   // validation
   const RegisterSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    seoTitle: Yup.string().required('Title is required'),
-    seoAlias: Yup.string().required('Alias is required'),
-    seoDescription: Yup.string().required('Description is required')
+    name: Yup.string()
+      .required('Name is required')
+      .max(200, 'Name has max length is 200 characters'),
+    seoTitle: Yup.string()
+      .required('Title is required')
+      .max(200, 'Seo title max length is 200 characters'),
+    seoAlias: Yup.string()
+      .required('Alias is required')
+      .max(200, 'Seo alias has max length is 200 characters'),
+    seoDescription: Yup.string()
+      .required('Description is required')
+      .max(500, 'Seo description has max length is 500 characters')
   });
 
   // call api
@@ -206,6 +217,7 @@ function CreateOrUpdateCategory() {
                       <TextField
                         fullWidth
                         label="Name"
+                        multiline={true}
                         {...getFieldProps('name')}
                         error={Boolean(touched.name && errors.name)}
                         helperText={touched.name && errors.name}
@@ -214,6 +226,7 @@ function CreateOrUpdateCategory() {
                       <TextField
                         sx={{ mt: '1.5rem' }}
                         fullWidth
+                        multiline={true}
                         label="Title"
                         {...getFieldProps('seoTitle')}
                         error={Boolean(touched.seoTitle && errors.seoTitle)}
@@ -224,6 +237,7 @@ function CreateOrUpdateCategory() {
                         fullWidth
                         sx={{ mt: '1.5rem', mb: '1.5rem' }}
                         label="Alias"
+                        multiline={true}
                         {...getFieldProps('seoAlias')}
                         error={Boolean(touched.seoAlias && errors.seoAlias)}
                         helperText={touched.seoAlias && errors.seoAlias}
@@ -232,6 +246,7 @@ function CreateOrUpdateCategory() {
                       <TextField
                         fullWidth
                         label="Description"
+                        multiline={true}
                         {...getFieldProps('seoDescription')}
                         error={Boolean(touched.seoDescription && errors.seoDescription)}
                         helperText={touched.seoDescription && errors.seoDescription}
@@ -276,7 +291,6 @@ function CreateOrUpdateCategory() {
                           onChange={handleChange}
                         >
                           <MenuItem value={'en-us'}>English</MenuItem>
-                          <MenuItem value={'vi-VN'}>Vietnamese</MenuItem>
                         </Select>
                       </FormControl>
                     </Card>
@@ -284,15 +298,38 @@ function CreateOrUpdateCategory() {
                 </Stack>
 
                 {/* register button */}
-                <LoadingButton
-                  fullWidth
-                  size="large"
-                  type="submit"
-                  variant="contained"
-                  loading={isSubmitting}
-                >
-                  {params.id ? 'Update' : 'Register'}
-                </LoadingButton>
+                {!params.id ? (
+                  <LoadingButton
+                    sx={{ mt: '1.5rem' }}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained"
+                    loading={isSubmitting}
+                  >
+                    Create
+                  </LoadingButton>
+                ) : (
+                  <>
+                    <LoadingButton
+                      sx={{ mt: '1.5rem' }}
+                      fullWidth
+                      size="large"
+                      variant="contained"
+                      loading={isSubmitting}
+                      onClick={() => setIsOpenConfirmModal(true)}
+                    >
+                      Update
+                    </LoadingButton>
+                    <AlertModal
+                      isOpen={isOpenConfirmModal}
+                      setIsOpen={setIsOpenConfirmModal}
+                      title={'Update Confirm'}
+                      message={'Are you sure want to update new information'}
+                      setAgreeAction={handleSubmit}
+                    ></AlertModal>
+                  </>
+                )}
               </Stack>
             </Form>
           </FormikProvider>
