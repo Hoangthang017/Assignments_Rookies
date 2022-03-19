@@ -1,21 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace ECommerce.Models.Request.Products
+﻿namespace ECommerce.Models.Request.Products
 {
-    public class UpdateProductRequest
+    public class UpdateProductRequest : BaseProductRequest
     {
-        public string Name { set; get; }
-
-        public string Description { set; get; }
-
-        public string Details { set; get; }
-
-        public string SeoDescription { set; get; }
-
-        public string SeoTitle { set; get; }
-
-        public string SeoAlias { get; set; }
-
-        public bool IsShowOnHome { get; set; }
     }
 }

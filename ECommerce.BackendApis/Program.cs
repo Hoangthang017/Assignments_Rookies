@@ -4,9 +4,6 @@ using ECommerce.DataAccess.Infrastructure.Common;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.AutoMapper;
 using ECommerce.Models.Entities;
-using ECommerce.Models.IdentityServer;
-using ECommerce.Models.Request.Validations;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // add json handler & fluent validation
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
-    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // add dbcontext
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
@@ -36,27 +32,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // add file storage for handler image
 builder.Services.AddTransient<IStorageService, FileStorageService>();
 
-// Identity Server 4
 // add identity EF
 builder.Services.AddIdentity<User, Role>() // use custome user and role
             .AddEntityFrameworkStores<ECommerceDbContext>() // declare DbContext
                                                             // add default token provider used to generate tokens for reset password,
                                                             // change mail and telephone number, operations and for 2FA token generation
             .AddDefaultTokenProviders();
-
-// add identity server
-builder.Services.AddIdentityServer(options => // custome event for identity server
-{
-    options.Events.RaiseErrorEvents = true;
-    options.Events.RaiseInformationEvents = true;
-    options.Events.RaiseFailureEvents = true;
-    options.Events.RaiseSuccessEvents = true;
-})
-    .AddInMemoryApiResources(IdentityServerConfig.Apis) // using in-memory resources
-    .AddInMemoryClients(IdentityServerConfig.Clients)
-    .AddInMemoryApiScopes(IdentityServerConfig.ApiScopes)
-    .AddAspNetIdentity<User>() // declare user using identity server
-    .AddDeveloperSigningCredential();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -76,13 +57,6 @@ builder.Services.AddCors(options =>
     builder => builder.AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader());
-    //setup.AddDefaultPolicy(policy =>
-    //{
-    //    policy.AllowAnyHeader();
-    //    policy.AllowAnyMethod();
-    //    policy.WithOrigins("https://localhost:5001/api/authenticate", "https://localhost:44401");
-    //    policy.AllowCredentials();
-    //});
 });
 
 // add author
@@ -162,7 +136,6 @@ app.UseStaticFiles();
 app.UseCors("CorsPolicy");
 
 // security
-app.UseIdentityServer();
 
 app.UseAuthentication();
 

@@ -16,7 +16,7 @@ namespace ECommerce.WebApp.Controllers.Components.Slide
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            return View(await _slideApiClient.GetAllSlide(SystemConstants.SlideSettings.NumberOfSlide));
+            return View(await _slideApiClient.GetAllSlide(SystemConstants.ImageSettings.NumberOfSlide));
         }
     }
 }

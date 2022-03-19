@@ -1,8 +1,6 @@
 ﻿using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request.Common;
 using ECommerce.Models.Request.Users;
-using ECommerce.Models.ViewModels.UserInfos;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +8,7 @@ namespace ECommerce.BackendApis.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +18,6 @@ namespace ECommerce.BackendApis.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // login
         // POST: api/users/authenticate
         [HttpPost("authenticate")]
         [AllowAnonymous]
@@ -33,23 +31,8 @@ namespace ECommerce.BackendApis.Controllers
             return Ok(new { token = resultToken });
         }
 
-        // login
-        [HttpPost("revoke")]
-        [Authorize]
-        public async Task<IActionResult> RevokeToken([FromBody] InforClientRequest request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var token = HttpContext.Request.Headers["Authorization"];
-            var resultToken = await _unitOfWork.User.RevokeToken(token, request);
-            if (!resultToken)
-                return BadRequest("Cannot revoke authorize token");
-            return Ok();
-        }
-
-        // register
+        //POST: api/users/register/admin
         [HttpPost("register/admin")]
-        [Authorize]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRequest request)
         {
             if (!ModelState.IsValid)
@@ -75,6 +58,7 @@ namespace ECommerce.BackendApis.Controllers
                     );
         }
 
+        //POST: api/users/register
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -96,94 +80,70 @@ namespace ECommerce.BackendApis.Controllers
                 );
         }
 
-        // Get information
+        //GET: api/users/account
         [HttpGet("account")]
-        [Authorize]
         public async Task<IActionResult> UserInfo()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var token = HttpContext.Request.Headers["Authorization"];
 
             var response = await _unitOfWork.User.GetUserInfo(token);
             if (response == null)
-                return BadRequest();
+                return BadRequest("Cannot find the user");
 
             return Ok(response.Raw);
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetAll()
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var response = await _unitOfWork.User.GetAll();
-            if (response == null)
-                return BadRequest();
-
-            return Ok(response);
-        }
-
+        //GET: api/users/paging
         [HttpGet("paging")]
-        [Authorize]
         public async Task<IActionResult> GetAllPaging([FromQuery] GetUserPagingRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var userInfoVMs = await _unitOfWork.User.GetAllPaging(request);
             if (userInfoVMs == null)
-                return BadRequest();
+                return BadRequest("Error to get all user");
 
             return Ok(userInfoVMs);
         }
 
+        //GET: api/users/adasd-asdasd
         [HttpGet("{userId}")]
-        [Authorize]
         public async Task<IActionResult> GetById(string userId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var response = await _unitOfWork.User.GetById(userId);
             if (response == null)
-                return BadRequest();
+                return BadRequest("Cannot find the user");
 
             return Ok(response);
         }
 
-        // update
+        //PUT: api/users/213123-1231231asda
         [HttpPut("{userId}")]
-        [Authorize]
         public async Task<IActionResult> Update(string userId, [FromBody] UpdateUserRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             var isSucess = await _unitOfWork.User.UpdateUser(userId, request);
             if (!isSucess)
-                return BadRequest();
+                return BadRequest("Update is unsuccess");
             return Ok();
         }
 
-        // delete
+        //DELETE: api/users/213123-123123123as
         [HttpDelete("{userId}")]
-        [Authorize]
         public async Task<IActionResult> Delete(string userId)
         {
             var isSucess = await _unitOfWork.User.RemoveUser(userId);
             if (!isSucess)
-                return BadRequest();
+                return BadRequest("Remove user is unsuccess");
             return Ok();
         }
 
+        //PATCH: api/users/deleteMulti
         [HttpPatch("deleteMulti")]
-        [Authorize]
         public async Task<IActionResult> DeleteMulti([FromBody] List<string> userIds)
         {
             var isSucess = await _unitOfWork.User.RemoveRangeUser(userIds);
             if (!isSucess)
-                return BadRequest();
+                return BadRequest("Remove all user with ids are unsuccess");
             return Ok();
         }
     }

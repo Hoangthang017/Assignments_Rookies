@@ -8,6 +8,8 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
 {
     public interface IProductRepository : IRepository<Product>
     {
+        #region Product
+
         Task<int> Create(CreateProductRequest request);
 
         Task<PageResult<ProductViewModel>> GetAllPaging(string languageId, GetProductPagingRequest request);
@@ -30,10 +32,16 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
 
         Task<bool> DeleteRange(List<int> productIds);
 
+        #endregion Product
+
+        #region Product Review
+
         Task<int> CreateProductReview(int productId, string customerId, CreateProductReviewRequest request);
 
         Task<List<ProductReviewViewModel>> GetAllProductReview(int productId);
 
         Task<ProductReviewViewModel> GetProductReviewById(int reviewId);
+
+        #endregion Product Review
     }
 }

@@ -32,14 +32,7 @@ public class BaseApiClient : IBaseApiClinet
         client.BaseAddress = new Uri(SystemConstants.AppSettings.BackendApiAddress);
 
         // check has authenticate
-        if (isAuthenticate)
-        {
-            var sessions = _httpContextAccessor
-                .HttpContext
-                .Session
-                .GetString("token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
-        }
+        client = AddTokenToClient(client, isAuthenticate);
 
         // method get asynce
         var response = await client.GetAsync(url);
@@ -56,15 +49,13 @@ public class BaseApiClient : IBaseApiClinet
         return JsonConvert.DeserializeObject<TResponse>(body);
     }
 
-    public async Task<List<T>> GetListAsync<T>(string url, bool requiredLogin = false)
+    public async Task<List<T>> GetListAsync<T>(string url, bool requiredLogin = false, bool isAuthenticate = false)
     {
-        //var sessions = _httpContextAccessor
-        //   .HttpContext
-        //   .Session
-        //   .GetString(SystemConstants.AppSettings.Token);
         var client = _httpClientFactory.CreateClient();
         client.BaseAddress = new Uri(SystemConstants.AppSettings.BackendApiAddress);
-        //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+
+        // check has authenticate
+        client = AddTokenToClient(client, isAuthenticate);
 
         var response = await client.GetAsync(url);
         var body = await response.Content.ReadAsStringAsync();
@@ -73,7 +64,7 @@ public class BaseApiClient : IBaseApiClinet
             var data = (List<T>)JsonConvert.DeserializeObject(body, typeof(List<T>));
             return data;
         }
-        throw new Exception(body);
+        throw new ECommerceException(body);
     }
 
     public async Task<ReponseType> PostAsync<ReponseType, RequestType>(string url, RequestType values, bool isAuthenticate = false)
@@ -84,15 +75,7 @@ public class BaseApiClient : IBaseApiClinet
         client.BaseAddress = new Uri(SystemConstants.AppSettings.BackendApiAddress);
 
         // check has authenticate
-        if (isAuthenticate)
-        {
-            var sessions = _httpContextAccessor
-                .HttpContext
-                .Session
-                .GetString("token");
-            if (!string.IsNullOrEmpty(sessions))
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
-        }
+        client = AddTokenToClient(client, isAuthenticate);
 
         var response = await client.PostAsync(url, httpContent);
 
@@ -126,14 +109,7 @@ public class BaseApiClient : IBaseApiClinet
         client.BaseAddress = new Uri(SystemConstants.AppSettings.BackendApiAddress);
 
         // check has authenticate
-        if (isAuthenticate)
-        {
-            var sessions = _httpContextAccessor
-                .HttpContext
-                .Session
-                .GetString("token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
-        }
+        client = AddTokenToClient(client, isAuthenticate);
 
         var repsone = await client.PostAsync(url, httpContent);
         if (repsone.IsSuccessStatusCode)
@@ -151,15 +127,7 @@ public class BaseApiClient : IBaseApiClinet
         client.BaseAddress = new Uri(SystemConstants.AppSettings.BackendApiAddress);
 
         // check has authenticate
-        if (isAuthenticate)
-        {
-            var sessions = _httpContextAccessor
-                .HttpContext
-                .Session
-                .GetString("token");
-            if (!string.IsNullOrEmpty(sessions))
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
-        }
+        client = AddTokenToClient(client, isAuthenticate);
 
         var response = await client.PatchAsync(url, httpContent);
 
@@ -177,5 +145,19 @@ public class BaseApiClient : IBaseApiClinet
             return myDeserializedObjList;
         };
         return (ReponseType)Activator.CreateInstance(typeof(ReponseType));
+    }
+
+    private HttpClient AddTokenToClient(HttpClient client, bool isAuthenticate)
+    {
+        // check has authenticate
+        if (isAuthenticate)
+        {
+            var sessions = _httpContextAccessor
+                .HttpContext
+                .Session
+                .GetString("token");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+        }
+        return client;
     }
 }
