@@ -23,5 +23,7 @@ namespace ECommerce.ApiItegration
         Task<List<ProductReviewViewModel>> GetAllReview(int productId);
 
         Task<ProductReviewViewModel> CreateProductReview(int productId, string customerId, CreateProductReviewRequest request);
+
+        Task<bool> UpdateViewCount(int productId);
     }
 }

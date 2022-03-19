@@ -34,6 +34,7 @@ import UpdateUser from 'src/api/user/UpdateUser';
 import { set } from 'date-fns';
 import CreateUserAvatar from 'src/api/user/CreateUserAvatar';
 import UpdateUserAvatar from 'src/api/user/UpdateUserAvatar';
+import AlertModal from '../Modal/AlertModal';
 
 function CreateUser() {
   // states
@@ -58,6 +59,8 @@ function CreateUser() {
   const [userAvatar, setUserAvatar] = useState([]);
   const [hasChangeValue, SetHasChangeValue] = useState(false);
 
+  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
+
   // validation
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string()
@@ -67,7 +70,12 @@ function CreateUser() {
     lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
     userName: Yup.string().min(6, 'Too Short!').max(50, 'Too Long!').required('User name required'),
     email: Yup.string().email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.string()
+      .required('Password is required')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character'
+      ),
     confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match')
   });
 
@@ -379,15 +387,38 @@ function CreateUser() {
                   </Stack>
 
                   {/* register button */}
-                  <LoadingButton
-                    fullWidth
-                    size="large"
-                    type="submit"
-                    variant="contained"
-                    loading={isSubmitting}  
-                  >
-                    {params.id ? 'Update' : 'Register'}
-                  </LoadingButton>
+                  {!params.id ? (
+                    <LoadingButton
+                      sx={{ mt: '1.5rem' }}
+                      fullWidth
+                      size="large"
+                      type="submit"
+                      variant="contained"
+                      loading={isSubmitting}
+                    >
+                      Create
+                    </LoadingButton>
+                  ) : (
+                    <>
+                      <LoadingButton
+                        sx={{ mt: '1.5rem' }}
+                        fullWidth
+                        size="large"
+                        variant="contained"
+                        loading={isSubmitting}
+                        onClick={() => setIsOpenConfirmModal(true)}
+                      >
+                        Update
+                      </LoadingButton>
+                      <AlertModal
+                        isOpen={isOpenConfirmModal}
+                        setIsOpen={setIsOpenConfirmModal}
+                        title={'Update Confirm'}
+                        message={'Are you sure want to update new information'}
+                        setAgreeAction={handleSubmit}
+                      ></AlertModal>
+                    </>
+                  )}
                 </Stack>
               </Form>
             </FormikProvider>

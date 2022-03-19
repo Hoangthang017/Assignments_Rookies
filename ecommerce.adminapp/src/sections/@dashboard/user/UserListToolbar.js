@@ -19,6 +19,7 @@ import { useState } from 'react';
 import UnstyledSelectObjectValues from 'src/sections/product/Dropdown';
 import DeleteProduct from 'src/api/product/DeleteProduct';
 import DeleteRangeProduct from 'src/api/product/DeleteRangeProduct';
+import AlertModal from 'src/sections/Modal/AlertModal';
 
 // ----------------------------------------------------------------------
 
@@ -70,9 +71,8 @@ export default function UserListToolbar({
       result = await DeleteRangeUser({ userIds: selected });
     } else if (type === 'category') {
       result = await DeleteRangeCategory({ categoryIds: selected });
-    }
-    else if (type === 'product') {
-      result = await DeleteRangeProduct({productIds: selected})
+    } else if (type === 'product') {
+      result = await DeleteRangeProduct({ productIds: selected });
     }
 
     if (result) {
@@ -81,56 +81,66 @@ export default function UserListToolbar({
     }
   }
 
+  const [isOpenModal, setIsOpenModal] = useState(false);
   return (
-    <RootStyle
-      sx={{
-        ...(numSelected > 0 && {
-          color: 'primary.main',
-          bgcolor: 'primary.lighter'
-        })
-      }}
-    >
-      {numSelected > 0 ? (
-        <Typography component="div" variant="subtitle1">
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <SearchStyle
-          value={filterName}
-          onChange={onFilterName}
-          placeholder={`Search ${type} ...`}
-          startAdornment={
-            <InputAdornment position="start">
-              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-            </InputAdornment>
-          }
-        />
-      )}
+    <>
+      <RootStyle
+        sx={{
+          ...(numSelected > 0 && {
+            color: 'primary.main',
+            bgcolor: 'primary.lighter'
+          })
+        }}
+      >
+        {numSelected > 0 ? (
+          <Typography component="div" variant="subtitle1">
+            {numSelected} selected
+          </Typography>
+        ) : (
+          <SearchStyle
+            value={filterName}
+            onChange={onFilterName}
+            placeholder={`Search ${type} ...`}
+            startAdornment={
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            }
+          />
+        )}
 
-      {type === 'product' && numSelected === 0 && (
-        <>
-          <Stack direction="row" justifyContent="center" alignItems="center">
-            <Typography component="div" variant="subtitle1" sx={{mr:"5px"}}>
-              Category: 
-            </Typography>
-            <UnstyledSelectObjectValues setCategoryId={setCategoryId} />
-          </Stack>
-        </>
-      )}
+        {type === 'product' && numSelected === 0 && (
+          <>
+            <Stack direction="row" justifyContent="center" alignItems="center">
+              <Typography component="div" variant="subtitle1" sx={{ mr: '5px' }}>
+                Category:
+              </Typography>
+              <UnstyledSelectObjectValues setCategoryId={setCategoryId} />
+            </Stack>
+          </>
+        )}
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton onClick={removeRange}>
-            <Iconify icon="eva:trash-2-fill" />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
-      )}
-    </RootStyle>
+        {numSelected > 0 ? (
+          <Tooltip title="Delete">
+            <IconButton onClick={() => setIsOpenModal(true)}>
+              <Iconify icon="eva:trash-2-fill" />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Filter list">
+            <IconButton>
+              <Iconify icon="ic:round-filter-list" />
+            </IconButton>
+          </Tooltip>
+        )}
+      </RootStyle>
+      <AlertModal
+        isOpen={isOpenModal}
+        setIsOpen={setIsOpenModal}
+        title={'Delete Confirm'}
+        message={'Are you sure want to delete your row'}
+        setAgreeAction={removeRange}
+      ></AlertModal>
+    </>
   );
 }

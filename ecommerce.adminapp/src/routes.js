@@ -23,7 +23,7 @@ export default function Router() {
       path: '/dashboard',
       element: <DashboardLayout />,
       children: [
-        { path: '', element: <DashboardApp /> },
+        { path: '', element: <Product /> },
         { path: 'user', element: <Navigate to="/user" /> },
         { path: 'category', element: <Navigate to="/category" /> },
         { path: 'products', element: <Navigate to="/product" /> },
@@ -61,7 +61,7 @@ export default function Router() {
       path: '/',
       element: <LogoOnlyLayout />,
       children: [
-        { path: '/', element: <Navigate to="/dashboard" /> },
+        { path: '/', element: <Navigate to="/product" /> },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: '404', element: <NotFound /> },
