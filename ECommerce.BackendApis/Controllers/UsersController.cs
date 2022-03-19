@@ -72,6 +72,8 @@ namespace ECommerce.BackendApis.Controllers
                 return BadRequest("register is unsuccess");
 
             var userInfoVM = await _unitOfWork.User.GetById(userId);
+            if (userInfoVM == null)
+                return BadRequest("Cannot get user information view modal");
 
             return CreatedAtAction(
                     nameof(GetById),

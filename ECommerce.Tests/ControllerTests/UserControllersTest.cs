@@ -1,12 +1,11 @@
 ﻿using ECommerce.BackendApis.Controllers;
 using ECommerce.DataAccess.Respository.Common;
 using ECommerce.Models.Request.Users;
+using ECommerce.Models.ViewModels.UserInfos;
+using ECommerce.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,7 +33,7 @@ namespace ECommerce.Tests.ControllerTests
             var result = await controller.Authenticate(It.IsAny<LoginRequest>());
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
+            var respone = Assert.IsType<BadRequestObjectResult>(result);
             mockUnitOfWork.Verify(x => x.User.Authencate(It.IsAny<LoginRequest>()), Times.Never());
         }
 
@@ -43,14 +42,15 @@ namespace ECommerce.Tests.ControllerTests
         {
             // Arrage
             mockUnitOfWork.Setup(x => x.User.Authencate(It.IsAny<LoginRequest>()))
-                    .ReturnsAsync("");
+                    .ReturnsAsync(It.IsAny<string>());
             var controller = new UsersController(mockUnitOfWork.Object);
 
             // Act
             var result = await controller.Authenticate(It.IsAny<LoginRequest>());
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
+            var respone = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("User name or Password is incorrect", respone.Value);
             mockUnitOfWork.Verify(x => x.User.Authencate(It.IsAny<LoginRequest>()), Times.Once());
         }
 
@@ -113,20 +113,20 @@ namespace ECommerce.Tests.ControllerTests
             var result = await controller.Register(It.IsAny<RegisterRequest>());
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
+            var respone = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("register is unsuccess", respone.Value);
             mockUnitOfWork.Verify(x => x.User.CreateUser(It.IsAny<RegisterRequest>()), Times.Once());
         }
 
         [Fact]
-        public async Task Register_WithLoginRequest_ReturnOkResult()
+        public async Task Register_WithErrorGetVM_ReturnBadRequest()
         {
             // Arrage
-            var sampleUserId = Guid.NewGuid();
+            var sampleUserId = Guid.NewGuid().ToString();
 
             var sampleRequest = new RegisterRequest()
             {
                 FirstName = Guid.NewGuid().ToString(),
-                //ConfirmPassword = Guid.NewGuid().ToString(),
                 DateOfBirth = DateTime.Now,
                 Email = Guid.NewGuid().ToString() + "@gmail.com",
                 LastName = Guid.NewGuid().ToString() + "@",
@@ -136,16 +136,70 @@ namespace ECommerce.Tests.ControllerTests
             };
 
             mockUnitOfWork.Setup(x => x.User.CreateUser(sampleRequest))
-                    .ReturnsAsync(sampleUserId.ToString());
+                    .ReturnsAsync(sampleUserId);
+            mockUnitOfWork.Setup(x => x.User.GetById(sampleUserId))
+                    .ReturnsAsync(It.IsAny<UserInfoViewModel>());
 
             var controller = new UsersController(mockUnitOfWork.Object);
 
             // Act
-            var actionResult = await controller.Register(sampleRequest);
+            var result = await controller.Register(sampleRequest);
 
             // Assert
-            var result = Assert.IsType<OkResult>(actionResult);
+            var respone = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Cannot get user information view modal", respone.Value);
+            mockUnitOfWork.Verify(x => x.User.CreateUser(sampleRequest), Times.Once());
+            mockUnitOfWork.Verify(x => x.User.GetById(sampleUserId), Times.Once());
+        }
+
+        [Fact]
+        public async Task Register_WithLoginRequest_ReturnOkResult()
+        {
+            // Arrage
+            var sampleUserId = Guid.NewGuid().ToString();
+
+            var sampleRequest = new RegisterRequest()
+            {
+                FirstName = Guid.NewGuid().ToString(),
+                DateOfBirth = DateTime.Now,
+                Email = Guid.NewGuid().ToString() + "@gmail.com",
+                LastName = Guid.NewGuid().ToString() + "@",
+                Password = Guid.NewGuid().ToString(),
+                PhoneNumber = rand.Next(100000000, 999999999).ToString(),
+                UserName = Guid.NewGuid().ToString(),
+            };
+
+            var sampleResult = new UserInfoViewModel()
+            {
+                avatarUrl = SystemConstants.ImageSettings.DefaultAvatart,
+                DateOfBirth = sampleRequest.DateOfBirth.ToString(),
+                Email = sampleRequest.Email,
+                FirstName = sampleRequest.FirstName,
+                Id = sampleUserId.ToString(),
+                LastName = sampleRequest.LastName,
+                Name = sampleRequest.FirstName + " " + sampleRequest.LastName,
+                PhoneNumber = sampleRequest.PhoneNumber,
+                Role = "customer",
+                UserName = sampleRequest.UserName,
+            };
+
+            mockUnitOfWork.Setup(x => x.User.CreateUser(sampleRequest))
+                    .ReturnsAsync(sampleUserId.ToString());
+            mockUnitOfWork.Setup(x => x.User.GetById(sampleUserId))
+                    .ReturnsAsync(sampleResult);
+
+            var controller = new UsersController(mockUnitOfWork.Object);
+
+            // Act
+            var actionResult = await controller.Register(sampleRequest) as CreatedAtActionResult;
+
+            // Assert
+            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(actionResult);
+            var returnValue = Assert.IsType<UserInfoViewModel>(createdAtActionResult.Value);
             mockUnitOfWork.Verify(x => x.User.CreateUser(sampleRequest), Times.Once);
+            mockUnitOfWork.Verify(x => x.User.GetById(sampleUserId), Times.Once);
+            Assert.Equal(sampleResult.Role, returnValue.Role);
+            Assert.Equal(sampleResult.UserName, returnValue.UserName);
         }
 
         #endregion Register
