@@ -20,7 +20,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Switch  
+  Switch,
+  InputAdornment
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // component
@@ -33,6 +34,7 @@ import GetProductById from 'src/api/product/GetProductById';
 import UpdateProduct from 'src/api/product/UpdateProduct';
 import UpdateProductPrice from 'src/api/product/UpdateProductPrice';
 import UpdateProductQuantity from 'src/api/product/UpdateProductQuantity';
+import AlertModal from '../Modal/AlertModal';
 
 const Android12Switch = styled(Switch)(({ theme }) => ({
   padding: 8,
@@ -83,7 +85,8 @@ function CreateOrUpdateProduct() {
     details: '',
     seoTitle: '',
     seoAlias: '',
-    seoDescription: ''
+    seoDescription: '',
+    stock: 0
   });
   const [createDate, setCreateDate] = useState(new Date(new Date()).toLocaleDateString('en-US'));
   const [updateDate, setupdateDate] = useState(new Date(new Date()).toLocaleDateString('en-US'));
@@ -95,19 +98,35 @@ function CreateOrUpdateProduct() {
   const [languageId, setLanguageId] = useState('en-US');
   const [isShowOnHome, setIsShowOnHome] = useState(true);
 
+  // modal
+  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
+
   // check changed
   const [priceChanged, setPriceChanged] = useState(false);
   const [stockChanged, setStockChanged] = useState(false);
-  
 
   // validation
   const RegisterSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
-    details: Yup.string().required('Detail is required'),
-    seoTitle: Yup.string().required('Seo Title is required'),
-    seoAlias: Yup.string().required('Seo Alias is required')
+    name: Yup.string()
+      .required('Name is required')
+      .max(200, 'Name has max length is 200 characters'),
+    description: Yup.string()
+      .required('Description is required')
+      .max(200, 'Description has max length is 200 characters'),
+    details: Yup.string()
+      .required('Detail is required')
+      .max(500, 'Detail has max length is 200 characters'),
+    seoTitle: Yup.string()
+      .required('Seo Title is required')
+      .max(200, 'Seo title has max length is 200 characters'),
+    seoAlias: Yup.string()
+      .required('Seo Alias is required')
+      .max(200, 'Sep alias has max length is 200 characters'),
+    seoDescription: Yup.string()
+      .required('Seo description is required')
+      .max(200, 'Seo description has max length is 200 characters')
   });
+  const [isValidCategoryId, setIsValidCategoryId] = useState(true);
 
   // call api
   useEffect(async () => {
@@ -127,7 +146,7 @@ function CreateOrUpdateProduct() {
         setPrice(response.price);
         setStock(response.stock);
         setLanguageId(response.languageId);
-        setIsShowOnHome(response.isShowOnHome)
+        setIsShowOnHome(response.isShowOnHome);
       }
     }
   }, []);
@@ -150,42 +169,49 @@ function CreateOrUpdateProduct() {
         isShowOnHome
       };
 
-      // update
-      if (params.id) {
-        let result = true;
-        result && (await UpdateProduct(params.id, languageId, baseRequest));
+      if (category.id === null || category.id === 0) {
+        setIsValidCategoryId(false);
+      } else {
+        setIsValidCategoryId(true);
 
-        if (priceChanged) {
-          result && (await UpdateProductPrice(params.id, price));
+        // update
+        if (params.id) {
+          let result = true;
+          result && (await UpdateProduct(params.id, languageId, baseRequest));
+
+          if (priceChanged) {
+            result && (await UpdateProductPrice(params.id, price));
+          }
+
+          if (stockChanged) {
+            result && (await UpdateProductQuantity(params.id, stock));
+          }
+
+          if (result) {
+            setUpdateSuccess(true);
+          } else {
+            console.log('Fail to update');
+          }
         }
+        // create
+        else {
+          const response = await CreateProduct({
+            ...baseRequest,
+            categoryId: category.id,
+            viewCount,
+            languageId,
+            originalPrice,
+            price,
+            stock
+          });
 
-        if (stockChanged) {
-          result && (await UpdateProductQuantity(params.id, stock));
-        }
-
-        if (result) {
-          setUpdateSuccess(true);
-        } else {
-          console.log('Fail to update');
-        }
-      }
-      // create
-      else {
-        const response = await CreateProduct({
-          ...baseRequest,
-          categoryId: category.id,
-          viewCount,
-          languageId,
-          originalPrice,
-          price,
-          stock
-        });
-
-        if (response) {
-          setCreateSuccess(true);
-          navigate(`/product/edit/${response.id}`, { replace: true });
-        } else {
-          console.log('Faild to create product');
+          if (response) {
+            setCreateSuccess(true);
+            navigate(`/product/edit/${response.id}`, { replace: true });
+            window.scrollTo(0, document.body.scrollHeight);
+          } else {
+            console.log('Faild to create product');
+          }
         }
       }
     }
@@ -235,14 +261,10 @@ function CreateOrUpdateProduct() {
   return (
     <Page title={`${params.id ? 'Edit Product' : 'New Product'} | Mystic Green`}>
       <Container>
+        <AlertModal></AlertModal>
         <Typography variant="h4" gutterBottom>
           {params.id ? 'Edit Product' : 'New Product'}
         </Typography>
-        {createSuccess && (
-          <Alert severity="success" sx={{ mt: '1rem', mb: '1rem' }}>
-            Create Success!!! Please add image for product at end page
-          </Alert>
-        )}
         {/* basic information */}
         <Accordion>
           <AccordionSummary
@@ -256,6 +278,7 @@ function CreateOrUpdateProduct() {
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                 <TextField
+                  multiline={true}
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
                   label="Name"
@@ -264,6 +287,7 @@ function CreateOrUpdateProduct() {
                   helperText={touched.name && errors.name}
                 />
                 <TextField
+                  multiline={true}
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
                   label="Description"
@@ -273,6 +297,7 @@ function CreateOrUpdateProduct() {
                 />
                 <TextField
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
+                  multiline={true}
                   fullWidth
                   label="Details"
                   {...getFieldProps('details')}
@@ -283,6 +308,7 @@ function CreateOrUpdateProduct() {
                 <Stack direction="row" justifyItems="center">
                   {params.id ? (
                     <TextField
+                      multiline={true}
                       disabled
                       sx={{ mt: '0.5rem', mb: '0.5rem', width: '40%' }}
                       fullWidth
@@ -294,6 +320,11 @@ function CreateOrUpdateProduct() {
                       setCategoryParent={setCategory}
                       initialCategory={category}
                     />
+                  )}
+                  {!isValidCategoryId ?? (
+                    <Alert severity="danger" sx={{ mt: '1rem', mb: '1rem' }}>
+                      Please choose a category for product
+                    </Alert>
                   )}
 
                   {/* language  */}
@@ -310,13 +341,16 @@ function CreateOrUpdateProduct() {
                       onChange={handleChange}
                     >
                       <MenuItem value={'en-US'}>English</MenuItem>
-                      <MenuItem value={'vi-VN'}>Vietnamese</MenuItem>
                     </Select>
                   </FormControl>
 
-                  <FormControlLabel sx={{ml: "2rem"}}
+                  <FormControlLabel
+                    sx={{ ml: '2rem' }}
                     control={
-                      <Android12Switch checked={isShowOnHome} onChange={(e) => setIsShowOnHome(e.target.checked)} />
+                      <Android12Switch
+                        checked={isShowOnHome}
+                        onChange={(e) => setIsShowOnHome(e.target.checked)}
+                      />
                     }
                     label="Show On Home"
                   />
@@ -341,26 +375,29 @@ function CreateOrUpdateProduct() {
                 <TextField
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
+                  multiline={true}
                   label="Seo Title"
                   {...getFieldProps('seoTitle')}
-                  error={Boolean(touched.name && errors.name)}
-                  helperText={touched.name && errors.name}
+                  error={Boolean(touched.seoTitle && errors.seoTitle)}
+                  helperText={touched.seoTitle && errors.seoTitle}
                 />
                 <TextField
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
                   label="Seo Alias"
+                  multiline={true}
                   {...getFieldProps('seoAlias')}
-                  error={Boolean(touched.description && errors.description)}
-                  helperText={touched.description && errors.description}
+                  error={Boolean(touched.seoAlias && errors.seoAlias)}
+                  helperText={touched.seoAlias && errors.seoAlias}
                 />
                 <TextField
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
                   label="Seo Description"
+                  multiline={true}
                   {...getFieldProps('seoDescription')}
-                  error={Boolean(touched.description && errors.description)}
-                  helperText={touched.description && errors.description}
+                  error={Boolean(touched.seoDescription && errors.seoDescription)}
+                  helperText={touched.seoDescription && errors.seoDescription}
                 />
               </Form>
             </FormikProvider>
@@ -407,25 +444,44 @@ function CreateOrUpdateProduct() {
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                 <TextField
+                  type="number"
                   disabled={!!params.id}
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
+                  required
+                  error={!Number.isInteger(parseInt(stock))}
                   label="Original Price"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>
+                  }}
                   value={originalPrice}
-                  onChange={(e) => parseInt(setOriginalPrice(e.target.value))}
+                  onChange={(e) => setOriginalPrice(e.target.value)}
                 />
                 <TextField
+                  type="number"
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
+                  required
                   label="Price"
+                  error={!Number.isInteger(parseInt(stock))}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>
+                  }}
                   value={price}
                   onChange={changePriceHandler}
                 />
 
                 <TextField
+                  type="number"
                   sx={{ mt: '0.5rem', mb: '0.5rem' }}
                   fullWidth
+                  required
                   label="Stock"
+                  error={!Number.isInteger(parseFloat(stock))}
+                  helperText="Quantity must have interger type"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">kg</InputAdornment>
+                  }}
                   value={stock}
                   onChange={changeStockHandler}
                 />
@@ -442,6 +498,11 @@ function CreateOrUpdateProduct() {
           </AccordionDetails>
         </Accordion>
 
+        {createSuccess && (
+          <Alert severity="success" sx={{ mt: '1rem', mb: '1rem' }}>
+            Create Successfully!!! Add product Image Here!!!
+          </Alert>
+        )}
         {/* images */}
         {params.id && (
           <Accordion>
@@ -465,17 +526,40 @@ function CreateOrUpdateProduct() {
         )}
         {/* register button */}
         <FormikProvider value={formik}>
-          <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <LoadingButton
-              sx={{ mt: '1.5rem' }}
-              fullWidth
-              size="large"
-              type="submit"
-              variant="contained"
-              loading={isSubmitting}
-            >
-              {params.id ? 'Update' : 'Create'}
-            </LoadingButton>
+          {/* <Form autoComplete="off" noValidate onSubmit={handleSubmit}> */}
+          <Form autoComplete="off" noValidate>
+            {!params.id ? (
+              <LoadingButton
+                sx={{ mt: '1.5rem' }}
+                fullWidth
+                size="large"
+                type="submit"
+                variant="contained"
+                loading={isSubmitting}
+              >
+                Create
+              </LoadingButton>
+            ) : (
+              <>
+                <LoadingButton
+                  sx={{ mt: '1.5rem' }}
+                  fullWidth
+                  size="large"
+                  variant="contained"
+                  loading={isSubmitting}
+                  onClick={() => setIsOpenConfirmModal(true)}
+                >
+                  Update
+                </LoadingButton>
+                <AlertModal
+                  isOpen={isOpenConfirmModal}
+                  setIsOpen={setIsOpenConfirmModal}
+                  title={'Update Confirm'}
+                  message={'Are you sure want to update new information'}
+                  setAgreeAction={handleSubmit}
+                ></AlertModal>
+              </>
+            )}
           </Form>
         </FormikProvider>
       </Container>

@@ -32,7 +32,8 @@ import GetAllProductImage from 'src/api/product/GetAllProductImage';
 import CreateProductImage from 'src/api/product/CreateProductImage';
 import UpdateProductImage from 'src/api/product/UpdateProductImage';
 import ProductImageMoreMenu from './ProductImageMoreMenu';
-//
+import AlertModal from 'src/sections/Modal/AlertModal';
+
 // import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
@@ -173,6 +174,8 @@ export default function ImageProductTable({ productId }) {
   // upload image
   const [sourceImage, setSourceImage] = useState(defaultImage);
   const [productImage, setProductImage] = useState([File]);
+  const [isOpenModalConfirm, setIsOpenModalConfirm] = useState(false);
+
   function UploadHandler(e) {
     var file = e.target.files[0];
     setProductImage([file]);
@@ -203,6 +206,7 @@ export default function ImageProductTable({ productId }) {
       });
       setCreateImageSuccess(true);
     }
+    setExpendUpload(false);
   }
 
   function expandNewImageHandler() {
@@ -211,223 +215,248 @@ export default function ImageProductTable({ productId }) {
     setIsNewDefault(true);
     setNewCaption('');
     setSourceImage(defaultImage);
-    window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: "smooth" })
+    window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
   return (
-    <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4" gutterBottom></Typography>
-        <Button
-          variant="contained"
-          onClick={expandNewImageHandler}
-          startIcon={<Iconify icon="eva:plus-fill" />}
-        >
-          New Image
-        </Button>
-      </Stack>
-
-      <Card variant="outlined">
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 800 }}>
-            <Table>
-              {/* setting for table databae */}
-              <UserListHead
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={count}
-                numSelected={selected.length}
-                onRequestSort={handleRequestSort}
-                onSelectAllClick={handleSelectAllClick}
-              />
-              <TableBody>
-                {/* map to row of table */}
-                {filteredUsers
-                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    const { id, imagePath, isDefault, caption } = row;
-                    const isItemSelected = selected.indexOf(id) !== -1;
-
-                    return (
-                      <TableRow
-                        hover
-                        key={id}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                      >
-                        {/* cột checkbox */}
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isItemSelected}
-                            onChange={(event) => handleClick(event, id)}
-                          />
-                        </TableCell>
-
-                        {/* cột avatar + names */}
-                        <TableCell align="left" mx={{ m: 0 }}>
-                          <img
-                            alt={caption}
-                            src={imagePath}
-                            style={{
-                              width: '20%',
-                              margin: 0
-                            }}
-                          />
-                        </TableCell>
-
-                        {/* cột company */}
-                        <TableCell align="left">{caption}</TableCell>
-
-                        {/* status */}
-                        <TableCell align="left">
-                          <Label variant="ghost" color={(isDefault && 'success') || 'error'}>
-                            {isDefault ? 'Default' : 'NON Default'}
-                          </Label>
-                        </TableCell>
-
-                        <TableCell align="right">
-                          <ProductImageMoreMenu
-                            id={id}
-                            IMAGE_LIST={IMAGE_LIST}
-                            setIdRemoveRow={setIdRemoveRow}
-                            setSourceImage={setSourceImage}
-                            setNewCaption={setNewCaption}
-                            setIsNewDefault={setIsNewDefault}
-                            setExpendUpload={setExpendUpload}
-                            setImageId={setImageId}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
-              {isUserNotFound && (
-                <TableBody>
-                  <TableRow>
-                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                      <SearchNotFound searchQuery={filterName} />
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              )}
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={count}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Card>
-
-      {expandUpload && (
-        <Card variant="outlined" sx={{ mt: '2rem' }}>
-          {createImageSuccess && (
-            <Alert severity="success" sx={{ mb: '3rem' }}>
-              Success!!!
-            </Alert>
-          )}
-          <Stack
-            sx={{ mt: '0.5rem', mr: '0.5rem' }}
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            mb={5}
+    <>
+      <Container>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h4" gutterBottom></Typography>
+          <Button
+            variant="contained"
+            onClick={expandNewImageHandler}
+            startIcon={<Iconify icon="eva:plus-fill" />}
           >
-            <Typography variant="h4" gutterBottom></Typography>
-            <Button
-              color="error"
-              variant="contained"
-              onClick={() => setExpendUpload(false)}
-              startIcon={<Iconify icon="ep:close" />}
-            >
-              Hidden
-            </Button>
-          </Stack>
-          <Stack direction="row">
-            <Container>
-              <Card
-                sx={{
-                  m: '2rem',
-                  p: '2rem'
-                }}
-                spacing={2}
-              >
-                <img
-                  style={{
-                    borderRadius: '0.5rem',
-                    marginBottom: '2rem'
-                  }}
-                  src={sourceImage}
-                  alt="your avatar"
-                />
-                <label htmlFor="contained-button-file">
-                  <input
-                    hidden
-                    accept="image/*"
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                    onChange={UploadHandler}
-                  />
-                  {!imageId && (
-                    <Button
-                      color="secondary"
-                      sx={{
-                        mb: '1rem'
-                      }}
-                      fullWidth
-                      size="large"
-                      variant="contained"
-                      component="span"
-                    >
-                      Upload
-                    </Button>
-                  )}
+            New Image
+          </Button>
+        </Stack>
 
-                  {productImage[0] && sourceImage !== defaultImage && (
-                    <Button fullWidth size="large" onClick={SaveImageHandler} variant="contained">
-                      {imageId === 0 ? 'Add' : 'Update'}
-                    </Button>
+        <Card variant="outlined">
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: 800 }}>
+              <Table>
+                {/* setting for table databae */}
+                <UserListHead
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={count}
+                  numSelected={selected.length}
+                  onRequestSort={handleRequestSort}
+                  onSelectAllClick={handleSelectAllClick}
+                />
+                <TableBody>
+                  {/* map to row of table */}
+                  {filteredUsers
+                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      const { id, imagePath, isDefault, caption } = row;
+                      const isItemSelected = selected.indexOf(id) !== -1;
+
+                      return (
+                        <TableRow
+                          hover
+                          key={id}
+                          tabIndex={-1}
+                          role="checkbox"
+                          selected={isItemSelected}
+                          aria-checked={isItemSelected}
+                        >
+                          {/* cột checkbox */}
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isItemSelected}
+                              onChange={(event) => handleClick(event, id)}
+                            />
+                          </TableCell>
+
+                          {/* cột avatar + names */}
+                          <TableCell align="left" mx={{ m: 0 }}>
+                            <img
+                              alt={caption}
+                              src={imagePath}
+                              style={{
+                                width: '20%',
+                                margin: 0
+                              }}
+                            />
+                          </TableCell>
+
+                          {/* cột company */}
+                          <TableCell align="left">{caption}</TableCell>
+
+                          {/* status */}
+                          <TableCell align="left">
+                            <Label variant="ghost" color={(isDefault && 'success') || 'error'}>
+                              {isDefault ? 'Default' : 'NON Default'}
+                            </Label>
+                          </TableCell>
+
+                          <TableCell align="right">
+                            <ProductImageMoreMenu
+                              id={id}
+                              IMAGE_LIST={IMAGE_LIST}
+                              setIdRemoveRow={setIdRemoveRow}
+                              setSourceImage={setSourceImage}
+                              setNewCaption={setNewCaption}
+                              setIsNewDefault={setIsNewDefault}
+                              setExpendUpload={setExpendUpload}
+                              setImageId={setImageId}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
                   )}
-                </label>
-              </Card>
-            </Container>
-            <Container sx={{ m: 'auto' }}>
-              <TextField
-                sx={{ mb: '1.5rem' }}
-                fullWidth
-                label="Caption"
-                value={newCaption}
-                onChange={(e) => setNewCaption(e.target.value)}
-              />
-              <FormControlLabel
-                sx={{ justifyContent: 'flex-end' }}
-                control={
-                  <Switch
-                    checked={isNewDefault}
-                    onChange={(e) => setIsNewDefault(e.target.checked)}
-                  />
-                }
-                label="Thumbnail"
-              />
-            </Container>
-          </Stack>
+                </TableBody>
+                {isUserNotFound && (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <SearchNotFound searchQuery={filterName} />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                )}
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={count}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </Card>
-      )}
-    </Container>
+
+        {expandUpload && (
+          <Card variant="outlined" sx={{ mt: '2rem' }}>
+            {createImageSuccess && (
+              <Alert severity="success" sx={{ mb: '3rem' }}>
+                Success!!!
+              </Alert>
+            )}
+            <Stack
+              sx={{ mt: '0.5rem', mr: '0.5rem' }}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              mb={5}
+            >
+              <Typography variant="h4" gutterBottom></Typography>
+              <Button
+                color="error"
+                variant="contained"
+                onClick={() => setExpendUpload(false)}
+                startIcon={<Iconify icon="ep:close" />}
+              >
+                Hidden
+              </Button>
+            </Stack>
+            <Stack direction="row">
+              <Container>
+                <Card
+                  sx={{
+                    m: '2rem',
+                    p: '2rem'
+                  }}
+                  spacing={2}
+                >
+                  <img
+                    style={{
+                      borderRadius: '0.5rem',
+                      marginBottom: '2rem'
+                    }}
+                    src={sourceImage}
+                    alt="your avatar"
+                  />
+                  <label htmlFor="contained-button-file">
+                    <input
+                      hidden
+                      accept="image/*"
+                      id="contained-button-file"
+                      multiple
+                      type="file"
+                      onChange={UploadHandler}
+                    />
+                    {!imageId && (
+                      <Button
+                        color="secondary"
+                        sx={{
+                          mb: '1rem'
+                        }}
+                        fullWidth
+                        size="large"
+                        variant="contained"
+                        component="span"
+                      >
+                        Upload
+                      </Button>
+                    )}
+
+                    {productImage[0] &&
+                      sourceImage !== defaultImage &&
+                      (imageId === 0 ? (
+                        <Button
+                          fullWidth
+                          size="large"
+                          onClick={SaveImageHandler}
+                          variant="contained"
+                        >
+                          Add
+                        </Button>
+                      ) : (
+                        <Button
+                          fullWidth
+                          size="large"
+                          onClick={() => setIsOpenModalConfirm(true)}
+                          variant="contained"
+                        >
+                          Update
+                        </Button>
+                      ))}
+                  </label>
+                </Card>
+              </Container>
+              <Container sx={{ m: 'auto' }}>
+                <TextField
+                  sx={{ mb: '1.5rem' }}
+                  fullWidth
+                  label="Caption"
+                  value={newCaption}
+                  onChange={(e) => setNewCaption(e.target.value)}
+                />
+                <FormControlLabel
+                  sx={{ justifyContent: 'flex-end' }}
+                  control={
+                    <Switch
+                      checked={isNewDefault}
+                      onChange={(e) => setIsNewDefault(e.target.checked)}
+                    />
+                  }
+                  label="Thumbnail"
+                />
+              </Container>
+            </Stack>
+          </Card>
+        )}
+      </Container>
+      <AlertModal
+        isOpen={isOpenModalConfirm}
+        setIsOpen={setIsOpenModalConfirm}
+        title={'Update Confirm'}
+        message={'Are you sure want to update your row'}
+        setAgreeAction={SaveImageHandler}
+      ></AlertModal>
+    </>
   );
 }

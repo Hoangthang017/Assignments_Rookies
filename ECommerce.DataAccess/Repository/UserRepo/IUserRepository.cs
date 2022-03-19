@@ -5,7 +5,6 @@ using ECommerce.Models.Request.Users;
 using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.UserInfos;
 using IdentityModel.Client;
-using System.Security.Claims;
 
 namespace ECommerce.DataAccess.Repository.UserRepo
 {
@@ -13,15 +12,11 @@ namespace ECommerce.DataAccess.Repository.UserRepo
     {
         Task<string> Authencate(LoginRequest request);
 
-        Task<bool> RevokeToken(string token, InforClientRequest request);
-
         Task<string> CreateUser(RegisterRequest request);
 
         Task<UserInfoResponse> GetUserInfo(string token);
 
         Task<UserInfoViewModel> GetById(string UserId);
-
-        Task<IEnumerable<UserInfoViewModel>> GetAll();
 
         Task<PageResult<UserInfoViewModel>> GetAllPaging(GetUserPagingRequest request);
 

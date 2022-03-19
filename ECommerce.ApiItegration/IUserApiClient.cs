@@ -7,8 +7,6 @@ namespace ECommerce.ApiItegration
     {
         Task<Dictionary<string, string>> Authenticate(LoginRequest request);
 
-        Task RevokeToken();
-
         Task<UserInfoViewModel> GetAccountInfor();
 
         Task<UserInfoViewModel> Register(string userName, string password);

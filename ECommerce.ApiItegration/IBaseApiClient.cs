@@ -4,7 +4,7 @@
     {
         Task<TResponse> GetAsync<TResponse>(string url, bool isAuthenticate = false);
 
-        Task<List<T>> GetListAsync<T>(string url, bool requiredLogin = false);
+        Task<List<T>> GetListAsync<T>(string url, bool requiredLogin = false, bool isAuthenticate = false);
 
         Task<ReponseType> PostAsync<ReponseType, RequestType>(string url, RequestType values, bool isAuthenticate = false);
 

@@ -40,23 +40,6 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             return category.Id;
         }
 
-        public async Task<bool> Delete(int categoryId)
-        {
-            var category = await _context.Categories.FindAsync(categoryId);
-            if (category == null)
-                throw new ECommerceException("Cannot find the category");
-            _context.Categories.Remove(category);
-
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> DeleteRange(List<int> categoryIds)
-        {
-            var categories = _context.Categories.Where(x => categoryIds.Contains(x.Id)).ToList();
-            _context.Categories.RemoveRange(categories);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
         public async Task<List<BaseCategoryViewModel>> GetActiveCategory(string languageId)
         {
             var categories = await (from c in _context.Categories
@@ -96,8 +79,6 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                         join l in _context.Languages on ct.LanguageId equals l.Id
                         where l.Id == languageId
                         select new { c, ct, languageName = l.Name };
-
-            var check = query.ToList();
 
             // paging
             int totalRow = await query.CountAsync();
@@ -205,6 +186,23 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                 throw new ECommerceException("Cannot find the category");
             category.IsShowOnHome = showOnHome;
             _context.Categories.Update(category);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> Delete(int categoryId)
+        {
+            var category = await _context.Categories.FindAsync(categoryId);
+            if (category == null)
+                throw new ECommerceException("Cannot find the category");
+            _context.Categories.Remove(category);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteRange(List<int> categoryIds)
+        {
+            var categories = _context.Categories.Where(x => categoryIds.Contains(x.Id)).ToList();
+            _context.Categories.RemoveRange(categories);
             return await _context.SaveChangesAsync() > 0;
         }
     }

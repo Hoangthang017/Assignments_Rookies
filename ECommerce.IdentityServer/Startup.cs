@@ -4,6 +4,7 @@
 using ECommerce.ApiItegration;
 using ECommerce.DataAccess.EF;
 using ECommerce.Models.Entities;
+using ECommerce.Utilities;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,16 +32,8 @@ namespace ECommerce.IdentityServer
         {
             services.AddControllersWithViews();
 
-            services.AddSingleton<ICorsPolicyService>((container) =>
-            {
-                var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
-                return new DefaultCorsPolicyService(logger)
-                {
-                    AllowedOrigins = { "https://localhost:44401" }
-                };
-            });
             services.AddDbContext<ECommerceDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ECommerceDB")));
+                options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.AppSettings.MainConnectionString)));
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<ECommerceDbContext>()
@@ -64,8 +57,6 @@ namespace ECommerce.IdentityServer
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-
-                // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
                 options.EmitStaticAudienceClaim = true;
             })
                 .AddDeveloperSigningCredential()
@@ -75,21 +66,6 @@ namespace ECommerce.IdentityServer
                 .AddInMemoryClients(Config.Clients)
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
-            services.AddTransient<ISlideApiClient, SlideApiClient>();
-            services.AddTransient<IProductApiClient, ProductApiClient>();
-            services.AddTransient<ICategoryApiClient, CategoryApiClient>();
-
-            //services.AddAuthentication()
-            //    .AddGoogle(options =>
-            //    {
-            //        options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-            //        // register your IdentityServer with Google at https://console.developers.google.com
-            //        // enable the Google+ API
-            //        // set the redirect URI to https://localhost:5001/signin-google
-            //        options.ClientId = "copy client ID from Google here";
-            //        options.ClientSecret = "copy client secret from Google here";
-            //    });
         }
 
         public void Configure(IApplicationBuilder app)

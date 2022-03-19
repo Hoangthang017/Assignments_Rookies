@@ -25,6 +25,8 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             _mapper = mapper;
         }
 
+        #region Product
+
         public async Task<int> Create(CreateProductRequest request)
         {
             // map request to product and product translation
@@ -40,6 +42,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             var category = await _context.Categories.FindAsync(request.CategoryId);
             if (category == null)
                 throw new ECommerceException("Cannot find the category");
+
             var productInCategory = new ProductInCategory()
             {
                 Category = category,
@@ -56,30 +59,6 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             return product.Id;
         }
 
-        public async Task<bool> Delete(int productId)
-        {
-            // find product
-            var product = await _context.Products.FindAsync(productId);
-            if (product == null)
-                throw new ECommerceException("Cannot find product");
-
-            // find all image of product and delete it out wwwroot
-            var images = from p in _context.Products
-                         join pi in _context.ProductImages on p.Id equals pi.ProductId
-                         join i in _context.Images on pi.ImageId equals i.Id
-                         where p.Id == productId
-                         select i;
-
-            foreach (Image image in images.ToList())
-            {
-                await _storageService.DeleteFileAsync(image.ImagePath);
-            }
-
-            _context.Products.Remove(product);
-
-            return await _context.SaveChangesAsync() > 0;
-        }
-
         public async Task<PageResult<ProductViewModel>> GetAllPaging(string languageId, GetProductPagingRequest request)
         {
             // get product from tables
@@ -91,11 +70,6 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                         where pt.LanguageId == languageId
                         select new { p, pt, pic, ct };
             // filter
-            //if (!string.IsNullOrEmpty(request.Keyword))
-            //{
-            //    query = query.Where(x => x.pt.Name.Contains(request.Keyword));
-            //}
-
             if (request.CategoryId != null && request.CategoryId != 0)
             {
                 query = query.Where(x => x.pic.CategoryId == request.CategoryId);
@@ -128,13 +102,12 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                 imagePaths = new List<string>(),
             }).ToListAsync();
 
+            // get all image
             foreach (var productVM in productVMs)
             {
                 var imagePaths = await GetImagePaths(productVM.Id);
                 productVM.imagePaths = imagePaths;
             }
-
-            var check = productVMs.ToList();
 
             // select and projection
             var pageResult = new PageResult<ProductViewModel>()
@@ -148,112 +121,6 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
             await _context.SaveChangesAsync();
 
             return pageResult;
-        }
-
-        public async Task<ProductViewModel> GetById(int productId, string languageId)
-        {
-            // get product in tabels
-            var query = await (from p in _context.Products
-                               join pt in _context.ProductTranslations on p.Id equals pt.ProductId
-                               join pic in _context.ProductInCategories on p.Id equals pic.ProductId
-                               join c in _context.Categories on pic.CategoryId equals c.Id
-                               join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
-                               where p.Id == productId && pt.LanguageId == languageId && ct.LanguageId == languageId
-                               select new { p, pt, pic, ct }).FirstOrDefaultAsync();
-
-            // check null
-            if (query == null)
-                throw new ECommerceException("Cannot find product");
-
-            // map to product view model
-            var productVM = new ProductViewModel()
-            {
-                Id = query.p.Id,
-                IsShowOnHome = query.p.IsShowOnHome,
-                CreatedDate = query.p.CreatedDate.ToShortDateString(),
-                OriginalPrice = query.p.OriginalPrice,
-                Price = query.p.Price,
-                Stock = query.p.Stock,
-                UpdatedDate = query.p.UpdatedDate.ToShortDateString(),
-                ViewCount = query.p.ViewCount,
-                SeoAlias = query.pt.SeoAlias,
-                Description = query.pt.Description,
-                Details = query.pt.Details,
-                LanguageId = query.pt.LanguageId,
-                Name = query.pt.Name,
-                SeoDescription = query.pt.SeoDescription,
-                SeoTitle = query.pt.SeoTitle,
-                categoryId = query.ct.CategoryId,
-                CategoryName = query.ct.Name,
-                imagePaths = new List<string>(),
-            };
-
-            productVM.imagePaths = await GetImagePaths(productVM.Id);
-
-            return productVM;
-        }
-
-        public async Task<int> Update(int productId, string languageId, UpdateProductRequest request)
-        {
-            var query = await (from p in _context.Products
-                               join pt in _context.ProductTranslations on p.Id equals pt.ProductId
-                               where p.Id == productId && pt.LanguageId == languageId
-                               select new { p, pt }).FirstOrDefaultAsync();
-            if (query == null)
-                throw new ECommerceException("Cannot find product");
-            _mapper.Map(request, query.pt);
-            query.p.UpdatedDate = DateTime.Now;
-            query.p.IsShowOnHome = request.IsShowOnHome;
-            return await _context.SaveChangesAsync();
-        }
-
-        public async Task<bool> UpdatePrice(int productId, decimal newPrice)
-        {
-            var product = await _context.Products.FindAsync(productId);
-            if (product == null)
-                throw new ECommerceException("Cannot find product");
-            product.Price = newPrice;
-            product.UpdatedDate = DateTime.Now;
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UpdateStock(int productId, int Quantity)
-        {
-            var product = await _context.Products.FindAsync(productId);
-            if (product == null)
-                throw new ECommerceException("Cannot find product");
-            product.Stock = Quantity;
-            product.UpdatedDate = DateTime.Now;
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UpdateViewCount(int productId)
-        {
-            var product = await _context.Products.FindAsync(productId);
-            if (product == null)
-                throw new ECommerceException("Cannot find product");
-            product.ViewCount += 1;
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        #region method to save image
-
-        private async Task<List<string>> GetImagePaths(int productId)
-        {
-            var defaultImage = "https://localhost:7195/user-content/product/default-product-image.png";
-            var imageProduct = await (from pi in _context.ProductImages
-                                      join i in _context.Images on pi.ImageId equals i.Id
-                                      where pi.ProductId == productId
-                                      orderby pi.IsDefault descending
-                                      select (i.ImagePath)).ToListAsync();
-            return imageProduct.Count == 0 ? new List<string>() { defaultImage } : imageProduct;
-        }
-
-        public async Task<bool> DeleteRange(List<int> productIds)
-        {
-            var products = _context.Products.Where(x => productIds.Contains(x.Id)).ToList();
-            _context.Products.RemoveRange(products);
-            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<List<ProductViewModel>> GetFeaturedProduct(string languageId, int take, int categoryId)
@@ -339,7 +206,7 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                                         imagePaths = new List<string>(),
                                     }).Take(take).ToListAsync();
 
-            if (productVMs == null) throw new ECommerceException("List null");
+            if (productVMs == null) throw new ECommerceException("Have Error in process to get product related");
 
             // add image path
             foreach (var productVM in productVMs)
@@ -350,6 +217,139 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
 
             return productVMs;
         }
+
+        public async Task<ProductViewModel> GetById(int productId, string languageId)
+        {
+            // get product in tabels
+            var query = await (from p in _context.Products
+                               join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                               join pic in _context.ProductInCategories on p.Id equals pic.ProductId
+                               join c in _context.Categories on pic.CategoryId equals c.Id
+                               join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
+                               where p.Id == productId && pt.LanguageId == languageId && ct.LanguageId == languageId
+                               select new { p, pt, pic, ct }).FirstOrDefaultAsync();
+
+            // check null
+            if (query == null)
+                throw new ECommerceException("Cannot find product");
+
+            // map to product view model
+            var productVM = new ProductViewModel()
+            {
+                Id = query.p.Id,
+                IsShowOnHome = query.p.IsShowOnHome,
+                CreatedDate = query.p.CreatedDate.ToShortDateString(),
+                OriginalPrice = query.p.OriginalPrice,
+                Price = query.p.Price,
+                Stock = query.p.Stock,
+                UpdatedDate = query.p.UpdatedDate.ToShortDateString(),
+                ViewCount = query.p.ViewCount,
+                SeoAlias = query.pt.SeoAlias,
+                Description = query.pt.Description,
+                Details = query.pt.Details,
+                LanguageId = query.pt.LanguageId,
+                Name = query.pt.Name,
+                SeoDescription = query.pt.SeoDescription,
+                SeoTitle = query.pt.SeoTitle,
+                categoryId = query.ct.CategoryId,
+                CategoryName = query.ct.Name,
+                imagePaths = new List<string>(),
+            };
+
+            productVM.imagePaths = await GetImagePaths(productVM.Id);
+
+            return productVM;
+        }
+
+        public async Task<int> Update(int productId, string languageId, UpdateProductRequest request)
+        {
+            var query = await (from p in _context.Products
+                               join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                               where p.Id == productId && pt.LanguageId == languageId
+                               select new { p, pt }).FirstOrDefaultAsync();
+            if (query == null)
+                throw new ECommerceException("Cannot find product");
+
+            _mapper.Map(request, query.pt);
+            query.p.UpdatedDate = DateTime.Now;
+            query.p.IsShowOnHome = request.IsShowOnHome;
+
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> UpdatePrice(int productId, decimal newPrice)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+                throw new ECommerceException("Cannot find product");
+            product.Price = newPrice;
+            product.UpdatedDate = DateTime.Now;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateStock(int productId, int Quantity)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+                throw new ECommerceException("Cannot find product");
+            product.Stock = Quantity;
+            product.UpdatedDate = DateTime.Now;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateViewCount(int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+                throw new ECommerceException("Cannot find product");
+            product.ViewCount += 1;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        private async Task<List<string>> GetImagePaths(int productId)
+        {
+            var imageProduct = await (from pi in _context.ProductImages
+                                      join i in _context.Images on pi.ImageId equals i.Id
+                                      where pi.ProductId == productId
+                                      orderby pi.IsDefault descending
+                                      select (i.ImagePath)).ToListAsync();
+            return imageProduct.Count == 0 ? new List<string>() { SystemConstants.ImageSettings.DefaultProductImage } : imageProduct;
+        }
+
+        public async Task<bool> DeleteRange(List<int> productIds)
+        {
+            var products = _context.Products.Where(x => productIds.Contains(x.Id)).ToList();
+            _context.Products.RemoveRange(products);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> Delete(int productId)
+        {
+            // find product
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+                throw new ECommerceException("Cannot find product");
+
+            // find all image of product and delete it out wwwroot
+            var images = from p in _context.Products
+                         join pi in _context.ProductImages on p.Id equals pi.ProductId
+                         join i in _context.Images on pi.ImageId equals i.Id
+                         where p.Id == productId
+                         select i;
+
+            foreach (Image image in images.ToList())
+            {
+                await _storageService.DeleteFileAsync(image.ImagePath);
+            }
+
+            _context.Products.Remove(product);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        #endregion Product
+
+        #region Product Review
 
         public async Task<List<ProductReviewViewModel>> GetAllProductReview(int productId)
         {
@@ -370,10 +370,10 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                                               Comment = pr.Comment,
                                               CustomerUsername = u.UserName,
                                               CustomerName = u.FirstName + " " + u.LastName,
-                                              customerAvatar = i.ImagePath == null ? SystemConstants.AppSettings.DefaultAvatart : i.ImagePath,
+                                              customerAvatar = i.ImagePath == null ? SystemConstants.ImageSettings.DefaultAvatart : i.ImagePath,
                                           }).ToListAsync();
 
-            if (productReviewVMs == null) throw new ECommerceException("Fail to get product review");
+            if (productReviewVMs == null) throw new ECommerceException("Have error in process to get product review");
 
             return productReviewVMs;
         }
@@ -418,13 +418,14 @@ namespace ECommerce.DataAccess.Repository.ProductRepo
                                       CustomerId = u.Id,
                                       CustomerUsername = u.UserName,
                                       CustomerName = u.FirstName + " " + u.LastName,
-                                      customerAvatar = i.ImagePath == null ? SystemConstants.AppSettings.DefaultAvatart : i.ImagePath,
+                                      customerAvatar = i.ImagePath == null ? SystemConstants.ImageSettings.DefaultAvatart : i.ImagePath,
                                   }).FirstOrDefaultAsync();
-            if (reviewVM == null) throw new ECommerceException("Cannot find the review");
+
+            if (reviewVM == null) throw new ECommerceException("Have Error in process to get product review model");
 
             return reviewVM;
         }
 
-        #endregion method to save image
+        #endregion Product Review
     }
 }

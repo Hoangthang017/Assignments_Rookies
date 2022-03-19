@@ -2,11 +2,6 @@
 using ECommerce.Models.Request.Products;
 using ECommerce.Models.ViewModels.Common;
 using ECommerce.Models.ViewModels.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.ApiItegration
 {
@@ -23,5 +18,7 @@ namespace ECommerce.ApiItegration
         Task<List<ProductReviewViewModel>> GetAllReview(int productId);
 
         Task<ProductReviewViewModel> CreateProductReview(int productId, string customerId, CreateProductReviewRequest request);
+
+        Task<bool> UpdateViewCount(int productId);
     }
 }

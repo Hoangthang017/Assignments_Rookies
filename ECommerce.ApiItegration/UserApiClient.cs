@@ -32,11 +32,6 @@ namespace ECommerce.ApiItegration
             return await GetAsync<UserInfoViewModel>(Path.Combine(_baseApiUrl, "account"), true);
         }
 
-        public async Task RevokeToken()
-        {
-            //await PostAsync(Path.Combine(_baseApiUrl, "revoke"), loginRequest, true);
-        }
-
         public async Task<UserInfoViewModel> Register(string userName, string password)
         {
             var registerRequest = new RegisterRequest() { UserName = userName, Password = password };
