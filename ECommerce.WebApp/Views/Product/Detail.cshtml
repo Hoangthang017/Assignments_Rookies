@@ -126,7 +126,7 @@
                                 </div>
                                 <div class="text text-center">
                                     <p class="mb-5 pl-4 line">@review.Comment</p>
-                                    <p class="name">@(string.IsNullOrEmpty(review.CustomerName) ?  review.CustomerUsername : review.CustomerName)</p>
+                                    <p class="name">@(string.IsNullOrWhiteSpace(review.CustomerName) ? review.CustomerUsername : review.CustomerName)</p>
                                 </div>
                             </div>
                         </div>

@@ -61,8 +61,8 @@ $(".btn-confirm-remove").click(function (e) {
 
             // update number of item at navbar
             $('#numOfCartItems').text(parseInt($("#numOfCartItems").text()) - 1);
-            $('.cart-items-subTotal').text((parseFloat($(".cart-items-subTotal").text()) - response.removeProductTotalPrice).toPrecision(2));
-            $('.cart-items-totalPrice').text((parseFloat($(".cart-items-totalPrice").text()) - response.removeProductTotalPrice).toPrecision(2));
+            $('.cart-items-subTotal').text((parseFloat($(".cart-items-subTotal").text().split(' ')[1]) - response.removeProductTotalPrice).toPrecision(2));
+            $('.cart-items-totalPrice').text((parseFloat($(".cart-items-totalPrice").text().split(' ')[1]) - response.removeProductTotalPrice).toPrecision(2));
         }
     });
 });

@@ -28,17 +28,15 @@
 
             public const int NumberOfSlide = 2;
 
-            public static string DefaultAvatart = Path.Combine(
-                AppSettings.BackendApiAddress,
-                FolderSaveImage,
-                FolderSaveUserImage,
-                NameOfDefaultAvatart);
+            public static string DefaultAvatart = AppSettings.BackendApiAddress + "//" +
+                                                            FolderSaveImage + "//" +
+                                                            FolderSaveUserImage + "//" +
+                                                            NameOfDefaultAvatart;
 
-            public static string DefaultProductImage = Path.Combine(
-                AppSettings.BackendApiAddress,
-                FolderSaveImage,
-                FolderSaveProductImage,
-                NameOfDefaultProductImage);
+            public static string DefaultProductImage = AppSettings.BackendApiAddress + "//" +
+                                                            FolderSaveImage + "//" +
+                                                            FolderSaveProductImage + "//" +
+                                                            NameOfDefaultProductImage;
         }
 
         public static class LanguageSettings
