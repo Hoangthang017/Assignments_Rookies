@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ECommerce.Models.Request.Categories
 {
-    public class CreateCategoryRequest
+    public class CreateCategoryRequest : BaseCategoryRequest
     {
         public int SortOrder { set; get; }
 
